@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Все методы доступа к DOM</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 900px;
+            margin: 20px auto;
+            padding: 0 20px;
+        }
+        section {
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+            background: #fafafa;
+        }
+        h2 {
+            margin-top: 0;
+            color: #333;
+            font-size: 18px;
+        }
+        label {
+            display: inline-block;
+            width: 180px;
+            margin-bottom: 5px;
+        }
+        input[type="number"] {
+            width: 150px;
+            padding: 4px;
+        }
+        input[type="text"][readonly] {
+            width: 180px;
+            padding: 4px;
+            background: #eee;
+            font-weight: bold;
+        }
+        button {
+            padding: 6px 20px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Изучаем JS: 6 методов доступа к DOM</h1>
+    <p>Кредитный калькулятор. Формула: <b>общая сумма = кредит × (1 + ставка/100 × срок/12)</b></p>
+
+    <!-- 1. getElementById -->
+    <section>
+        <h2>1. document.getElementById(id)</h2>
+        <label>Сумма кредита:</label>
+        <input type="number" id="amount1" placeholder="100000"><br>
+        <label>Процентная ставка (%):</label>
+        <input type="number" id="rate1" placeholder="12"><br>
+        <label>Срок (месяцев):</label>
+        <input type="number" id="months1" placeholder="24"><br>
+        <button id="calc1">Рассчитать</button><br><br>
+        <label>Всего отдадите:</label>
+        <input type="text" id="result1" readonly>
+    </section>
+
+    <!-- 2. getElementsByName -->
+    <section>
+        <h2>2. document.getElementsByName(name)</h2>
+        <label>Сумма кредита:</label>
+        <input type="number" name="amount2" placeholder="100000"><br>
+        <label>Процентная ставка (%):</label>
+        <input type="number" name="rate2" placeholder="12"><br>
+        <label>Срок (месяцев):</label>
+        <input type="number" name="months2" placeholder="24"><br>
+        <button name="calc2">Рассчитать</button><br><br>
+        <label>Всего отдадите:</label>
+        <input type="text" name="result2" readonly>
+    </section>
+
+    <!-- 3. getElementsByClassName -->
+    <section>
+        <h2>3. document.getElementsByClassName(className)</h2>
+        <label>Сумма кредита:</label>
+        <input type="number" class="amount3" placeholder="100000"><br>
+        <label>Процентная ставка (%):</label>
+        <input type="number" class="rate3" placeholder="12"><br>
+        <label>Срок (месяцев):</label>
+        <input type="number" class="months3" placeholder="24"><br>
+        <button class="calc3">Рассчитать</button><br><br>
+        <label>Всего отдадите:</label>
+        <input type="text" class="result3" readonly>
+    </section>
+
+    <!-- 4. getElementsByTagName -->
+    <section>
+        <h2>4. document.getElementsByTagName(tagName)</h2>
+        <label>Сумма кредита:</label>
+        <input type="number" placeholder="100000"><br>
+        <label>Процентная ставка (%):</label>
+        <input type="number" placeholder="12"><br>
+        <label>Срок (месяцев):</label>
+        <input type="number" placeholder="24"><br>
+        <button>Рассчитать</button><br><br>
+        <label>Всего отдадите:</label>
+        <input type="text" readonly>
+    </section>
+
+    <!-- 5. querySelector -->
+    <section>
+        <h2>5. document.querySelector(selector)</h2>
+        <label>Сумма кредита:</label>
+        <input type="number" id="amount5" placeholder="100000"><br>
+        <label>Процентная ставка (%):</label>
+        <input type="number" id="rate5" placeholder="12"><br>
+        <label>Срок (месяцев):</label>
+        <input type="number" id="months5" placeholder="24"><br>
+        <button id="calc5">Рассчитать</button><br><br>
+        <label>Всего отдадите:</label>
+        <input type="text" id="result5" readonly>
+    </section>
+
+    <!-- 6. querySelectorAll -->
+    <section>
+        <h2>6. document.querySelectorAll(selector)</h2>
+        <label>Сумма кредита:</label>
+        <input type="number" class="amount6" placeholder="100000"><br>
+        <label>Процентная ставка (%):</label>
+        <input type="number" class="rate6" placeholder="12"><br>
+        <label>Срок (месяцев):</label>
+        <input type="number" class="months6" placeholder="24"><br>
+        <button class="calc6">Рассчитать</button><br><br>
+        <label>Всего отдадите:</label>
+        <input type="text" class="result6" readonly>
+    </section>
+
+    <script>
+        // =============================================
+        // 1. document.getElementById
+        // =============================================
+        document.getElementById('calc1').addEventListener('click', function() {
+            let amount = document.getElementById('amount1').value;
+            let rate = document.getElementById('rate1').value;
+            let months = document.getElementById('months1').value;
+            let resultField = document.getElementById('result1');
+
+            if (amount === '' || rate === '' || months === '') {
+                resultField.value = 'Заполните все поля!';
+                return;
+            }
+            let total = amount * (1 + rate / 100 * months / 12);
+            resultField.value = total.toFixed(2) + ' руб.';
+        });
+
+        // =============================================
+        // 2. document.getElementsByName
+        // =============================================
+        document.getElementsByName('calc2')[0].addEventListener('click', function() {
+            let amount = document.getElementsByName('amount2')[0].value;
+            let rate = document.getElementsByName('rate2')[0].value;
+            let months = document.getElementsByName('months2')[0].value;
+            let resultField = document.getElementsByName('result2')[0];
+
+            if (amount === '' || rate === '' || months === '') {
+                resultField.value = 'Заполните все поля!';
+                return;
+            }
+            let total = amount * (1 + rate / 100 * months / 12);
+            resultField.value = total.toFixed(2) + ' руб.';
+        });
+
+        // =============================================
+        // 3. document.getElementsByClassName
+        // =============================================
+        document.getElementsByClassName('calc3')[0].addEventListener('click', function() {
+            let amount = document.getElementsByClassName('amount3')[0].value;
+            let rate = document.getElementsByClassName('rate3')[0].value;
+            let months = document.getElementsByClassName('months3')[0].value;
+            let resultField = document.getElementsByClassName('result3')[0];
+
+            if (amount === '' || rate === '' || months === '') {
+                resultField.value = 'Заполните все поля!';
+                return;
+            }
+            let total = amount * (1 + rate / 100 * months / 12);
+            resultField.value = total.toFixed(2) + ' руб.';
+        });
+
+        // =============================================
+        // 4. document.getElementsByTagName
+        // =============================================
+        // Ищем все <section>, берём 4-й (индекс 3), внутри него ищем input и button
+        (function() {
+            let sections = document.getElementsByTagName('section');
+            let section4 = sections[3]; // 4-я секция (индекс 3)
+            let inputs = section4.getElementsByTagName('input');
+            let buttons = section4.getElementsByTagName('button');
+
+            buttons[0].addEventListener('click', function() {
+                let amount = inputs[0].value;
+                let rate = inputs[1].value;
+                let months = inputs[2].value;
+                let resultField = inputs[3];
+
+                if (amount === '' || rate === '' || months === '') {
+                    resultField.value = 'Заполните все поля!';
+                    return;
+                }
+                let total = amount * (1 + rate / 100 * months / 12);
+                resultField.value = total.toFixed(2) + ' руб.';
+            });
+        })();
+
+        // =============================================
+        // 5. document.querySelector
+        // =============================================
+        document.querySelector('#calc5').addEventListener('click', function() {
+            let amount = document.querySelector('#amount5').value;
+            let rate = document.querySelector('#rate5').value;
+            let months = document.querySelector('#months5').value;
+            let resultField = document.querySelector('#result5');
+
+            if (amount === '' || rate === '' || months === '') {
+                resultField.value = 'Заполните все поля!';
+                return;
+            }
+            let total = amount * (1 + rate / 100 * months / 12);
+            resultField.value = total.toFixed(2) + ' руб.';
+        });
+
+        // =============================================
+        // 6. document.querySelectorAll
+        // =============================================
+        document.querySelectorAll('.calc6')[0].addEventListener('click', function() {
+            let amount = document.querySelectorAll('.amount6')[0].value;
+            let rate = document.querySelectorAll('.rate6')[0].value;
+            let months = document.querySelectorAll('.months6')[0].value;
+            let resultField = document.querySelectorAll('.result6')[0];
+
+            if (amount === '' || rate === '' || months === '') {
+                resultField.value = 'Заполните все поля!';
+                return;
+            }
+            let total = amount * (1 + rate / 100 * months / 12);
+            resultField.value = total.toFixed(2) + ' руб.';
+        });
+    </script>
+
+</body>
+</html>

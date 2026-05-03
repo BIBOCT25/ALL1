@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>110. Страница товара</title>
+<style>
+  * { box-sizing: border-box; margin: 0; }
+  body { font-family: Arial, sans-serif; background: #f5f5f5; }
+  header {
+    background: #1565C0; color: #fff; padding: 14px 32px;
+    display: flex; justify-content: space-between; align-items: center;
+    position: sticky; top: 0; z-index: 10;
+  }
+  .logo { font-size: 18px; font-weight: bold; }
+  .cart-icon { font-size: 20px; position: relative; cursor: pointer; }
+  .cart-badge {
+    position: absolute; top: -8px; right: -10px;
+    background: #E53935; color: #fff; font-size: 10px; font-weight: bold;
+    width: 18px; height: 18px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    transition: transform 0.3s;
+  }
+  .cart-badge.bump { transform: scale(1.5); }
+  .page { max-width: 780px; margin: 0 auto; padding: 28px 20px; display: flex; gap: 32px; flex-wrap: wrap; }
+  /* Галерея */
+  .gallery { flex: 1; min-width: 280px; }
+  .main-img { width: 100%; border-radius: 14px; display: block; margin-bottom: 10px; }
+  .thumbs { display: flex; gap: 8px; }
+  .thumb {
+    width: 64px; height: 48px; border-radius: 6px; object-fit: cover;
+    cursor: pointer; border: 2px solid transparent; transition: border-color 0.2s;
+  }
+  .thumb.active { border-color: #1565C0; }
+  /* Инфо */
+  .info { flex: 1; min-width: 260px; }
+  .brand { font-size: 12px; color: #888; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 1px; }
+  h1 { font-size: 22px; font-weight: 900; margin-bottom: 8px; }
+  .rating-row { display: flex; align-items: center; gap: 8px; margin-bottom: 14px; }
+  .stars-row  { color: #FFB300; font-size: 15px; }
+  .rev-count  { font-size: 13px; color: #888; }
+  .price-row  { display: flex; align-items: baseline; gap: 12px; margin-bottom: 18px; }
+  .price-new  { font-size: 30px; font-weight: 900; color: #D32F2F; }
+  .price-old  { font-size: 16px; color: #aaa; text-decoration: line-through; }
+  .discount-badge { background: #FFEBEE; color: #C62828; font-size: 12px; font-weight: bold; padding: 3px 8px; border-radius: 6px; }
+  .section-title { font-size: 13px; font-weight: bold; color: #555; margin-bottom: 8px; }
+  /* Цвета */
+  .colors { display: flex; gap: 8px; margin-bottom: 18px; }
+  .color-opt { width: 28px; height: 28px; border-radius: 50%; cursor: pointer; border: 3px solid transparent; transition: border-color 0.2s; }
+  .color-opt.active { border-color: #1565C0; }
+  /* Размеры */
+  .sizes { display: flex; gap: 8px; margin-bottom: 20px; }
+  .size-opt {
+    min-width: 48px; padding: 7px 10px; border: 1px solid #ddd; border-radius: 8px;
+    background: #fff; cursor: pointer; font-size: 13px; font-weight: bold;
+    text-align: center; transition: all 0.2s;
+  }
+  .size-opt.active { border-color: #1565C0; background: #E3F2FD; color: #1565C0; }
+  .size-opt.out { color: #ccc; text-decoration: line-through; cursor: default; }
+  /* Счётчик + кнопка */
+  .add-row { display: flex; gap: 10px; align-items: center; margin-bottom: 16px; }
+  .qty-box { display: flex; align-items: center; border: 1px solid #ddd; border-radius: 8px; overflow: hidden; }
+  .qty-box button { width: 36px; height: 42px; background: #f5f5f5; border: none; font-size: 18px; cursor: pointer; }
+  .qty-box button:hover { background: #E3F2FD; }
+  .qty-box input { width: 46px; text-align: center; border: none; font-size: 15px; font-weight: bold; outline: none; }
+  .btn-add {
+    flex: 1; padding: 12px; background: #1565C0; color: #fff;
+    border: none; border-radius: 8px; font-size: 14px; font-weight: bold;
+    cursor: pointer; transition: background 0.2s; position: relative; overflow: hidden;
+  }
+  .btn-add:hover { background: #0D47A1; }
+  .btn-add::after {
+    content: '✓ Добавлено!'; position: absolute; inset: 0;
+    background: #2E7D32; display: flex; align-items: center; justify-content: center;
+    transform: translateY(100%); transition: transform 0.3s;
+  }
+  .btn-add.added::after { transform: none; }
+  .btn-fav { width: 44px; height: 44px; border: 1px solid #ddd; border-radius: 8px; background: #fff; font-size: 20px; cursor: pointer; }
+  .btn-fav.on { color: #E53935; border-color: #E53935; }
+  /* Особенности */
+  .features { display: flex; gap: 10px; flex-wrap: wrap; }
+  .feat-chip { background: #f0f4ff; color: #1565C0; font-size: 12px; padding: 5px 10px; border-radius: 20px; }
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">МегаМаркет</div>
+  <div class="cart-icon">
+    🛒 <div class="cart-badge" id="cartBadge">0</div>
+  </div>
+</header>
+
+<div class="page">
+  <!-- Галерея -->
+  <div class="gallery">
+    <img id="mainImg" class="main-img"
+      src="https://placehold.co/480x320/1565C0/fff?text=iPhone+15+Pro"
+      alt="iPhone 15 Pro">
+    <div class="thumbs">
+      <img class="thumb active" data-src="https://placehold.co/480x320/1565C0/fff?text=Вид+1" src="https://placehold.co/64x48/1565C0/fff?text=1" alt="1">
+      <img class="thumb" data-src="https://placehold.co/480x320/0D47A1/fff?text=Вид+2" src="https://placehold.co/64x48/0D47A1/fff?text=2" alt="2">
+      <img class="thumb" data-src="https://placehold.co/480x320/283593/fff?text=Вид+3" src="https://placehold.co/64x48/283593/fff?text=3" alt="3">
+      <img class="thumb" data-src="https://placehold.co/480x320/1A237E/fff?text=Вид+4" src="https://placehold.co/64x48/1A237E/fff?text=4" alt="4">
+    </div>
+  </div>
+
+  <!-- Информация -->
+  <div class="info">
+    <div class="brand">Apple</div>
+    <h1>iPhone 15 Pro 256GB</h1>
+    <div class="rating-row">
+      <div class="stars-row">★★★★★</div>
+      <div class="rev-count">4.9 · 328 отзывов</div>
+    </div>
+    <div class="price-row">
+      <span class="price-new">83 990 ₽</span>
+      <span class="price-old">119 990 ₽</span>
+      <span class="discount-badge">−30%</span>
+    </div>
+
+    <div class="section-title">Цвет: <span id="colorName">Titanium Black</span></div>
+    <div class="colors" id="colors">
+      <div class="color-opt active" data-name="Titanium Black"  style="background:#1A1A1A" title="Titanium Black"></div>
+      <div class="color-opt"        data-name="Titanium White"  style="background:#F0EDE8" title="Titanium White"></div>
+      <div class="color-opt"        data-name="Titanium Blue"   style="background:#4A7FA5" title="Titanium Blue"></div>
+      <div class="color-opt"        data-name="Titanium Natural" style="background:#C8B89A" title="Titanium Natural"></div>
+    </div>
+
+    <div class="section-title">Объём памяти:</div>
+    <div class="sizes" id="sizes">
+      <div class="size-opt out"   data-size="128">128 ГБ</div>
+      <div class="size-opt active" data-size="256">256 ГБ</div>
+      <div class="size-opt"        data-size="512">512 ГБ</div>
+      <div class="size-opt"        data-size="1024">1 ТБ</div>
+    </div>
+
+    <div class="add-row">
+      <div class="qty-box">
+        <button id="qtyMinus">−</button>
+        <input type="number" id="qtyInput" value="1" min="1" max="10">
+        <button id="qtyPlus">+</button>
+      </div>
+      <button class="btn-add" id="btnAdd">🛒 В корзину</button>
+      <button class="btn-fav" id="btnFav" title="В избранное">♡</button>
+    </div>
+
+    <div class="features">
+      <span class="feat-chip">Чип A17 Pro</span>
+      <span class="feat-chip">48 МП камера</span>
+      <span class="feat-chip">USB-C</span>
+      <span class="feat-chip">Titanium</span>
+      <span class="feat-chip">5G</span>
+      <span class="feat-chip">iOS 18</span>
+    </div>
+  </div>
+</div>
+
+<script>
+  let cartCount = 0;
+
+  // Галерея
+  document.querySelectorAll('.thumb').forEach(t => {
+    t.addEventListener('click', () => {
+      document.getElementById('mainImg').src = t.dataset.src;
+      document.querySelectorAll('.thumb').forEach(x => x.classList.remove('active'));
+      t.classList.add('active');
+    });
+  });
+
+  // Цвет
+  document.querySelectorAll('.color-opt').forEach(opt => {
+    opt.addEventListener('click', () => {
+      document.querySelectorAll('.color-opt').forEach(x => x.classList.remove('active'));
+      opt.classList.add('active');
+      document.getElementById('colorName').textContent = opt.dataset.name;
+    });
+  });
+
+  // Размер
+  document.querySelectorAll('.size-opt:not(.out)').forEach(opt => {
+    opt.addEventListener('click', () => {
+      document.querySelectorAll('.size-opt').forEach(x => x.classList.remove('active'));
+      opt.classList.add('active');
+    });
+  });
+
+  // Количество
+  const qtyInput = document.getElementById('qtyInput');
+  document.getElementById('qtyMinus').addEventListener('click', () => {
+    qtyInput.value = Math.max(1, parseInt(qtyInput.value) - 1);
+  });
+  document.getElementById('qtyPlus').addEventListener('click', () => {
+    qtyInput.value = Math.min(10, parseInt(qtyInput.value) + 1);
+  });
+
+  // Корзина
+  const btnAdd   = document.getElementById('btnAdd');
+  const badge    = document.getElementById('cartBadge');
+  btnAdd.addEventListener('click', () => {
+    cartCount += parseInt(qtyInput.value);
+    badge.textContent = cartCount;
+    badge.classList.add('bump');
+    btnAdd.classList.add('added');
+    setTimeout(() => { btnAdd.classList.remove('added'); badge.classList.remove('bump'); }, 1500);
+  });
+
+  // Избранное
+  const btnFav = document.getElementById('btnFav');
+  btnFav.addEventListener('click', () => {
+    btnFav.classList.toggle('on');
+    btnFav.textContent = btnFav.classList.contains('on') ? '♥' : '♡';
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>102. Фильтр по тегам</title>
+<style>
+  * { box-sizing: border-box; margin: 0; }
+  body { font-family: Arial, sans-serif; padding: 32px; background: #f5f5f5; }
+  h2 { font-size: 18px; margin-bottom: 16px; }
+  .tags-wrap { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; }
+  .tag {
+    padding: 6px 14px; border-radius: 20px; border: 1px solid #ccc;
+    background: #fff; cursor: pointer; font-size: 13px; font-weight: 500;
+    transition: all 0.2s;
+  }
+  .tag.active { background: #1565C0; color: #fff; border-color: #1565C0; }
+  .tag:hover:not(.active) { border-color: #1565C0; color: #1565C0; }
+  .count { font-size: 13px; color: #888; margin-bottom: 14px; }
+  .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; max-width: 620px; }
+  .card { background: #fff; border-radius: 10px; padding: 14px; }
+  .card img { width: 100%; border-radius: 6px; margin-bottom: 8px; }
+  .card-name  { font-size: 13px; font-weight: bold; margin-bottom: 4px; }
+  .card-price { font-size: 13px; color: #D32F2F; font-weight: bold; margin-bottom: 8px; }
+  .card-tags  { display: flex; flex-wrap: wrap; gap: 4px; }
+  .card-tag   { font-size: 10px; padding: 2px 7px; border-radius: 8px; background: #E3F2FD; color: #1565C0; }
+  .empty { font-size: 14px; color: #aaa; padding: 20px 0; }
+</style>
+</head>
+<body>
+<h2>Каталог с фильтром по тегам</h2>
+<div class="tags-wrap" id="tagsWrap"></div>
+<div class="count" id="countLabel"></div>
+<div class="grid" id="grid"></div>
+
+<script>
+  const PRODUCTS = [
+    { id:1, name:'iPhone 15',     price:'89 990 ₽', color:'1565C0', tags:['iOS','5G','OLED','48МП'] },
+    { id:2, name:'Galaxy S24',    price:'74 990 ₽', color:'2E7D32', tags:['Android','5G','OLED','50МП'] },
+    { id:3, name:'MacBook Air M3',price:'124 990 ₽',color:'6A1B9A', tags:['macOS','M3','14ч.','Ноутбук'] },
+    { id:4, name:'iPad Pro 11"',  price:'99 990 ₽', color:'BF360C', tags:['iOS','M2','OLED','5G'] },
+    { id:5, name:'Pixel 8 Pro',   price:'84 990 ₽', color:'00695C', tags:['Android','5G','50МП','7лет'] },
+    { id:6, name:'OnePlus 12',    price:'54 990 ₽', color:'F57F17', tags:['Android','5G','100Вт','16ГБ'] },
+    { id:7, name:'Samsung A55',   price:'39 990 ₽', color:'4527A0', tags:['Android','OLED','5000мАч'] },
+    { id:8, name:'Xiaomi 14',     price:'64 990 ₽', color:'880E4F', tags:['Android','5G','50МП','Leica'] },
+  ];
+
+  const ALL_TAGS = [...new Set(PRODUCTS.flatMap(p => p.tags))].sort();
+  let active = new Set();
+
+  function render() {
+    // Теги
+    document.getElementById('tagsWrap').innerHTML = ALL_TAGS.map(t =>
+      `<button class="tag ${active.has(t) ? 'active' : ''}" data-tag="${t}">${t}</button>`
+    ).join('');
+    document.querySelectorAll('.tag').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const t = btn.dataset.tag;
+        active.has(t) ? active.delete(t) : active.add(t);
+        render();
+      });
+    });
+
+    // Товары
+    const filtered = active.size === 0
+      ? PRODUCTS
+      : PRODUCTS.filter(p => [...active].every(t => p.tags.includes(t)));
+
+    document.getElementById('countLabel').textContent =
+      `Показано: ${filtered.length} из ${PRODUCTS.length}${active.size ? ' (фильтр: ' + [...active].join(', ') + ')' : ''}`;
+
+    document.getElementById('grid').innerHTML = filtered.length
+      ? filtered.map(p => `
+        <div class="card">
+          <img src="https://placehold.co/200x110/${p.color}/fff?text=${encodeURIComponent(p.name)}" alt="${p.name}">
+          <div class="card-name">${p.name}</div>
+          <div class="card-price">${p.price}</div>
+          <div class="card-tags">${p.tags.map(t => `<span class="card-tag${active.has(t) ? '" style="background:#C8E6C9;color:#1B5E20' : ''}">${t}</span>`).join('')}</div>
+        </div>`).join('')
+      : `<div class="empty" style="grid-column:1/-1">Ничего не найдено</div>`;
+  }
+
+  render();
+</script>
+</body>
+</html>

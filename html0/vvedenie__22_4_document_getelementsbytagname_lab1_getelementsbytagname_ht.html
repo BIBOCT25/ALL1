@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang='ru'>
+<head>
+    <meta charset='UTF-8'>
+    <title>Метод: getElementsByTagName</title>
+</head>
+<body>
+    <h2>Кредитный калькулятор (getElementsByTagName)</h2>
+    
+    <label>Сумма кредита:</label>
+    <input type='number' placeholder='100000'><br><br>
+    
+    <label>Процентная ставка (%):</label>
+    <input type='number' placeholder='12'><br><br>
+    
+    <label>Срок (месяцев):</label>
+    <input type='number' placeholder='24'><br><br>
+    
+    <button onclick='calculate()'>Рассчитать</button><br><br>
+    
+    <label>Всего отдадите:</label>
+    <input type='text' readonly>
+
+    <script>
+        function calculate() {
+            let inputs = document.getElementsByTagName('input');
+            let amount = inputs[0].value;
+            let rate = inputs[1].value;
+            let months = inputs[2].value;
+            
+            if (amount === '' || rate === '' || months === '') {
+                inputs[3].value = 'Заполните все поля!';
+                return;
+            }
+            
+            let total = amount * (1 + rate / 100 * months / 12);
+            inputs[3].value = total.toFixed(2) + ' руб.';
+        }
+    </script>
+</body>
+</html>

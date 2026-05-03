@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>12. Бейдж скидки</title>
+<style>
+  body { font-family: Arial, sans-serif; display: flex; justify-content: center; padding: 40px; gap: 20px; flex-wrap: wrap; }
+  .card {
+    border: 1px solid #ddd; border-radius: 8px; overflow: hidden;
+    width: 200px; position: relative;
+  }
+  .card img { width: 100%; display: block; }
+  .badge-sale {
+    position: absolute; top: 10px; left: 10px;
+    background: #e53935; color: #fff; border-radius: 4px;
+    padding: 3px 8px; font-size: 13px; font-weight: bold;
+  }
+  .card-body { padding: 12px; }
+  .price-new { font-size: 18px; font-weight: bold; color: #e53935; }
+  .price-old { font-size: 14px; color: #999; text-decoration: line-through; }
+</style>
+</head>
+<body>
+
+<script>
+  const items = [
+    { name: 'Кроссовки', oldPrice: 6000, newPrice: 3990 },
+    { name: 'Куртка',    oldPrice: 8500, newPrice: 5100 },
+    { name: 'Шапка',     oldPrice: 1200, newPrice: 1200 },
+  ];
+
+  items.forEach(item => {
+    const discount = Math.round((1 - item.newPrice / item.oldPrice) * 100);
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.innerHTML = `
+      <img src="https://placehold.co/200x130/eee/999?text=${encodeURIComponent(item.name)}" alt="${item.name}">
+      ${discount > 0 ? `<span class="badge-sale">−${discount}%</span>` : ''}
+      <div class="card-body">
+        <div>${item.name}</div>
+        <div class="price-new">${item.newPrice.toLocaleString('ru')} ₽</div>
+        ${discount > 0 ? `<div class="price-old">${item.oldPrice.toLocaleString('ru')} ₽</div>` : ''}
+      </div>
+    `;
+    document.body.appendChild(card);
+  });
+</script>
+
+</body>
+</html>

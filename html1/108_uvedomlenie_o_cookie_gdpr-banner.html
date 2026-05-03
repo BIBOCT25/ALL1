@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>108. Cookie-баннер</title>
+<style>
+  * { box-sizing: border-box; margin: 0; }
+  body { font-family: Arial, sans-serif; padding: 40px; background: #f5f5f5; min-height: 100vh; }
+  h1 { font-size: 22px; margin-bottom: 10px; }
+  p  { font-size: 14px; color: #555; line-height: 1.7; }
+  /* Баннер */
+  .cookie-banner {
+    position: fixed; bottom: 0; left: 0; right: 0;
+    background: #212121; color: #fff; padding: 20px 28px;
+    box-shadow: 0 -4px 20px rgba(0,0,0,.3);
+    transform: translateY(100%); transition: transform 0.4s ease;
+    z-index: 100;
+  }
+  .cookie-banner.show { transform: none; }
+  .banner-row { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
+  .banner-text { flex: 1; min-width: 220px; font-size: 13px; color: #ccc; line-height: 1.6; }
+  .banner-text a { color: #90CAF9; }
+  .banner-btns { display: flex; gap: 8px; flex-wrap: wrap; }
+  .btn-accept {
+    padding: 9px 20px; background: #1565C0; color: #fff;
+    border: none; border-radius: 8px; font-size: 13px; font-weight: bold; cursor: pointer;
+  }
+  .btn-accept:hover { background: #0D47A1; }
+  .btn-settings, .btn-reject {
+    padding: 9px 14px; background: transparent; color: #ccc;
+    border: 1px solid #555; border-radius: 8px; font-size: 13px; cursor: pointer;
+  }
+  .btn-settings:hover, .btn-reject:hover { border-color: #90CAF9; color: #90CAF9; }
+  /* Детали */
+  .cookie-details { max-height: 0; overflow: hidden; transition: max-height 0.35s ease; }
+  .cookie-details.open { max-height: 200px; }
+  .details-inner { padding: 14px 0 0; border-top: 1px solid #333; margin-top: 14px; display: flex; flex-wrap: wrap; gap: 16px; }
+  .toggle-row { display: flex; align-items: center; gap: 8px; font-size: 13px; }
+  .toggle-row input[type=checkbox] { accent-color: #1565C0; width: 16px; height: 16px; }
+  .toggle-row .disabled { color: #666; font-size: 11px; }
+  /* Восстановить */
+  .btn-reopen {
+    position: fixed; bottom: 16px; left: 16px;
+    padding: 7px 14px; background: #212121; color: #fff;
+    border: none; border-radius: 20px; font-size: 12px; cursor: pointer;
+    display: none;
+  }
+  .btn-reopen.show { display: block; }
+</style>
+</head>
+<body>
+<h1>МегаМаркет</h1>
+<p>Добро пожаловать! Мы используем файлы cookie для улучшения работы сайта.<br>
+Прокрутите страницу — баннер появится снизу (или нажмите «Сбросить согласие» ниже).</p>
+<br><br>
+<button onclick="localStorage.removeItem('cookieConsent'); location.reload()" style="padding:8px 16px;border:1px solid #ccc;border-radius:6px;cursor:pointer;font-size:13px;">
+  ↺ Сбросить согласие (демо)
+</button>
+
+<div class="cookie-banner" id="cookieBanner">
+  <div class="banner-row">
+    <div class="banner-text">
+      Мы используем cookie для аналитики, персонализации и рекламы. Подробнее — в нашей
+      <a href="#">политике конфиденциальности</a>.
+    </div>
+    <div class="banner-btns">
+      <button class="btn-accept"   id="btnAccept">Принять все</button>
+      <button class="btn-settings" id="btnSettings">⚙ Настройки</button>
+      <button class="btn-reject"   id="btnReject">Отклонить</button>
+    </div>
+  </div>
+  <div class="cookie-details" id="cookieDetails">
+    <div class="details-inner">
+      <div class="toggle-row"><input type="checkbox" checked disabled><span>Необходимые</span><span class="disabled">(всегда)</span></div>
+      <div class="toggle-row"><input type="checkbox" id="ckAnalytics" checked><span>Аналитика</span></div>
+      <div class="toggle-row"><input type="checkbox" id="ckMarketing"><span>Маркетинг</span></div>
+      <div class="toggle-row"><input type="checkbox" id="ckPersonal" checked><span>Персонализация</span></div>
+    </div>
+  </div>
+</div>
+
+<button class="btn-reopen" id="btnReopen">🍪 Cookie</button>
+
+<script>
+  const banner  = document.getElementById('cookieBanner');
+  const reopen  = document.getElementById('btnReopen');
+  const details = document.getElementById('cookieDetails');
+
+  function hide(choice) {
+    banner.classList.remove('show');
+    reopen.classList.add('show');
+    localStorage.setItem('cookieConsent', JSON.stringify({ choice, ts: Date.now() }));
+  }
+
+  if (!localStorage.getItem('cookieConsent')) {
+    setTimeout(() => banner.classList.add('show'), 600);
+  } else {
+    reopen.classList.add('show');
+  }
+
+  document.getElementById('btnAccept').addEventListener('click', () => hide('all'));
+  document.getElementById('btnReject').addEventListener('click', () => hide('necessary'));
+  document.getElementById('btnSettings').addEventListener('click', () => {
+    details.classList.toggle('open');
+    if (details.classList.contains('open')) {
+      document.getElementById('btnSettings').textContent = '✓ Сохранить выбор';
+    } else {
+      hide('custom');
+    }
+  });
+  reopen.addEventListener('click', () => {
+    banner.classList.add('show');
+    reopen.classList.remove('show');
+  });
+</script>
+</body>
+</html>

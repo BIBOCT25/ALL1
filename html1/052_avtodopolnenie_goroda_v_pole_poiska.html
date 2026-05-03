@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>52. Автодополнение города</title>
+<style>
+  body { font-family: Arial, sans-serif; display: flex; justify-content: center; padding: 60px; }
+  .wrap { width: 320px; position: relative; }
+  label { display: block; font-size: 14px; margin-bottom: 6px; }
+  input {
+    width: 100%; padding: 10px 12px; border: 1px solid #ddd; border-radius: 6px;
+    font-size: 14px; outline: none; box-sizing: border-box;
+  }
+  input:focus { border-color: #2196F3; }
+  .dropdown {
+    position: absolute; top: calc(100% + 2px); left: 0; right: 0;
+    background: #fff; border: 1px solid #ddd; border-radius: 6px;
+    box-shadow: 0 4px 12px rgba(0,0,0,.12); max-height: 200px; overflow-y: auto;
+    display: none; z-index: 10;
+  }
+  .dropdown.open { display: block; }
+  .dd-item {
+    padding: 9px 14px; font-size: 14px; cursor: pointer;
+    transition: background 0.15s;
+  }
+  .dd-item:hover, .dd-item.focused { background: #E3F2FD; }
+  .dd-item b { color: #2196F3; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <label for="cityInput">Город доставки</label>
+  <input type="text" id="cityInput" placeholder="Начните вводить город..." autocomplete="off">
+  <div class="dropdown" id="dropdown"></div>
+</div>
+<script>
+  const CITIES = [
+    'Москва','Санкт-Петербург','Новосибирск','Екатеринбург','Казань',
+    'Нижний Новгород','Краснодар','Самара','Ростов-на-Дону','Омск',
+    'Уфа','Красноярск','Пермь','Воронеж','Волгоград','Тюмень','Сочи',
+    'Иркутск','Хабаровск','Владивосток','Саратов','Тольятти','Барнаул',
+  ];
+
+  const input    = document.getElementById('cityInput');
+  const dropdown = document.getElementById('dropdown');
+  let focusIdx   = -1;
+
+  function highlight(str, query) {
+    const idx = str.toLowerCase().indexOf(query.toLowerCase());
+    if (idx === -1) return str;
+    return str.slice(0, idx) + '<b>' + str.slice(idx, idx + query.length) + '</b>' + str.slice(idx + query.length);
+  }
+
+  function show(items, query) {
+    if (!items.length) { dropdown.classList.remove('open'); return; }
+    focusIdx = -1;
+    dropdown.innerHTML = items.map(c =>
+      `<div class="dd-item" data-val="${c}">${highlight(c, query)}</div>`
+    ).join('');
+    dropdown.classList.add('open');
+    dropdown.querySelectorAll('.dd-item').forEach(el => {
+      el.addEventListener('mousedown', () => {
+        input.value = el.dataset.val;
+        dropdown.classList.remove('open');
+      });
+    });
+  }
+
+  input.addEventListener('input', () => {
+    const q = input.value.trim();
+    if (!q) { dropdown.classList.remove('open'); return; }
+    const filtered = CITIES.filter(c => c.toLowerCase().includes(q.toLowerCase())).slice(0, 8);
+    show(filtered, q);
+  });
+
+  input.addEventListener('keydown', e => {
+    const items = dropdown.querySelectorAll('.dd-item');
+    if (!items.length) return;
+    if (e.key === 'ArrowDown') { focusIdx = Math.min(focusIdx + 1, items.length - 1); }
+    if (e.key === 'ArrowUp')   { focusIdx = Math.max(focusIdx - 1, 0); }
+    if (e.key === 'Enter' && focusIdx >= 0) {
+      input.value = items[focusIdx].dataset.val;
+      dropdown.classList.remove('open');
+      e.preventDefault();
+    }
+    items.forEach((el, i) => el.classList.toggle('focused', i === focusIdx));
+  });
+
+  document.addEventListener('click', e => {
+    if (!e.target.closest('.wrap')) dropdown.classList.remove('open');
+  });
+</script>
+</body>
+</html>

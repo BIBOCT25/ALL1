@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>71. Быстрый просмотр</title>
+<style>
+  * { box-sizing: border-box; }
+  body { font-family: Arial, sans-serif; padding: 30px; background: #f5f5f5; }
+  .catalog { display: flex; gap: 16px; flex-wrap: wrap; }
+  .prod-card {
+    background: #fff; border-radius: 10px; padding: 14px; width: 180px;
+    box-shadow: 0 2px 10px rgba(0,0,0,.07); text-align: center;
+  }
+  .prod-card img { width: 100%; height: 110px; object-fit: cover; border-radius: 6px; }
+  .prod-name  { font-size: 13px; font-weight: bold; margin: 8px 0 4px; }
+  .prod-price { font-size: 13px; color: #2196F3; margin-bottom: 10px; }
+  .btn-quick {
+    width: 100%; padding: 7px; border: 1px solid #2196F3; color: #2196F3;
+    background: none; border-radius: 6px; cursor: pointer; font-size: 13px; transition: all 0.15s;
+  }
+  .btn-quick:hover { background: #2196F3; color: #fff; }
+
+  .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.5); z-index: 100; align-items: center; justify-content: center; }
+  .overlay.open { display: flex; }
+  .modal {
+    background: #fff; border-radius: 14px; width: 480px; max-width: 95vw;
+    display: flex; gap: 20px; padding: 24px;
+    box-shadow: 0 8px 40px rgba(0,0,0,.2); animation: popIn 0.22s ease;
+  }
+  @keyframes popIn { from { opacity: 0; transform: scale(.92); } to { opacity: 1; transform: scale(1); } }
+  .modal img { width: 180px; height: 180px; object-fit: cover; border-radius: 10px; flex-shrink: 0; }
+  .modal-info { flex: 1; }
+  .modal-name  { font-size: 17px; font-weight: bold; margin-bottom: 6px; }
+  .modal-price { font-size: 22px; font-weight: bold; color: #2196F3; margin-bottom: 10px; }
+  .modal-desc  { font-size: 13px; color: #666; line-height: 1.6; margin-bottom: 16px; }
+  .modal-info .btn-cart {
+    width: 100%; padding: 10px; background: #2196F3; color: #fff;
+    border: none; border-radius: 8px; cursor: pointer; font-size: 14px;
+  }
+  .btn-close-modal {
+    position: absolute; top: 12px; right: 16px;
+    background: none; border: none; font-size: 24px; cursor: pointer; color: #aaa;
+  }
+  .overlay .modal { position: relative; }
+</style>
+</head>
+<body>
+<div class="catalog" id="catalog"></div>
+
+<div class="overlay" id="overlay">
+  <div class="modal" id="modal">
+    <button class="btn-close-modal" id="closeBtn">✕</button>
+    <img id="mImg" src="" alt="">
+    <div class="modal-info">
+      <div class="modal-name"  id="mName"></div>
+      <div class="modal-price" id="mPrice"></div>
+      <div class="modal-desc"  id="mDesc"></div>
+      <button class="btn-cart">🛒 В корзину</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  const items = [
+    { name: 'iPhone 15', price: '89 990 ₽', color: '1565C0', desc: 'Процессор A16, OLED 6.1", 48 МП, 5G, Face ID' },
+    { name: 'Galaxy S24', price: '74 990 ₽', color: '2E7D32', desc: 'Snapdragon 8 Gen 3, 6.2" AMOLED, 50 МП' },
+    { name: 'Pixel 8', price: '64 990 ₽', color: '6A1B9A', desc: 'Google Tensor G3, 6.2" OLED, 7 лет обновлений' },
+  ];
+
+  const catalog = document.getElementById('catalog');
+  const overlay = document.getElementById('overlay');
+
+  items.forEach((it, i) => {
+    const card = document.createElement('div');
+    card.className = 'prod-card';
+    card.innerHTML = `
+      <img src="https://placehold.co/180x110/${it.color}/fff?text=${encodeURIComponent(it.name)}" alt="">
+      <div class="prod-name">${it.name}</div>
+      <div class="prod-price">${it.price}</div>
+      <button class="btn-quick" data-idx="${i}">Быстрый просмотр</button>`;
+    catalog.appendChild(card);
+  });
+
+  catalog.addEventListener('click', e => {
+    const btn = e.target.closest('.btn-quick');
+    if (!btn) return;
+    const it = items[btn.dataset.idx];
+    document.getElementById('mImg').src   = `https://placehold.co/180x180/${it.color}/fff?text=${encodeURIComponent(it.name)}`;
+    document.getElementById('mName').textContent  = it.name;
+    document.getElementById('mPrice').textContent = it.price;
+    document.getElementById('mDesc').textContent  = it.desc;
+    overlay.classList.add('open');
+  });
+
+  function close() { overlay.classList.remove('open'); }
+  document.getElementById('closeBtn').addEventListener('click', close);
+  overlay.addEventListener('click', e => { if (e.target === overlay) close(); });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') close(); });
+</script>
+</body>
+</html>

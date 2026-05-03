@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>66. Карусель с drag</title>
+<style>
+  * { box-sizing: border-box; margin: 0; }
+  body { font-family: Arial, sans-serif; padding: 30px; background: #f5f5f5; }
+  h2 { font-size: 18px; margin-bottom: 16px; }
+  .carousel-wrap { overflow: hidden; border-radius: 10px; cursor: grab; user-select: none; }
+  .carousel-wrap:active { cursor: grabbing; }
+  .carousel {
+    display: flex; gap: 16px;
+    transition: transform 0.3s ease;
+    will-change: transform;
+  }
+  .carousel.dragging { transition: none; }
+  .item {
+    min-width: 180px; background: #fff; border-radius: 10px;
+    padding: 16px; box-shadow: 0 2px 10px rgba(0,0,0,.07); flex-shrink: 0;
+  }
+  .item img { width: 100%; height: 120px; object-fit: cover; border-radius: 6px; margin-bottom: 10px; display: block; }
+  .item-name  { font-size: 14px; font-weight: bold; margin-bottom: 4px; }
+  .item-price { font-size: 13px; color: #2196F3; }
+  .nav-btns { display: flex; gap: 8px; margin-top: 14px; }
+  .nav-btns button {
+    padding: 7px 16px; border: 1px solid #ddd; border-radius: 6px;
+    background: #fff; cursor: pointer; font-size: 15px; transition: all 0.15s;
+  }
+  .nav-btns button:hover { background: #2196F3; color: #fff; border-color: #2196F3; }
+</style>
+</head>
+<body>
+<h2>Рекомендуемые товары</h2>
+<div class="carousel-wrap" id="carouselWrap">
+  <div class="carousel" id="carousel"></div>
+</div>
+<div class="nav-btns">
+  <button id="btnL">‹ Назад</button>
+  <button id="btnR">Вперёд ›</button>
+</div>
+
+<script>
+  const ITEMS = [
+    { name: 'iPhone 15', price: '89 990 ₽', color: '1565C0' },
+    { name: 'Galaxy S24', price: '74 990 ₽', color: '2E7D32' },
+    { name: 'AirPods Pro', price: '22 990 ₽', color: '6A1B9A' },
+    { name: 'iPad Air', price: '59 990 ₽', color: 'BF360C' },
+    { name: 'MacBook Air', price: '129 990 ₽', color: '00695C' },
+    { name: 'Watch Ultra', price: '79 990 ₽', color: '4527A0' },
+  ];
+
+  const carousel = document.getElementById('carousel');
+  ITEMS.forEach(it => {
+    carousel.innerHTML += `
+      <div class="item">
+        <img src="https://placehold.co/180x120/${it.color}/ffffff?text=${encodeURIComponent(it.name)}" alt="">
+        <div class="item-name">${it.name}</div>
+        <div class="item-price">${it.price}</div>
+      </div>`;
+  });
+
+  const STEP = 196; // ширина карточки + gap
+  let offset = 0;
+  const maxOffset = -(ITEMS.length - 3) * STEP;
+
+  function move(delta) {
+    offset = Math.max(maxOffset, Math.min(0, offset + delta));
+    carousel.style.transform = `translateX(${offset}px)`;
+  }
+
+  document.getElementById('btnL').addEventListener('click', () => move(STEP));
+  document.getElementById('btnR').addEventListener('click', () => move(-STEP));
+
+  // Drag
+  const wrap = document.getElementById('carouselWrap');
+  let startX = 0, startOffset = 0, dragging = false;
+
+  wrap.addEventListener('mousedown', e => { dragging = true; startX = e.clientX; startOffset = offset; carousel.classList.add('dragging'); });
+  window.addEventListener('mousemove', e => { if (!dragging) return; move(0); offset = Math.max(maxOffset, Math.min(0, startOffset + e.clientX - startX)); carousel.style.transform = `translateX(${offset}px)`; });
+  window.addEventListener('mouseup', () => { dragging = false; carousel.classList.remove('dragging'); });
+
+  wrap.addEventListener('touchstart', e => { startX = e.touches[0].clientX; startOffset = offset; }, { passive: true });
+  wrap.addEventListener('touchmove',  e => { offset = Math.max(maxOffset, Math.min(0, startOffset + e.touches[0].clientX - startX)); carousel.style.transform = `translateX(${offset}px)`; }, { passive: true });
+</script>
+</body>
+</html>

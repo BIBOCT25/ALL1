@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>39. Корзина в localStorage</title>
+<style>
+  body { font-family: Arial, sans-serif; padding: 24px; max-width: 500px; margin: 0 auto; }
+  h2 { font-size: 17px; margin-bottom: 12px; }
+  .catalog { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 24px; }
+  .prod-btn { padding: 8px 16px; background: #2196F3; color: #fff; border: none; border-radius: 6px; cursor: pointer; font-size: 13px; }
+  .cart-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid #eee; font-size: 14px; }
+  .btn-del { background: none; border: none; color: #aaa; font-size: 18px; cursor: pointer; }
+  .btn-del:hover { color: #e53935; }
+  .total { margin-top: 10px; font-weight: bold; font-size: 16px; }
+  .note  { font-size: 12px; color: #888; margin-top: 6px; }
+</style>
+</head>
+<body>
+<h2>Каталог</h2>
+<div class="catalog">
+  <button class="prod-btn" data-name="Кроссовки" data-price="4990">+ Кроссовки</button>
+  <button class="prod-btn" data-name="Шапка"     data-price="890" >+ Шапка</button>
+  <button class="prod-btn" data-name="Рюкзак"    data-price="3200">+ Рюкзак</button>
+</div>
+<h2>Корзина</h2>
+<div id="cartEl"></div>
+<div class="total">Итого: <span id="total">0</span> ₽</div>
+<div class="note">↻ Обновите страницу — корзина сохранится!</div>
+<script>
+  const KEY = 'shop_cart_39';
+  let cart  = JSON.parse(localStorage.getItem(KEY) || '[]');
+  const cartEl  = document.getElementById('cartEl');
+  const totalEl = document.getElementById('total');
+
+  function save()   { localStorage.setItem(KEY, JSON.stringify(cart)); }
+  function render() {
+    if (!cart.length) { cartEl.innerHTML = '<div style="color:#999;font-size:14px">Корзина пуста</div>'; totalEl.textContent = '0'; return; }
+    cartEl.innerHTML = cart.map((it, i) =>
+      `<div class="cart-item"><span>${it.name}</span><span>${it.price.toLocaleString('ru')} ₽</span>
+       <button class="btn-del" data-idx="${i}">✕</button></div>`).join('');
+    totalEl.textContent = cart.reduce((s, it) => s + it.price, 0).toLocaleString('ru');
+  }
+
+  document.querySelectorAll('.prod-btn').forEach(btn => {
+    btn.addEventListener('click', () => { cart.push({ name: btn.dataset.name, price: +btn.dataset.price }); save(); render(); });
+  });
+  cartEl.addEventListener('click', e => {
+    const btn = e.target.closest('.btn-del');
+    if (!btn) return;
+    cart.splice(+btn.dataset.idx, 1); save(); render();
+  });
+  render();
+</script>
+</body>
+</html>

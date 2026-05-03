@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>50. Многошаговая форма</title>
+<style>
+  * { box-sizing: border-box; }
+  body { font-family: Arial, sans-serif; display: flex; justify-content: center; padding: 40px; background: #f5f5f5; }
+  .wizard { background: #fff; border-radius: 12px; padding: 30px; width: 380px; box-shadow: 0 2px 16px rgba(0,0,0,.08); }
+  .steps-row { display: flex; align-items: center; margin-bottom: 28px; }
+  .step-dot {
+    width: 32px; height: 32px; border-radius: 50%; background: #eee; color: #aaa;
+    display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: bold;
+    flex-shrink: 0; transition: all 0.2s;
+  }
+  .step-dot.active { background: #2196F3; color: #fff; }
+  .step-dot.done   { background: #4CAF50; color: #fff; }
+  .step-line { flex: 1; height: 2px; background: #eee; margin: 0 6px; transition: background 0.2s; }
+  .step-line.done { background: #4CAF50; }
+  .step-label { font-size: 10px; text-align: center; color: #aaa; margin-top: 3px; }
+
+  .step-panel { display: none; }
+  .step-panel.active { display: block; }
+  h3 { font-size: 16px; margin: 0 0 18px; }
+  .field { margin-bottom: 14px; }
+  .field label { font-size: 13px; color: #555; margin-bottom: 4px; display: block; }
+  .field input, .field select {
+    width: 100%; padding: 9px 12px; border: 1px solid #ddd; border-radius: 6px;
+    font-size: 14px; outline: none; transition: border-color 0.2s;
+  }
+  .field input:focus { border-color: #2196F3; }
+  .nav { display: flex; justify-content: space-between; margin-top: 22px; }
+  .btn-back { padding: 9px 20px; background: #f5f5f5; border: 1px solid #ddd; border-radius: 6px; cursor: pointer; font-size: 14px; }
+  .btn-next { padding: 9px 20px; background: #2196F3; color: #fff; border: none; border-radius: 6px; cursor: pointer; font-size: 14px; }
+  .summary-line { font-size: 14px; padding: 6px 0; border-bottom: 1px solid #f0f0f0; display: flex; justify-content: space-between; }
+  .success-msg { text-align: center; color: #4CAF50; font-size: 17px; font-weight: bold; padding: 20px 0; }
+</style>
+</head>
+<body>
+<div class="wizard">
+  <div class="steps-row">
+    <div><div class="step-dot active" id="dot1">1</div><div class="step-label">Контакт</div></div>
+    <div class="step-line" id="line1"></div>
+    <div><div class="step-dot" id="dot2">2</div><div class="step-label">Доставка</div></div>
+    <div class="step-line" id="line2"></div>
+    <div><div class="step-dot" id="dot3">3</div><div class="step-label">Итог</div></div>
+  </div>
+
+  <!-- Шаг 1 -->
+  <div class="step-panel active" id="panel1">
+    <h3>Контактные данные</h3>
+    <div class="field"><label>Имя *</label><input id="f-name" placeholder="Иван Иванов"></div>
+    <div class="field"><label>Телефон *</label><input id="f-phone" placeholder="+7 999 123-45-67"></div>
+    <div class="nav"><span></span><button class="btn-next" onclick="go(1,2)">Далее →</button></div>
+  </div>
+
+  <!-- Шаг 2 -->
+  <div class="step-panel" id="panel2">
+    <h3>Адрес доставки</h3>
+    <div class="field"><label>Город *</label><input id="f-city" placeholder="Москва"></div>
+    <div class="field"><label>Улица и дом *</label><input id="f-addr" placeholder="ул. Ленина, 10"></div>
+    <div class="field"><label>Способ доставки</label>
+      <select id="f-ship"><option>Курьером (1–2 дня)</option><option>Самовывоз</option><option>Почта России</option></select>
+    </div>
+    <div class="nav">
+      <button class="btn-back" onclick="go(2,1)">← Назад</button>
+      <button class="btn-next" onclick="go(2,3)">Далее →</button>
+    </div>
+  </div>
+
+  <!-- Шаг 3: Итог -->
+  <div class="step-panel" id="panel3">
+    <h3>Подтверждение</h3>
+    <div id="summary"></div>
+    <div class="nav">
+      <button class="btn-back" onclick="go(3,2)">← Назад</button>
+      <button class="btn-next" onclick="finish()">Оформить ✓</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  const dots  = [null, 'dot1','dot2','dot3'].map(id => id && document.getElementById(id));
+  const lines = [null, 'line1','line2'].map(id => id && document.getElementById(id));
+  const panels= [null, 'panel1','panel2','panel3'].map(id => id && document.getElementById(id));
+
+  function go(from, to) {
+    // Простая проверка: все input на текущем шаге заполнены
+    const panel = panels[from];
+    const empty = [...panel.querySelectorAll('input[id]')].filter(i => !i.value.trim());
+    if (to > from && empty.length) {
+      empty.forEach(i => { i.style.borderColor='#e53935'; setTimeout(()=>i.style.borderColor='',1500); });
+      return;
+    }
+
+    panels[from].classList.remove('active');
+    panels[to].classList.add('active');
+
+    // Обновляем индикаторы
+    for (let i = 1; i <= 3; i++) {
+      dots[i].className = 'step-dot' + (i < to ? ' done' : i === to ? ' active' : '');
+    }
+    for (let i = 1; i <= 2; i++) {
+      lines[i].className = 'step-line' + (i < to ? ' done' : '');
+    }
+
+    if (to === 3) {
+      // Заполняем итог
+      const data = {
+        'Имя':     document.getElementById('f-name').value,
+        'Телефон': document.getElementById('f-phone').value,
+        'Город':   document.getElementById('f-city').value,
+        'Адрес':   document.getElementById('f-addr').value,
+        'Доставка':document.getElementById('f-ship').value,
+      };
+      document.getElementById('summary').innerHTML = Object.entries(data).map(
+        ([k,v]) => `<div class="summary-line"><span>${k}:</span><span><b>${v}</b></span></div>`
+      ).join('');
+    }
+  }
+
+  function finish() {
+    document.querySelector('.wizard').innerHTML =
+      '<div class="success-msg">🎉 Заказ оформлен!<br><span style="font-size:14px;color:#555;font-weight:normal">Мы свяжемся с вами в течение 15 минут.</span></div>';
+  }
+</script>
+</body>
+</html>

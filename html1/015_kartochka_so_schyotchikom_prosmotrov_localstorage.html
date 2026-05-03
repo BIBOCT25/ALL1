@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>15. Счётчик просмотров (localStorage)</title>
+<style>
+  body { font-family: Arial, sans-serif; display: flex; justify-content: center; padding: 40px; }
+  .card { border: 1px solid #ddd; border-radius: 8px; padding: 20px; width: 260px; }
+  .card img { width: 100%; border-radius: 6px; margin-bottom: 14px; }
+  .card-name { font-size: 16px; font-weight: bold; }
+  .card-price { color: #e53935; font-size: 20px; margin: 8px 0 14px; }
+  .views { font-size: 13px; color: #888; display: flex; align-items: center; gap: 6px; }
+  .btn-reset {
+    margin-top: 12px; padding: 6px 12px; font-size: 12px;
+    border: 1px solid #ddd; background: #f5f5f5; border-radius: 4px; cursor: pointer;
+  }
+</style>
+</head>
+<body>
+<div class="card">
+  <img src="https://placehold.co/260x160/eee/999?text=Товар" alt="Товар">
+  <div class="card-name">Умные часы Xiaomi</div>
+  <div class="card-price">8 990 ₽</div>
+  <div class="views">👁 Просмотров: <strong id="viewCount">0</strong></div>
+  <button class="btn-reset" id="btnReset">Сбросить</button>
+</div>
+<script>
+  const KEY = 'product_views_15';
+  const countEl = document.getElementById('viewCount');
+
+  // Увеличиваем счётчик при загрузке
+  let views = parseInt(localStorage.getItem(KEY) || '0', 10);
+  views++;
+  localStorage.setItem(KEY, views);
+  countEl.textContent = views;
+
+  document.getElementById('btnReset').addEventListener('click', () => {
+    localStorage.removeItem(KEY);
+    countEl.textContent = 0;
+    views = 0;
+  });
+</script>
+</body>
+</html>

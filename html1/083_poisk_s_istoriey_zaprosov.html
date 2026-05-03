@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>83. Поиск с историей</title>
+<style>
+  * { box-sizing: border-box; margin: 0; }
+  body { font-family: Arial, sans-serif; padding: 40px; background: #f5f5f5; }
+  h2 { font-size: 18px; margin-bottom: 20px; }
+  .search-wrap { position: relative; max-width: 440px; }
+  .search-row {
+    display: flex; border: 2px solid #1565C0; border-radius: 10px;
+    overflow: hidden; background: #fff;
+  }
+  .search-row input {
+    flex: 1; padding: 12px 14px; border: none; outline: none;
+    font-size: 15px;
+  }
+  .search-row button {
+    padding: 0 18px; background: #1565C0; color: #fff;
+    border: none; cursor: pointer; font-size: 15px;
+  }
+  .search-row button:hover { background: #0D47A1; }
+  .dropdown {
+    position: absolute; top: calc(100% + 4px); left: 0; right: 0;
+    background: #fff; border: 1px solid #ddd; border-radius: 8px;
+    box-shadow: 0 4px 14px rgba(0,0,0,.12); display: none; z-index: 10;
+    overflow: hidden;
+  }
+  .dropdown.open { display: block; }
+  .dd-header {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 8px 14px; font-size: 12px; color: #888; border-bottom: 1px solid #f0f0f0;
+  }
+  .dd-clear { background: none; border: none; cursor: pointer; color: #E53935; font-size: 12px; }
+  .dd-item {
+    display: flex; align-items: center; gap: 8px; padding: 10px 14px;
+    cursor: pointer; font-size: 14px;
+  }
+  .dd-item:hover { background: #E3F2FD; }
+  .dd-item span.icon { color: #aaa; font-size: 13px; }
+  .results { margin-top: 20px; max-width: 440px; }
+  .res-item { padding: 10px 14px; background: #fff; border-radius: 8px; margin-bottom: 6px; font-size: 14px; }
+  .no-results { color: #888; font-size: 14px; margin-top: 16px; }
+</style>
+</head>
+<body>
+<h2>Поиск товаров</h2>
+<div class="search-wrap">
+  <div class="search-row">
+    <input type="text" id="searchInput" placeholder="Найти товар..." autocomplete="off">
+    <button id="searchBtn">🔍</button>
+  </div>
+  <div class="dropdown" id="dropdown">
+    <div class="dd-header">
+      <span>История поиска</span>
+      <button class="dd-clear" id="clearHistory">Очистить</button>
+    </div>
+    <div id="historyList"></div>
+  </div>
+</div>
+<div class="results" id="results"></div>
+
+<script>
+  const MOCK = ['iPhone 15', 'Samsung Galaxy S24', 'MacBook Air', 'iPad Pro', 'AirPods Pro',
+                'Xiaomi 14', 'OnePlus 12', 'Sony Xperia', 'Google Pixel 8', 'Huawei P60'];
+  const KEY  = 'searchHistory';
+  const input    = document.getElementById('searchInput');
+  const dropdown = document.getElementById('dropdown');
+  const histList = document.getElementById('historyList');
+  const results  = document.getElementById('results');
+
+  function getHistory() { return JSON.parse(localStorage.getItem(KEY) || '[]'); }
+  function saveHistory(q) {
+    let h = getHistory().filter(x => x !== q);
+    h.unshift(q);
+    h = h.slice(0, 5);
+    localStorage.setItem(KEY, JSON.stringify(h));
+  }
+  function renderHistory() {
+    const h = getHistory();
+    histList.innerHTML = '';
+    if (!h.length) { dropdown.classList.remove('open'); return; }
+    h.forEach(q => {
+      const item = document.createElement('div');
+      item.className = 'dd-item';
+      item.innerHTML = `<span class="icon">🕐</span>${q}`;
+      item.addEventListener('click', () => { input.value = q; doSearch(q); });
+      histList.appendChild(item);
+    });
+    dropdown.classList.add('open');
+  }
+
+  function doSearch(q) {
+    dropdown.classList.remove('open');
+    if (!q.trim()) { results.innerHTML = ''; return; }
+    saveHistory(q.trim());
+    const found = MOCK.filter(m => m.toLowerCase().includes(q.toLowerCase()));
+    results.innerHTML = found.length
+      ? found.map(m => `<div class="res-item">📦 ${m}</div>`).join('')
+      : `<div class="no-results">По запросу «${q}» ничего не найдено</div>`;
+  }
+
+  input.addEventListener('focus', renderHistory);
+  input.addEventListener('input', e => {
+    if (!e.target.value) renderHistory();
+  });
+  document.getElementById('searchBtn').addEventListener('click', () => doSearch(input.value));
+  input.addEventListener('keydown', e => { if (e.key === 'Enter') doSearch(input.value); });
+  document.getElementById('clearHistory').addEventListener('click', () => {
+    localStorage.removeItem(KEY);
+    dropdown.classList.remove('open');
+  });
+  document.addEventListener('click', e => {
+    if (!e.target.closest('.search-wrap')) dropdown.classList.remove('open');
+  });
+</script>
+</body>
+</html>

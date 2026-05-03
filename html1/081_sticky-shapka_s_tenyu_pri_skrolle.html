@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>81. Sticky-шапка</title>
+<style>
+  * { box-sizing: border-box; margin: 0; }
+  body { font-family: Arial, sans-serif; }
+  header {
+    position: sticky; top: 0; z-index: 100;
+    background: #fff; padding: 18px 32px;
+    display: flex; align-items: center; justify-content: space-between;
+    transition: padding 0.3s, box-shadow 0.3s;
+    border-bottom: 1px solid transparent;
+  }
+  header.scrolled {
+    padding: 10px 32px;
+    box-shadow: 0 2px 14px rgba(0,0,0,0.12);
+    border-bottom-color: #e0e0e0;
+  }
+  .logo { font-size: 20px; font-weight: bold; color: #1565C0; transition: font-size 0.3s; }
+  header.scrolled .logo { font-size: 16px; }
+  nav a { margin-left: 20px; text-decoration: none; color: #333; font-size: 14px; }
+  nav a:hover { color: #1565C0; }
+  .section {
+    min-height: 80vh; display: flex; align-items: center; justify-content: center;
+    font-size: 22px; font-weight: bold; color: #fff;
+  }
+  #s1 { background: #1565C0; }
+  #s2 { background: #2E7D32; }
+  #s3 { background: #6A1B9A; }
+  #s4 { background: #BF360C; }
+  .hint { text-align: center; padding: 12px; font-size: 13px; color: #888; }
+</style>
+</head>
+<body>
+<header id="header">
+  <span class="logo">МегаМаркет</span>
+  <nav>
+    <a href="#">Каталог</a>
+    <a href="#">Акции</a>
+    <a href="#">Доставка</a>
+    <a href="#">Контакты</a>
+  </nav>
+</header>
+
+<div class="hint">↓ Прокрутите страницу — шапка получит тень и уменьшится</div>
+<div class="section" id="s1">Баннер — Главная</div>
+<div class="section" id="s2">Категории товаров</div>
+<div class="section" id="s3">Хиты продаж</div>
+<div class="section" id="s4">Акции и скидки</div>
+
+<script>
+  const header = document.getElementById('header');
+
+  window.addEventListener('scroll', () => {
+    header.classList.toggle('scrolled', window.scrollY > 0);
+  });
+</script>
+</body>
+</html>

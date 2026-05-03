@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>88. Вложенный аккордеон</title>
+<style>
+  * { box-sizing: border-box; margin: 0; }
+  body { font-family: Arial, sans-serif; padding: 36px; background: #f5f5f5; }
+  h2 { font-size: 20px; margin-bottom: 20px; }
+  .accordion { max-width: 540px; }
+  /* Уровень 1 */
+  .cat { background: #fff; border-radius: 10px; margin-bottom: 8px; overflow: hidden; }
+  .cat-header {
+    padding: 14px 18px; cursor: pointer; font-size: 15px; font-weight: 700;
+    display: flex; justify-content: space-between; align-items: center;
+    color: #1565C0; background: #E3F2FD; user-select: none;
+  }
+  .cat-header .arrow { transition: transform 0.3s; font-size: 12px; }
+  .cat.open > .cat-header .arrow { transform: rotate(90deg); }
+  .cat-body { max-height: 0; overflow: hidden; transition: max-height 0.35s ease; }
+  /* Уровень 2 */
+  .sub { border-top: 1px solid #f0f0f0; }
+  .sub-header {
+    padding: 12px 18px 12px 32px; cursor: pointer; font-size: 14px;
+    font-weight: 600; display: flex; justify-content: space-between;
+    align-items: center; user-select: none; background: #fff;
+  }
+  .sub-header:hover { background: #fafafa; }
+  .sub-header .arrow2 { transition: transform 0.3s; font-size: 11px; color: #888; }
+  .sub.open > .sub-header .arrow2 { transform: rotate(90deg); }
+  .sub-body { max-height: 0; overflow: hidden; transition: max-height 0.3s ease; }
+  .sub-body ul { padding: 8px 18px 12px 46px; margin: 0; list-style: disc; }
+  .sub-body li { font-size: 13px; color: #555; line-height: 2; cursor: pointer; }
+  .sub-body li:hover { color: #1565C0; }
+</style>
+</head>
+<body>
+<h2>Каталог товаров</h2>
+<div class="accordion" id="acc">
+  <div class="cat" data-acc="cat">
+    <div class="cat-header">📱 Смартфоны <span class="arrow">▶</span></div>
+    <div class="cat-body">
+      <div class="sub" data-acc="sub">
+        <div class="sub-header">Apple <span class="arrow2">▶</span></div>
+        <div class="sub-body"><ul><li>iPhone 15</li><li>iPhone 15 Pro</li><li>iPhone 14</li></ul></div>
+      </div>
+      <div class="sub" data-acc="sub">
+        <div class="sub-header">Samsung <span class="arrow2">▶</span></div>
+        <div class="sub-body"><ul><li>Galaxy S24</li><li>Galaxy A55</li><li>Galaxy Z Fold</li></ul></div>
+      </div>
+      <div class="sub" data-acc="sub">
+        <div class="sub-header">Xiaomi <span class="arrow2">▶</span></div>
+        <div class="sub-body"><ul><li>Xiaomi 14</li><li>Redmi Note 13</li><li>POCO X6</li></ul></div>
+      </div>
+    </div>
+  </div>
+  <div class="cat" data-acc="cat">
+    <div class="cat-header">💻 Ноутбуки <span class="arrow">▶</span></div>
+    <div class="cat-body">
+      <div class="sub" data-acc="sub">
+        <div class="sub-header">Apple <span class="arrow2">▶</span></div>
+        <div class="sub-body"><ul><li>MacBook Air M3</li><li>MacBook Pro 14"</li></ul></div>
+      </div>
+      <div class="sub" data-acc="sub">
+        <div class="sub-header">Lenovo <span class="arrow2">▶</span></div>
+        <div class="sub-body"><ul><li>ThinkPad X1</li><li>IdeaPad 5</li><li>Legion 5</li></ul></div>
+      </div>
+    </div>
+  </div>
+  <div class="cat" data-acc="cat">
+    <div class="cat-header">🎧 Аудио <span class="arrow">▶</span></div>
+    <div class="cat-body">
+      <div class="sub" data-acc="sub">
+        <div class="sub-header">Наушники <span class="arrow2">▶</span></div>
+        <div class="sub-body"><ul><li>AirPods Pro</li><li>Sony WH-1000XM5</li><li>JBL Tune 770</li></ul></div>
+      </div>
+      <div class="sub" data-acc="sub">
+        <div class="sub-header">Колонки <span class="arrow2">▶</span></div>
+        <div class="sub-body"><ul><li>JBL Charge 5</li><li>Marshall Emberton</li></ul></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function toggleAcc(item, headerSel, bodySel) {
+    item.querySelectorAll(`[data-acc="${bodySel === '.cat-body' ? 'sub' : ''}"]`);
+    const body   = item.querySelector(bodySel);
+    const isOpen = item.classList.contains('open');
+    item.classList.toggle('open', !isOpen);
+    body.style.maxHeight = isOpen ? '0' : body.scrollHeight + 'px';
+    // обновить родительскую высоту
+    const parentBody = item.closest(bodySel === '.sub-body' ? '.cat-body' : null);
+    if (parentBody) parentBody.style.maxHeight = parentBody.scrollHeight + 'px';
+  }
+
+  document.querySelectorAll('[data-acc="cat"] .cat-header').forEach(h => {
+    h.addEventListener('click', () => toggleAcc(h.parentElement, '.cat-header', '.cat-body'));
+  });
+  document.querySelectorAll('[data-acc="sub"] .sub-header').forEach(h => {
+    h.addEventListener('click', e => {
+      e.stopPropagation();
+      const sub = h.parentElement;
+      const body = sub.querySelector('.sub-body');
+      const isOpen = sub.classList.contains('open');
+      sub.classList.toggle('open', !isOpen);
+      body.style.maxHeight = isOpen ? '0' : body.scrollHeight + 'px';
+      // пересчитать высоту cat-body
+      const catBody = sub.closest('.cat-body');
+      if (catBody) catBody.style.maxHeight = catBody.scrollHeight + 'px';
+    });
+  });
+</script>
+</body>
+</html>

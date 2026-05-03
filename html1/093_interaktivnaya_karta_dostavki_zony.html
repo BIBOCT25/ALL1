@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>93. Зоны доставки</title>
+<style>
+  * { box-sizing: border-box; margin: 0; }
+  body { font-family: Arial, sans-serif; padding: 36px; background: #f5f5f5; }
+  h2 { font-size: 20px; margin-bottom: 20px; }
+  .layout { display: flex; gap: 28px; flex-wrap: wrap; align-items: flex-start; }
+  .map-wrap {
+    background: #fff; border-radius: 14px; padding: 16px;
+    box-shadow: 0 2px 12px rgba(0,0,0,.08);
+  }
+  svg { display: block; }
+  .zone { cursor: pointer; transition: opacity 0.2s; stroke: #fff; stroke-width="2"; }
+  .zone:hover { opacity: 0.75; }
+  .zone.active { stroke: #212121; stroke-width: 3; filter: drop-shadow(0 2px 6px rgba(0,0,0,.25)); }
+  .panel { min-width: 220px; }
+  .btn-zone {
+    display: block; width: 100%; text-align: left; padding: 12px 16px;
+    border: 2px solid #e0e0e0; border-radius: 10px; margin-bottom: 8px;
+    background: #fff; cursor: pointer; font-size: 14px; font-weight: 600;
+    transition: all 0.2s;
+  }
+  .btn-zone .dot { display: inline-block; width: 12px; height: 12px; border-radius: 50%; margin-right: 8px; }
+  .btn-zone.active, .btn-zone:hover { border-color: currentColor; }
+  .info-box {
+    background: #fff; border-radius: 10px; padding: 18px;
+    box-shadow: 0 2px 10px rgba(0,0,0,.08); margin-top: 12px;
+  }
+  .info-box h3 { font-size: 15px; margin-bottom: 10px; }
+  .info-row { display: flex; justify-content: space-between; font-size: 13px; padding: 5px 0; border-bottom: 1px solid #f0f0f0; }
+  .info-row:last-child { border-bottom: none; }
+  .info-val { font-weight: bold; }
+</style>
+</head>
+<body>
+<h2>Зоны и стоимость доставки</h2>
+<div class="layout">
+  <div class="map-wrap">
+    <svg width="320" height="280" viewBox="0 0 320 280">
+      <!-- Зона 1: Москва -->
+      <circle class="zone" id="z1" cx="160" cy="140" r="40" fill="#1565C0"/>
+      <!-- Зона 2: ЦФО -->
+      <circle class="zone" id="z2" cx="160" cy="140" r="80" fill="#42A5F5" opacity="0.7"/>
+      <!-- Зона 3: Европейская часть -->
+      <circle class="zone" id="z3" cx="160" cy="140" r="120" fill="#90CAF9" opacity="0.5"/>
+      <!-- Зона 4: Вся Россия -->
+      <circle class="zone" id="z4" cx="160" cy="140" r="135" fill="#BBDEFB" opacity="0.4"/>
+      <text x="160" y="144" text-anchor="middle" fill="#fff" font-size="11" font-weight="bold" pointer-events="none">Москва</text>
+    </svg>
+  </div>
+  <div class="panel">
+    <button class="btn-zone" data-zone="1" style="color:#1565C0"><span class="dot" style="background:#1565C0"></span>Зона 1 — Москва</button>
+    <button class="btn-zone" data-zone="2" style="color:#2196F3"><span class="dot" style="background:#42A5F5"></span>Зона 2 — МО и ЦФО</button>
+    <button class="btn-zone" data-zone="3" style="color:#1976D2"><span class="dot" style="background:#90CAF9"></span>Зона 3 — Европейская Россия</button>
+    <button class="btn-zone" data-zone="4" style="color:#0D47A1"><span class="dot" style="background:#BBDEFB"></span>Зона 4 — Вся Россия</button>
+    <div class="info-box" id="infoBox">
+      <h3>Выберите зону</h3>
+      <div class="info-row"><span>Нажмите на кнопку</span><span class="info-val">—</span></div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const ZONES = {
+    1: { name: 'Зона 1 — Москва',              срок: '1–2 дня',   цена: 'Бесплатно от 1 000 ₽', экспресс: '299 ₽' },
+    2: { name: 'Зона 2 — МО и ЦФО',            срок: '2–3 дня',   цена: 'Бесплатно от 2 000 ₽', экспресс: '399 ₽' },
+    3: { name: 'Зона 3 — Европейская Россия',   срок: '3–5 дней',  цена: 'Бесплатно от 3 000 ₽', экспресс: '599 ₽' },
+    4: { name: 'Зона 4 — Вся Россия',           срок: '5–10 дней', цена: 'Бесплатно от 5 000 ₽', экспресс: '899 ₽' },
+  };
+
+  function activate(zoneId) {
+    document.querySelectorAll('.zone').forEach(el => el.classList.remove('active'));
+    document.querySelectorAll('.btn-zone').forEach(el => el.classList.remove('active'));
+    document.getElementById('z' + zoneId).classList.add('active');
+    document.querySelector(`.btn-zone[data-zone="${zoneId}"]`).classList.add('active');
+    const z = ZONES[zoneId];
+    document.getElementById('infoBox').innerHTML = `
+      <h3>${z.name}</h3>
+      <div class="info-row"><span>Срок доставки</span><span class="info-val">${z.срок}</span></div>
+      <div class="info-row"><span>Стандартная</span><span class="info-val">${z.цена}</span></div>
+      <div class="info-row"><span>Экспресс</span><span class="info-val">${z.экспресс}</span></div>`;
+  }
+
+  document.querySelectorAll('.btn-zone').forEach(btn => {
+    btn.addEventListener('click', () => activate(parseInt(btn.dataset.zone)));
+  });
+  document.querySelectorAll('.zone').forEach(el => {
+    el.addEventListener('click', () => activate(parseInt(el.id.replace('z', ''))));
+  });
+</script>
+</body>
+</html>

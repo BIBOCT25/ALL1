@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Метод: getElementsByTagName</title>
+</head>
+<body>
+
+    <h2>Анализ числа (getElementsByTagName)</h2>
+
+    <input type="number" placeholder="Введите число 1">
+    <input type="number" placeholder="Введите число 2">
+    <input type="number" placeholder="Введите число 3">
+    <input type="number" placeholder="Введите число 4">
+
+    <br><br>
+
+    <button>Анализировать 4-е число</button>
+
+    <p></p>
+
+    <script>
+        let allInputs = document.getElementsByTagName('input');
+        let buttons = document.getElementsByTagName('button');
+        let paragraphs = document.getElementsByTagName('p');
+
+        buttons[0].addEventListener('click', function() {
+            let input = allInputs[3].value;
+            let num = Number(input);
+            let resultField = paragraphs[0];
+
+            if (input === '' || isNaN(num)) {
+                resultField.textContent = 'Ошибка: введите корректное число в 4-е поле!';
+                return;
+            }
+
+            let sign = '';
+            if (num > 0) {
+                sign = 'положительное';
+            } else if (num < 0) {
+                sign = 'отрицательное';
+            } else {
+                sign = 'нулевое';
+            }
+
+            let parity = (num % 2 === 0) ? 'чётное' : 'нечётное';
+
+            resultField.textContent = `Число ${num}: ${sign}, ${parity}.`;
+        });
+    </script>
+
+</body>
+</html>

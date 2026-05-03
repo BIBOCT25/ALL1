@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>59. Вкладки</title>
+<style>
+  * { box-sizing: border-box; }
+  body { font-family: Arial, sans-serif; padding: 40px; }
+  .tabs { max-width: 480px; }
+  .tab-nav { display: flex; border-bottom: 2px solid #eee; }
+  .tab-btn {
+    padding: 10px 20px; background: none; border: none; cursor: pointer;
+    font-size: 14px; color: #888; border-bottom: 2px solid transparent;
+    margin-bottom: -2px; transition: color 0.2s, border-color 0.2s;
+  }
+  .tab-btn.active { color: #2196F3; border-bottom-color: #2196F3; font-weight: bold; }
+  .tab-btn:hover:not(.active) { color: #555; }
+  .tab-panel {
+    display: none; padding: 20px 0;
+    animation: fadeIn 0.25s ease;
+  }
+  .tab-panel.active { display: block; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+  .tab-panel h3 { margin: 0 0 10px; font-size: 16px; }
+  .tab-panel p  { font-size: 14px; color: #555; line-height: 1.6; margin: 0; }
+  .tag { display: inline-block; background: #E3F2FD; color: #1565C0; border-radius: 4px; padding: 3px 8px; font-size: 12px; margin: 3px 2px; }
+</style>
+</head>
+<body>
+<div class="tabs">
+  <div class="tab-nav">
+    <button class="tab-btn active" data-tab="desc">Описание</button>
+    <button class="tab-btn" data-tab="specs">Характеристики</button>
+    <button class="tab-btn" data-tab="reviews">Отзывы (14)</button>
+    <button class="tab-btn" data-tab="delivery">Доставка</button>
+  </div>
+
+  <div class="tab-panel active" id="tab-desc">
+    <h3>Samsung Galaxy A55</h3>
+    <p>Стильный смартфон с мощным процессором Exynos 1480, AMOLED-дисплеем 6,6" и аккумулятором 5000 мАч. Идеально подходит для повседневного использования.</p>
+  </div>
+  <div class="tab-panel" id="tab-specs">
+    <h3>Технические характеристики</h3>
+    <span class="tag">6.6" AMOLED 120 Гц</span>
+    <span class="tag">Exynos 1480</span>
+    <span class="tag">8 / 256 ГБ</span>
+    <span class="tag">50 МП камера</span>
+    <span class="tag">5000 мАч</span>
+    <span class="tag">Android 14</span>
+  </div>
+  <div class="tab-panel" id="tab-reviews">
+    <h3>Отзывы покупателей</h3>
+    <p>⭐⭐⭐⭐⭐ <b>Алексей</b> — «Отличный телефон, быстрый, дисплей яркий»<br><br>
+       ⭐⭐⭐⭐☆ <b>Мария</b> — «Хорошая камера, немного нагревается»</p>
+  </div>
+  <div class="tab-panel" id="tab-delivery">
+    <h3>Условия доставки</h3>
+    <p>🚚 Курьером по Москве — <b>бесплатно</b>, 1–2 дня<br>
+       📦 Самовывоз — <b>бесплатно</b>, сегодня<br>
+       🏤 Почта России — <b>290 ₽</b>, 5–14 дней</p>
+  </div>
+</div>
+
+<script>
+  const btns   = document.querySelectorAll('.tab-btn');
+  const panels = document.querySelectorAll('.tab-panel');
+
+  btns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      btns.forEach(b => b.classList.remove('active'));
+      panels.forEach(p => p.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+    });
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>104. Bundle builder</title>
+<style>
+  * { box-sizing: border-box; margin: 0; }
+  body { font-family: Arial, sans-serif; padding: 32px; background: #f5f5f5; }
+  h2 { font-size: 20px; margin-bottom: 6px; }
+  .sub { font-size: 13px; color: #888; margin-bottom: 24px; }
+  .layout { display: flex; gap: 24px; flex-wrap: wrap; align-items: flex-start; }
+  .steps { flex: 1; min-width: 280px; }
+  .step { background: #fff; border-radius: 12px; padding: 16px; margin-bottom: 14px; box-shadow: 0 1px 6px rgba(0,0,0,.07); }
+  .step-title { font-size: 14px; font-weight: bold; color: #1565C0; margin-bottom: 12px; }
+  .opt-list { display: flex; flex-direction: column; gap: 6px; }
+  .opt {
+    display: flex; align-items: center; gap: 10px; padding: 9px 12px;
+    border: 1px solid #e0e0e0; border-radius: 8px; cursor: pointer;
+    transition: border-color 0.2s, background 0.2s;
+  }
+  .opt input[type=radio] { accent-color: #1565C0; }
+  .opt:has(input:checked) { border-color: #1565C0; background: #E3F2FD; }
+  .opt-name  { font-size: 13px; flex: 1; }
+  .opt-price { font-size: 13px; color: #D32F2F; font-weight: bold; }
+  /* Итого */
+  .summary {
+    width: 240px; background: #fff; border-radius: 12px; padding: 18px;
+    box-shadow: 0 2px 12px rgba(0,0,0,.08); position: sticky; top: 20px;
+  }
+  .summary h3 { font-size: 15px; margin-bottom: 14px; }
+  .sum-row { display: flex; justify-content: space-between; font-size: 13px; padding: 5px 0; border-bottom: 1px solid #f0f0f0; color: #555; }
+  .sum-row:last-of-type { border-bottom: none; }
+  .sum-row .val { font-weight: bold; color: #333; }
+  .sum-discount { color: #2E7D32; font-weight: bold; }
+  .sum-total  { font-size: 18px; font-weight: 900; color: #D32F2F; margin: 12px 0 16px; }
+  .btn-bundle {
+    width: 100%; padding: 12px; background: #1565C0; color: #fff;
+    border: none; border-radius: 10px; font-size: 14px; font-weight: bold; cursor: pointer;
+  }
+  .btn-bundle:hover { background: #0D47A1; }
+  .bundle-badge { background: #E8F5E9; color: #2E7D32; font-size: 11px; font-weight: bold;
+    padding: 2px 8px; border-radius: 10px; margin-left: 6px; }
+</style>
+</head>
+<body>
+<h2>Собери свой набор</h2>
+<p class="sub">Выберите товары — при покупке набора скидка 10% <span class="bundle-badge">-10% на набор</span></p>
+<div class="layout">
+  <div class="steps" id="steps"></div>
+  <div class="summary" id="summary">
+    <h3>Ваш набор</h3>
+    <div id="sumRows"></div>
+    <div class="sum-total" id="sumTotal">0 ₽</div>
+    <button class="btn-bundle">🛒 Добавить набор в корзину</button>
+  </div>
+</div>
+
+<script>
+  const GROUPS = [
+    {
+      title: '① Смартфон',
+      opts: [
+        { name:'iPhone 15',    price:89990 },
+        { name:'Galaxy S24',   price:74990 },
+        { name:'Xiaomi 14',    price:64990 },
+      ]
+    },
+    {
+      title: '② Чехол',
+      opts: [
+        { name:'Кожаный чехол', price:2990 },
+        { name:'Силиконовый',   price:990  },
+        { name:'Карбон',        price:1990 },
+      ]
+    },
+    {
+      title: '③ Зарядное устройство',
+      opts: [
+        { name:'65W GaN зарядка', price:3490 },
+        { name:'20W USB-C',       price:1490 },
+        { name:'MagSafe 15W',     price:4990 },
+      ]
+    },
+    {
+      title: '④ Защитное стекло',
+      opts: [
+        { name:'Матовое 2.5D',   price:890  },
+        { name:'Глянцевое Full',  price:690  },
+        { name:'Privacy стекло', price:1290 },
+      ]
+    },
+  ];
+
+  const selected = {};
+
+  function render() {
+    document.getElementById('steps').innerHTML = GROUPS.map((g, gi) => `
+      <div class="step">
+        <div class="step-title">${g.title}</div>
+        <div class="opt-list">
+          ${g.opts.map((o, oi) => `
+            <label class="opt">
+              <input type="radio" name="g${gi}" value="${oi}" ${selected[gi] === oi ? 'checked' : ''}>
+              <span class="opt-name">${o.name}</span>
+              <span class="opt-price">${o.price.toLocaleString('ru')} ₽</span>
+            </label>`).join('')}
+        </div>
+      </div>`).join('');
+
+    document.querySelectorAll('input[type=radio]').forEach(inp => {
+      inp.addEventListener('change', () => {
+        const [, gi] = inp.name.match(/g(\d)/);
+        selected[parseInt(gi)] = parseInt(inp.value);
+        updateSummary();
+      });
+    });
+    updateSummary();
+  }
+
+  function updateSummary() {
+    const rows  = document.getElementById('sumRows');
+    const total = document.getElementById('sumTotal');
+    let sum = 0;
+    const lines = GROUPS.map((g, gi) => {
+      const oi   = selected[gi];
+      if (oi === undefined) return `<div class="sum-row"><span>${g.title}</span><span class="val" style="color:#aaa">не выбрано</span></div>`;
+      const item = g.opts[oi];
+      sum += item.price;
+      return `<div class="sum-row"><span>${item.name}</span><span class="val">${item.price.toLocaleString('ru')} ₽</span></div>`;
+    });
+    const allChosen = Object.keys(selected).length === GROUPS.length;
+    const discount  = allChosen ? Math.round(sum * 0.1) : 0;
+    const final     = sum - discount;
+    rows.innerHTML  = lines.join('') +
+      (allChosen ? `<div class="sum-row"><span class="sum-discount">Скидка на набор −10%</span><span class="val sum-discount">−${discount.toLocaleString('ru')} ₽</span></div>` : '');
+    total.textContent = final.toLocaleString('ru') + ' ₽';
+  }
+
+  render();
+</script>
+</body>
+</html>

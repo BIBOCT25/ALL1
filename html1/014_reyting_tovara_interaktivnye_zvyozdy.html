@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>14. Рейтинг — звёзды</title>
+<style>
+  body { font-family: Arial, sans-serif; display: flex; justify-content: center; padding: 60px; }
+  .rating-wrap { text-align: center; }
+  .stars { display: flex; justify-content: center; gap: 4px; margin-bottom: 10px; }
+  .star {
+    font-size: 36px; cursor: pointer; color: #ddd;
+    transition: color 0.1s, transform 0.1s;
+  }
+  .star.hovered, .star.selected { color: #FFC107; }
+  .star:hover { transform: scale(1.2); }
+  .label { font-size: 15px; color: #555; }
+</style>
+</head>
+<body>
+<div class="rating-wrap">
+  <div class="stars" id="stars">
+    <span class="star" data-val="1">★</span>
+    <span class="star" data-val="2">★</span>
+    <span class="star" data-val="3">★</span>
+    <span class="star" data-val="4">★</span>
+    <span class="star" data-val="5">★</span>
+  </div>
+  <div class="label" id="label">Оцените товар</div>
+</div>
+<script>
+  const starsEl = document.getElementById('stars');
+  const label   = document.getElementById('label');
+  const stars   = Array.from(starsEl.querySelectorAll('.star'));
+  const texts   = ['', 'Ужасно', 'Плохо', 'Нормально', 'Хорошо', 'Отлично!'];
+  let selected  = 0;
+
+  function highlight(max, cls) {
+    stars.forEach(s => {
+      const v = +s.dataset.val;
+      s.classList.toggle(cls, v <= max);
+    });
+  }
+
+  starsEl.addEventListener('mouseover', e => {
+    const s = e.target.closest('.star');
+    if (s) highlight(+s.dataset.val, 'hovered');
+  });
+
+  starsEl.addEventListener('mouseleave', () => {
+    highlight(0, 'hovered');
+    highlight(selected, 'selected');
+  });
+
+  starsEl.addEventListener('click', e => {
+    const s = e.target.closest('.star');
+    if (!s) return;
+    selected = +s.dataset.val;
+    highlight(selected, 'selected');
+    label.textContent = texts[selected] + ' (' + selected + '/5)';
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>106. Оценка доставки</title>
+<style>
+  * { box-sizing: border-box; margin: 0; }
+  body { font-family: Arial, sans-serif; padding: 40px; background: #f0f4ff; }
+  .widget {
+    background: #fff; border-radius: 16px; padding: 28px;
+    max-width: 420px; box-shadow: 0 4px 20px rgba(21,101,192,.1);
+  }
+  .step { display: none; }
+  .step.active { display: block; }
+  .step-num { font-size: 11px; color: #aaa; margin-bottom: 8px; }
+  .question { font-size: 17px; font-weight: 700; color: #1a237e; margin-bottom: 20px; line-height: 1.4; }
+  /* Звёзды */
+  .stars { display: flex; gap: 8px; margin-bottom: 18px; }
+  .star { font-size: 32px; cursor: pointer; color: #ddd; transition: color 0.15s; user-select: none; }
+  .star.on { color: #FFB300; }
+  /* Варианты */
+  .opts { display: flex; flex-direction: column; gap: 8px; margin-bottom: 18px; }
+  .opt-btn {
+    padding: 11px 14px; border: 1px solid #e0e0e0; border-radius: 8px;
+    background: #fff; text-align: left; cursor: pointer; font-size: 14px; transition: all 0.2s;
+  }
+  .opt-btn:hover, .opt-btn.sel { border-color: #1565C0; background: #E3F2FD; color: #1565C0; font-weight: bold; }
+  .btn-next {
+    width: 100%; padding: 12px; background: #1565C0; color: #fff;
+    border: none; border-radius: 10px; font-size: 14px; font-weight: bold; cursor: pointer;
+  }
+  .btn-next:disabled { background: #ccc; cursor: default; }
+  /* Результат */
+  .result { text-align: center; }
+  .nps-score { font-size: 56px; font-weight: 900; margin: 12px 0 6px; }
+  .nps-label { font-size: 14px; color: #888; margin-bottom: 16px; }
+  .nps-msg { font-size: 15px; font-weight: bold; padding: 12px; border-radius: 8px; }
+  .nps-great { background: #E8F5E9; color: #2E7D32; }
+  .nps-ok    { background: #FFF9C4; color: #F57F17; }
+  .nps-bad   { background: #FFEBEE; color: #C62828; }
+  .progress-bar { height: 4px; background: #E3F2FD; border-radius: 2px; margin-bottom: 20px; }
+  .progress-fill { height: 100%; background: #1565C0; border-radius: 2px; transition: width 0.4s; }
+</style>
+</head>
+<body>
+<div class="widget">
+  <div class="progress-bar"><div class="progress-fill" id="progress" style="width:0%"></div></div>
+
+  <!-- Шаг 1: Общая оценка -->
+  <div class="step active" id="step1">
+    <div class="step-num">Вопрос 1 из 3</div>
+    <div class="question">Как вы оцениваете доставку?</div>
+    <div class="stars" id="stars1">
+      <span class="star" data-v="1">★</span>
+      <span class="star" data-v="2">★</span>
+      <span class="star" data-v="3">★</span>
+      <span class="star" data-v="4">★</span>
+      <span class="star" data-v="5">★</span>
+    </div>
+    <button class="btn-next" id="next1" disabled>Далее →</button>
+  </div>
+
+  <!-- Шаг 2: Скорость -->
+  <div class="step" id="step2">
+    <div class="step-num">Вопрос 2 из 3</div>
+    <div class="question">Как быстро прибыл ваш заказ?</div>
+    <div class="opts" id="opts2">
+      <button class="opt-btn" data-v="5">📦 Раньше срока</button>
+      <button class="opt-btn" data-v="4">✅ Точно в срок</button>
+      <button class="opt-btn" data-v="2">⏳ С небольшой задержкой</button>
+      <button class="opt-btn" data-v="1">😤 Сильно опоздал</button>
+    </div>
+    <button class="btn-next" id="next2" disabled>Далее →</button>
+  </div>
+
+  <!-- Шаг 3: Упаковка -->
+  <div class="step" id="step3">
+    <div class="step-num">Вопрос 3 из 3</div>
+    <div class="question">Как вам упаковка товара?</div>
+    <div class="opts" id="opts3">
+      <button class="opt-btn" data-v="5">🎁 Отличная — всё целое</button>
+      <button class="opt-btn" data-v="3">👍 Нормальная</button>
+      <button class="opt-btn" data-v="1">💥 Повреждена</button>
+    </div>
+    <button class="btn-next" id="next3" disabled>Завершить</button>
+  </div>
+
+  <!-- Результат -->
+  <div class="step" id="stepResult">
+    <div class="result">
+      <div>Ваш NPS-балл</div>
+      <div class="nps-score" id="npsScore">—</div>
+      <div class="nps-label">из 15 возможных</div>
+      <div class="nps-msg" id="npsMsg"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const answers = {};
+
+  // Шаг 1 — звёзды
+  document.querySelectorAll('#stars1 .star').forEach(star => {
+    star.addEventListener('click', () => {
+      const v = parseInt(star.dataset.v);
+      answers.q1 = v;
+      document.querySelectorAll('#stars1 .star').forEach(s => s.classList.toggle('on', parseInt(s.dataset.v) <= v));
+      document.getElementById('next1').disabled = false;
+    });
+  });
+
+  // Шаг 2 и 3 — варианты
+  ['opts2','opts3'].forEach(id => {
+    document.querySelectorAll(`#${id} .opt-btn`).forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll(`#${id} .opt-btn`).forEach(b => b.classList.remove('sel'));
+        btn.classList.add('sel');
+        answers[id === 'opts2' ? 'q2' : 'q3'] = parseInt(btn.dataset.v);
+        document.getElementById(id === 'opts2' ? 'next2' : 'next3').disabled = false;
+      });
+    });
+  });
+
+  function showStep(from, to, pct) {
+    document.getElementById(from).classList.remove('active');
+    document.getElementById(to).classList.add('active');
+    document.getElementById('progress').style.width = pct + '%';
+  }
+
+  document.getElementById('next1').addEventListener('click', () => showStep('step1','step2', 33));
+  document.getElementById('next2').addEventListener('click', () => showStep('step2','step3', 66));
+  document.getElementById('next3').addEventListener('click', () => {
+    showStep('step3','stepResult', 100);
+    const total = (answers.q1 || 0) + (answers.q2 || 0) + (answers.q3 || 0);
+    document.getElementById('npsScore').textContent = total;
+    const msg = document.getElementById('npsMsg');
+    if (total >= 13)      { msg.textContent = '🎉 Спасибо! Мы рады, что вам всё понравилось.';   msg.className = 'nps-msg nps-great'; }
+    else if (total >= 8)  { msg.textContent = '👍 Спасибо! Мы работаем над улучшениями.';         msg.className = 'nps-msg nps-ok';    }
+    else                  { msg.textContent = '😔 Нам жаль. Мы свяжемся с вами для решения проблемы.'; msg.className = 'nps-msg nps-bad'; }
+  });
+</script>
+</body>
+</html>

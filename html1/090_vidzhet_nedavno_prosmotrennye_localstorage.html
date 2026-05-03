@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>90. Недавно просмотренные</title>
+<style>
+  * { box-sizing: border-box; margin: 0; }
+  body { font-family: Arial, sans-serif; padding: 30px; background: #f5f5f5; }
+  h2 { font-size: 18px; margin-bottom: 18px; }
+  .catalog { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; max-width: 600px; }
+  .card {
+    background: #fff; border-radius: 10px; padding: 14px;
+    cursor: pointer; transition: box-shadow 0.2s; border: 2px solid transparent;
+  }
+  .card:hover { box-shadow: 0 4px 14px rgba(0,0,0,.12); border-color: #90CAF9; }
+  .card img { width: 100%; border-radius: 6px; display: block; margin-bottom: 8px; }
+  .card-title { font-size: 13px; font-weight: bold; margin-bottom: 4px; }
+  .card-price { font-size: 13px; color: #D32F2F; font-weight: bold; }
+  hr { border: none; border-top: 1px solid #e0e0e0; margin: 28px 0 16px; max-width: 600px; }
+  .recent-title { font-size: 15px; font-weight: bold; margin-bottom: 14px; color: #555; }
+  .recent-list { display: flex; gap: 10px; flex-wrap: wrap; max-width: 600px; }
+  .recent-item {
+    display: flex; align-items: center; gap: 8px;
+    background: #fff; border-radius: 8px; padding: 8px 10px;
+    font-size: 12px; border: 1px solid #e0e0e0; max-width: 160px;
+  }
+  .recent-item img { width: 36px; height: 36px; object-fit: cover; border-radius: 4px; flex-shrink: 0; }
+  .recent-name { font-weight: bold; display: block; margin-bottom: 2px; }
+  .recent-price { color: #D32F2F; }
+  .empty-msg { font-size: 13px; color: #aaa; }
+</style>
+</head>
+<body>
+<h2>Каталог — нажмите на товар</h2>
+<div class="catalog" id="catalog"></div>
+<hr>
+<div class="recent-title">Недавно просмотренные</div>
+<div class="recent-list" id="recentList"></div>
+
+<script>
+  const PRODUCTS = [
+    { id: 1, name: 'iPhone 15',    price: '89 990 ₽', color: '1565C0' },
+    { id: 2, name: 'Galaxy S24',   price: '74 990 ₽', color: '2E7D32' },
+    { id: 3, name: 'MacBook Air',  price: '124 990 ₽', color: '6A1B9A' },
+    { id: 4, name: 'iPad Pro',     price: '99 990 ₽', color: 'BF360C' },
+    { id: 5, name: 'AirPods Pro',  price: '22 990 ₽', color: '00695C' },
+    { id: 6, name: 'Apple Watch',  price: '44 990 ₽', color: '4527A0' },
+  ];
+
+  const KEY = 'recentViewed';
+  const MAX = 4;
+
+  function getRecent() { return JSON.parse(localStorage.getItem(KEY) || '[]'); }
+  function addRecent(id) {
+    let arr = getRecent().filter(x => x !== id);
+    arr.unshift(id);
+    arr = arr.slice(0, MAX);
+    localStorage.setItem(KEY, JSON.stringify(arr));
+  }
+  function renderRecent() {
+    const list = document.getElementById('recentList');
+    const ids  = getRecent();
+    if (!ids.length) { list.innerHTML = '<div class="empty-msg">Пока ничего нет</div>'; return; }
+    list.innerHTML = ids.map(id => {
+      const p = PRODUCTS.find(x => x.id === id);
+      if (!p) return '';
+      const img = `https://placehold.co/36x36/${p.color}/fff?text=${encodeURIComponent(p.id)}`;
+      return `<div class="recent-item">
+        <img src="${img}" alt="${p.name}">
+        <div><span class="recent-name">${p.name}</span><span class="recent-price">${p.price}</span></div>
+      </div>`;
+    }).join('');
+  }
+
+  // Рендер каталога
+  document.getElementById('catalog').innerHTML = PRODUCTS.map(p => `
+    <div class="card" data-id="${p.id}">
+      <img src="https://placehold.co/200x130/${p.color}/fff?text=${encodeURIComponent(p.name)}" alt="${p.name}">
+      <div class="card-title">${p.name}</div>
+      <div class="card-price">${p.price}</div>
+    </div>`).join('');
+
+  document.querySelectorAll('.card').forEach(card => {
+    card.addEventListener('click', () => {
+      addRecent(parseInt(card.dataset.id));
+      renderRecent();
+    });
+  });
+
+  renderRecent();
+</script>
+</body>
+</html>

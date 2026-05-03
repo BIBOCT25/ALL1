@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>38. Очистить корзину</title>
+<style>
+  body { font-family: Arial, sans-serif; padding: 30px; max-width: 420px; margin: 0 auto; }
+  h2 { font-size: 18px; margin-bottom: 14px; }
+  .cart-item { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #eee; font-size: 14px; }
+  .btn-clear { padding: 9px 18px; background: #fff; color: #e53935; border: 1px solid #e53935; border-radius: 6px; cursor: pointer; font-size: 14px; margin-top: 14px; }
+  .confirm-box { display: none; padding: 12px 16px; background: #FFF8E1; border: 1px solid #FFD54F; border-radius: 6px; font-size: 14px; margin-top: 10px; }
+  .confirm-box.show { display: block; }
+  .confirm-box .actions { margin-top: 10px; display: flex; gap: 8px; }
+  .btn-yes { padding: 7px 14px; background: #e53935; color: #fff; border: none; border-radius: 4px; cursor: pointer; }
+  .btn-no  { padding: 7px 14px; background: #ddd; border: none; border-radius: 4px; cursor: pointer; }
+  .empty   { color: #999; font-size: 14px; margin-top: 10px; display: none; }
+</style>
+</head>
+<body>
+<h2>Корзина</h2>
+<div id="cartEl"></div>
+<button class="btn-clear" id="btnClear">Очистить корзину</button>
+<div class="confirm-box" id="confirmBox">
+  ⚠ Вы уверены? Все товары будут удалены.
+  <div class="actions">
+    <button class="btn-yes" id="btnYes">Да, удалить</button>
+    <button class="btn-no"  id="btnNo">Отмена</button>
+  </div>
+</div>
+<div class="empty" id="emptyMsg">Корзина пуста</div>
+<script>
+  let cart = [
+    { name: 'Кроссовки Nike', price: 4990 },
+    { name: 'Шапка UA',       price: 890  },
+    { name: 'Рюкзак',         price: 3200 },
+  ];
+  const cartEl     = document.getElementById('cartEl');
+  const confirmBox = document.getElementById('confirmBox');
+  const emptyMsg   = document.getElementById('emptyMsg');
+
+  function render() {
+    cartEl.innerHTML = cart.map(it =>
+      `<div class="cart-item"><span>${it.name}</span><span>${it.price.toLocaleString('ru')} ₽</span></div>`
+    ).join('');
+    emptyMsg.style.display = cart.length ? 'none' : 'block';
+  }
+  document.getElementById('btnClear').addEventListener('click', () => confirmBox.classList.add('show'));
+  document.getElementById('btnNo').addEventListener('click',   () => confirmBox.classList.remove('show'));
+  document.getElementById('btnYes').addEventListener('click',  () => { cart = []; confirmBox.classList.remove('show'); render(); });
+  render();
+</script>
+</body>
+</html>

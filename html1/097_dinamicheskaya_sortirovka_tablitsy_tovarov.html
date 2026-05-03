@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>97. Сортировка таблицы</title>
+<style>
+  * { box-sizing: border-box; margin: 0; }
+  body { font-family: Arial, sans-serif; padding: 36px; background: #f5f5f5; }
+  h2 { font-size: 18px; margin-bottom: 20px; }
+  .table-wrap { background: #fff; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 12px rgba(0,0,0,.08); max-width: 640px; }
+  table { width: 100%; border-collapse: collapse; }
+  thead tr { background: #1565C0; color: #fff; }
+  th {
+    padding: 13px 14px; text-align: left; font-size: 13px; font-weight: 600;
+    cursor: pointer; user-select: none; white-space: nowrap;
+  }
+  th:hover { background: #0D47A1; }
+  th .arrow { margin-left: 5px; opacity: 0.4; }
+  th.asc  .arrow::after { content: '▲'; opacity: 1; }
+  th.desc .arrow::after { content: '▼'; opacity: 1; }
+  th:not(.asc):not(.desc) .arrow::after { content: '⇅'; }
+  td { padding: 11px 14px; font-size: 13px; border-bottom: 1px solid #f0f0f0; color: #444; }
+  tr:last-child td { border-bottom: none; }
+  tbody tr:hover { background: #F3F8FF; }
+  .badge {
+    display: inline-block; padding: 2px 8px; border-radius: 10px;
+    font-size: 11px; font-weight: bold;
+  }
+  .badge-green { background: #E8F5E9; color: #2E7D32; }
+  .badge-red   { background: #FFEBEE; color: #C62828; }
+  .badge-gray  { background: #F5F5F5; color: #757575; }
+  .hint { font-size: 12px; color: #aaa; margin-bottom: 10px; }
+</style>
+</head>
+<body>
+<h2>Управление товарами</h2>
+<p class="hint">Нажмите на заголовок колонки для сортировки</p>
+<div class="table-wrap">
+  <table>
+    <thead>
+      <tr>
+        <th data-col="name"    data-type="str">Товар <span class="arrow"></span></th>
+        <th data-col="cat"     data-type="str">Категория <span class="arrow"></span></th>
+        <th data-col="price"   data-type="num">Цена, ₽ <span class="arrow"></span></th>
+        <th data-col="stock"   data-type="num">Остаток <span class="arrow"></span></th>
+        <th data-col="rating"  data-type="num">Рейтинг <span class="arrow"></span></th>
+        <th data-col="status"  data-type="str">Статус <span class="arrow"></span></th>
+      </tr>
+    </thead>
+    <tbody id="tbody"></tbody>
+  </table>
+</div>
+
+<script>
+  const DATA = [
+    { name:'iPhone 15',    cat:'Смартфоны',  price:89990,  stock:24, rating:4.8, status:'В наличии'  },
+    { name:'Galaxy S24',   cat:'Смартфоны',  price:74990,  stock:11, rating:4.7, status:'В наличии'  },
+    { name:'MacBook Air',  cat:'Ноутбуки',   price:124990, stock:5,  rating:4.9, status:'Мало'        },
+    { name:'iPad Pro',     cat:'Планшеты',   price:99990,  stock:0,  rating:4.8, status:'Нет в наличии' },
+    { name:'AirPods Pro',  cat:'Аудио',      price:22990,  stock:38, rating:4.6, status:'В наличии'  },
+    { name:'Apple Watch',  cat:'Аксессуары', price:44990,  stock:7,  rating:4.7, status:'Мало'        },
+    { name:'Xiaomi 14',    cat:'Смартфоны',  price:64990,  stock:19, rating:4.5, status:'В наличии'  },
+    { name:'OnePlus 12',   cat:'Смартфоны',  price:54990,  stock:3,  rating:4.4, status:'Мало'        },
+  ];
+
+  let sortCol = null, sortDir = 'asc';
+
+  function statusClass(s) {
+    if (s === 'В наличии') return 'badge-green';
+    if (s === 'Мало')      return 'badge-red';
+    return 'badge-gray';
+  }
+
+  function render() {
+    const sorted = [...DATA].sort((a, b) => {
+      if (!sortCol) return 0;
+      const th  = document.querySelector(`th[data-col="${sortCol}"]`);
+      const type = th.dataset.type;
+      const va = a[sortCol], vb = b[sortCol];
+      let cmp = type === 'num' ? va - vb : String(va).localeCompare(String(vb), 'ru');
+      return sortDir === 'asc' ? cmp : -cmp;
+    });
+    document.getElementById('tbody').innerHTML = sorted.map(r => `
+      <tr>
+        <td><b>${r.name}</b></td>
+        <td>${r.cat}</td>
+        <td>${r.price.toLocaleString('ru')}</td>
+        <td>${r.stock}</td>
+        <td>${r.rating} ★</td>
+        <td><span class="badge ${statusClass(r.status)}">${r.status}</span></td>
+      </tr>`).join('');
+  }
+
+  document.querySelectorAll('th[data-col]').forEach(th => {
+    th.addEventListener('click', () => {
+      const col = th.dataset.col;
+      if (sortCol === col) sortDir = sortDir === 'asc' ? 'desc' : 'asc';
+      else { sortCol = col; sortDir = 'asc'; }
+      document.querySelectorAll('th').forEach(t => t.classList.remove('asc','desc'));
+      th.classList.add(sortDir);
+      render();
+    });
+  });
+
+  render();
+</script>
+</body>
+</html>

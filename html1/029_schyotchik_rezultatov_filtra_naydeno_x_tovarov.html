@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>29. Счётчик результатов</title>
+<style>
+  body { font-family: Arial, sans-serif; padding: 24px; max-width: 700px; margin: 0 auto; }
+  .toolbar { display: flex; align-items: center; gap: 16px; margin-bottom: 6px; flex-wrap: wrap; }
+  .filter-btn {
+    padding: 7px 16px; border: 1px solid #ddd; background: #fff;
+    border-radius: 20px; cursor: pointer; font-size: 13px; transition: all 0.15s;
+  }
+  .filter-btn.active { background: #2196F3; color: #fff; border-color: #2196F3; }
+  .result-count { font-size: 13px; color: #888; margin-bottom: 16px; }
+  .result-count b { color: #333; }
+  .products { display: flex; gap: 12px; flex-wrap: wrap; }
+  .card { border: 1px solid #ddd; border-radius: 8px; padding: 12px; width: 155px; }
+  .card.hidden { display: none; }
+  .card-cat   { font-size: 11px; color: #2196F3; text-transform: uppercase; }
+  .card-name  { font-size: 13px; font-weight: bold; margin: 4px 0; }
+  .card-price { color: #e53935; }
+</style>
+</head>
+<body>
+<div class="toolbar" id="toolbar">
+  <button class="filter-btn active" data-cat="all">Все</button>
+  <button class="filter-btn" data-cat="shoes">Обувь</button>
+  <button class="filter-btn" data-cat="clothes">Одежда</button>
+  <button class="filter-btn" data-cat="acc">Аксессуары</button>
+</div>
+<div class="result-count" id="resultCount"></div>
+
+<div class="products" id="products">
+  <div class="card" data-cat="shoes"><div class="card-cat">Обувь</div><div class="card-name">Кроссовки</div><div class="card-price">4 990 ₽</div></div>
+  <div class="card" data-cat="shoes"><div class="card-cat">Обувь</div><div class="card-name">Ботинки</div><div class="card-price">7 200 ₽</div></div>
+  <div class="card" data-cat="clothes"><div class="card-cat">Одежда</div><div class="card-name">Куртка</div><div class="card-price">6 990 ₽</div></div>
+  <div class="card" data-cat="clothes"><div class="card-cat">Одежда</div><div class="card-name">Шапка</div><div class="card-price">890 ₽</div></div>
+  <div class="card" data-cat="acc"><div class="card-cat">Аксессуары</div><div class="card-name">Рюкзак</div><div class="card-price">3 200 ₽</div></div>
+</div>
+
+<script>
+  const toolbar  = document.getElementById('toolbar');
+  const cards    = document.querySelectorAll('.card');
+  const countEl  = document.getElementById('resultCount');
+
+  function applyFilter(cat) {
+    let visible = 0;
+    cards.forEach(card => {
+      const show = cat === 'all' || card.dataset.cat === cat;
+      card.classList.toggle('hidden', !show);
+      if (show) visible++;
+    });
+    countEl.innerHTML = `Найдено: <b>${visible}</b> из <b>${cards.length}</b> товаров`;
+  }
+
+  toolbar.addEventListener('click', e => {
+    const btn = e.target.closest('.filter-btn');
+    if (!btn) return;
+    toolbar.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    applyFilter(btn.dataset.cat);
+  });
+
+  applyFilter('all');
+</script>
+</body>
+</html>

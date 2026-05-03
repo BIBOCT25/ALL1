@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>40. Анимация «летит в корзину»</title>
+<style>
+  body { font-family: Arial, sans-serif; padding: 0; }
+  header { background: #222; color: #fff; padding: 12px 24px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+  .cart-icon { font-size: 28px; position: relative; }
+  .badge { position: absolute; top: -6px; right: -8px; background: #e53935; color: #fff; border-radius: 50%; width: 18px; height: 18px; font-size: 11px; display: flex; align-items: center; justify-content: center; font-weight: bold; }
+  .products { display: flex; gap: 16px; flex-wrap: wrap; padding: 0 24px; }
+  .card { border: 1px solid #ddd; border-radius: 8px; padding: 14px; width: 180px; text-align: center; }
+  .card img { width: 100%; border-radius: 4px; margin-bottom: 10px; }
+  .card-name { font-size: 14px; font-weight: bold; margin-bottom: 8px; }
+  .btn-add { padding: 7px 14px; background: #2196F3; color: #fff; border: none; border-radius: 4px; cursor: pointer; font-size: 13px; }
+  .fly-img {
+    position: fixed; width: 50px; height: 50px; border-radius: 50%;
+    object-fit: cover; pointer-events: none; z-index: 9999;
+    transition: top 0.7s cubic-bezier(.2,.8,.6,1), left 0.7s cubic-bezier(.2,.8,.6,1), opacity 0.7s, transform 0.7s;
+  }
+</style>
+</head>
+<body>
+<header>
+  <div>МойМагазин</div>
+  <div class="cart-icon" id="cartIcon">🛒<span class="badge" id="badge">0</span></div>
+</header>
+<div class="products">
+  <div class="card">
+    <img src="https://placehold.co/180x110/4FC3F7/fff?text=Nike" alt="Кроссовки">
+    <div class="card-name">Кроссовки Nike</div>
+    <button class="btn-add">В корзину</button>
+  </div>
+  <div class="card">
+    <img src="https://placehold.co/180x110/81C784/fff?text=Adidas" alt="Куртка">
+    <div class="card-name">Куртка Adidas</div>
+    <button class="btn-add">В корзину</button>
+  </div>
+</div>
+<script>
+  let cartCount = 0;
+  const badge = document.getElementById('badge');
+
+  document.querySelectorAll('.btn-add').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const card   = btn.closest('.card');
+      const imgEl  = card.querySelector('img');
+      const cartEl = document.getElementById('cartIcon');
+      const from   = imgEl.getBoundingClientRect();
+      const to     = cartEl.getBoundingClientRect();
+
+      const fly = document.createElement('img');
+      fly.className = 'fly-img';
+      fly.src = imgEl.src;
+      fly.style.top  = from.top  + 'px';
+      fly.style.left = from.left + 'px';
+      document.body.appendChild(fly);
+
+      requestAnimationFrame(() => requestAnimationFrame(() => {
+        fly.style.top       = (to.top  + to.height / 2 - 25) + 'px';
+        fly.style.left      = (to.left + to.width  / 2 - 25) + 'px';
+        fly.style.opacity   = '0';
+        fly.style.transform = 'scale(0.3)';
+      }));
+
+      setTimeout(() => { fly.remove(); badge.textContent = ++cartCount; }, 750);
+    });
+  });
+</script>
+</body>
+</html>

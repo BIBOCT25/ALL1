@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>101. Калькулятор скидки</title>
+<style>
+  * { box-sizing: border-box; margin: 0; }
+  body { font-family: Arial, sans-serif; padding: 36px; background: #f5f5f5; }
+  h2 { font-size: 20px; margin-bottom: 20px; }
+  .calc { background: #fff; border-radius: 14px; padding: 24px; max-width: 400px; box-shadow: 0 2px 14px rgba(0,0,0,.08); }
+  .field { margin-bottom: 16px; }
+  .field label { display: block; font-size: 13px; color: #555; margin-bottom: 5px; font-weight: bold; }
+  .field input {
+    width: 100%; padding: 10px 12px; border: 1px solid #ddd;
+    border-radius: 8px; font-size: 15px; outline: none;
+  }
+  .field input:focus { border-color: #1565C0; }
+  .type-row { display: flex; gap: 8px; margin-bottom: 18px; }
+  .type-btn {
+    flex: 1; padding: 9px; border: 1px solid #ddd; border-radius: 8px;
+    background: #fff; cursor: pointer; font-size: 13px; font-weight: bold;
+    transition: all 0.2s;
+  }
+  .type-btn.active { background: #1565C0; color: #fff; border-color: #1565C0; }
+  .result { background: #E8F5E9; border-radius: 10px; padding: 16px; text-align: center; }
+  .result-label { font-size: 12px; color: #555; margin-bottom: 4px; }
+  .result-price { font-size: 32px; font-weight: 900; color: #2E7D32; margin-bottom: 6px; }
+  .result-saving { font-size: 14px; color: #E53935; font-weight: bold; }
+  .result-pct    { font-size: 12px; color: #888; margin-top: 4px; }
+</style>
+</head>
+<body>
+<h2>Калькулятор скидки</h2>
+<div class="calc">
+  <div class="field">
+    <label>Цена товара, ₽</label>
+    <input type="number" id="origPrice" value="89990" min="0">
+  </div>
+  <div class="type-row">
+    <button class="type-btn active" data-type="pct">Скидка в %</button>
+    <button class="type-btn" data-type="rub">Скидка в ₽</button>
+  </div>
+  <div class="field">
+    <label id="discLabel">Размер скидки, %</label>
+    <input type="number" id="discValue" value="30" min="0">
+  </div>
+  <div class="result">
+    <div class="result-label">Итоговая цена</div>
+    <div class="result-price" id="resFinal">—</div>
+    <div class="result-saving" id="resSaving">—</div>
+    <div class="result-pct" id="resPct"></div>
+  </div>
+</div>
+
+<script>
+  let discType = 'pct';
+
+  function calc() {
+    const orig = parseFloat(document.getElementById('origPrice').value) || 0;
+    const disc = parseFloat(document.getElementById('discValue').value) || 0;
+    let final, saving;
+    if (discType === 'pct') {
+      saving = orig * Math.min(disc, 100) / 100;
+      final  = orig - saving;
+    } else {
+      saving = Math.min(disc, orig);
+      final  = orig - saving;
+    }
+    document.getElementById('resFinal').textContent  = final.toLocaleString('ru') + ' ₽';
+    document.getElementById('resSaving').textContent = saving > 0 ? '— Экономия ' + saving.toLocaleString('ru') + ' ₽' : 'Скидка не применена';
+    document.getElementById('resPct').textContent    = orig > 0 && discType === 'rub'
+      ? `(${((saving/orig)*100).toFixed(1)}% от цены)` : '';
+  }
+
+  document.querySelectorAll('.type-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      discType = btn.dataset.type;
+      document.querySelectorAll('.type-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('discLabel').textContent = discType === 'pct' ? 'Размер скидки, %' : 'Размер скидки, ₽';
+      document.getElementById('discValue').value = discType === 'pct' ? 30 : 10000;
+      calc();
+    });
+  });
+
+  document.getElementById('origPrice').addEventListener('input', calc);
+  document.getElementById('discValue').addEventListener('input', calc);
+  calc();
+</script>
+</body>
+</html>

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>8. Выбор цвета товара</title>
+<style>
+  body { font-family: Arial, sans-serif; display: flex; justify-content: center; padding: 40px; }
+  .card { border: 1px solid #ddd; border-radius: 8px; padding: 20px; width: 240px; text-align: center; }
+  .card img { width: 100%; height: 160px; object-fit: cover; border-radius: 6px; margin-bottom: 14px; transition: opacity 0.2s; }
+  .colors { display: flex; justify-content: center; gap: 10px; margin-bottom: 12px; }
+  .color-btn {
+    width: 32px; height: 32px; border-radius: 50%; border: 3px solid transparent; cursor: pointer;
+    transition: border-color 0.15s, transform 0.15s;
+  }
+  .color-btn.active { border-color: #333; transform: scale(1.15); }
+  .label { font-size: 14px; color: #555; }
+</style>
+</head>
+<body>
+<div class="card">
+  <img id="productImg" src="https://placehold.co/240x160/1565C0/fff?text=Синий" alt="Товар">
+  <div class="colors" id="colorPicker">
+    <button class="color-btn active" style="background:#1565C0" data-color="Синий"
+      data-img="https://placehold.co/240x160/1565C0/fff?text=Синий"></button>
+    <button class="color-btn" style="background:#B71C1C" data-color="Красный"
+      data-img="https://placehold.co/240x160/B71C1C/fff?text=Красный"></button>
+    <button class="color-btn" style="background:#2E7D32" data-color="Зелёный"
+      data-img="https://placehold.co/240x160/2E7D32/fff?text=Зелёный"></button>
+    <button class="color-btn" style="background:#F9A825" data-color="Жёлтый"
+      data-img="https://placehold.co/240x160/F9A825/333?text=Жёлтый"></button>
+  </div>
+  <div class="label" id="colorLabel">Цвет: Синий</div>
+</div>
+<script>
+  const picker = document.getElementById('colorPicker');
+  const img    = document.getElementById('productImg');
+  const label  = document.getElementById('colorLabel');
+
+  picker.addEventListener('click', e => {
+    const btn = e.target.closest('.color-btn');
+    if (!btn) return;
+    picker.querySelectorAll('.color-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    img.style.opacity = '0';
+    setTimeout(() => {
+      img.src = btn.dataset.img;
+      img.style.opacity = '1';
+    }, 150);
+    label.textContent = 'Цвет: ' + btn.dataset.color;
+  });
+</script>
+</body>
+</html>

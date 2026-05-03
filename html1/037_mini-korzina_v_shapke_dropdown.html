@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>37. Мини-корзина в шапке</title>
+<style>
+  * { box-sizing: border-box; }
+  body { font-family: Arial, sans-serif; margin: 0; }
+  header {
+    background: #222; color: #fff; padding: 12px 24px;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .logo { font-size: 18px; font-weight: bold; }
+  .cart-wrap { position: relative; }
+  .cart-icon { font-size: 26px; cursor: pointer; display: flex; align-items: center; gap: 6px; }
+  .badge {
+    background: #e53935; color: #fff; border-radius: 50%;
+    width: 20px; height: 20px; font-size: 12px;
+    display: flex; align-items: center; justify-content: center; font-weight: bold;
+  }
+  .mini-cart {
+    position: absolute; top: calc(100% + 12px); right: 0;
+    background: #fff; color: #222; border-radius: 8px;
+    box-shadow: 0 8px 24px rgba(0,0,0,.18); width: 280px;
+    padding: 16px; display: none; z-index: 200;
+  }
+  .mini-cart.open { display: block; }
+  .mc-item { display: flex; justify-content: space-between; font-size: 14px; padding: 6px 0; border-bottom: 1px solid #eee; }
+  .mc-total { font-size: 15px; font-weight: bold; text-align: right; margin-top: 10px; }
+  .mc-btn { display: block; width: 100%; margin-top: 10px; padding: 9px; background: #2196F3; color: #fff; border: none; border-radius: 6px; cursor: pointer; font-size: 14px; }
+  main { padding: 30px 24px; }
+  .add-btn { padding: 9px 20px; background: #FF9800; color: #fff; border: none; border-radius: 6px; cursor: pointer; margin-right: 8px; font-size: 14px; }
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">МойМагазин</div>
+  <div class="cart-wrap">
+    <div class="cart-icon" id="cartIcon">🛒 <span class="badge" id="badge">0</span></div>
+    <div class="mini-cart" id="miniCart">
+      <strong style="font-size:15px">Ваша корзина</strong>
+      <div id="mcItems" style="margin-top:10px;"></div>
+      <div class="mc-total">Итого: <span id="mcTotal">0</span> ₽</div>
+      <button class="mc-btn">Оформить заказ</button>
+    </div>
+  </div>
+</header>
+<main>
+  <button class="add-btn" data-name="Кроссовки Nike" data-price="4990">+ Кроссовки</button>
+  <button class="add-btn" data-name="Куртка Adidas"  data-price="6990">+ Куртка</button>
+  <button class="add-btn" data-name="Шапка UA"       data-price="890" >+ Шапка</button>
+</main>
+<script>
+  const cartItems = [];
+  const badge    = document.getElementById('badge');
+  const mcItems  = document.getElementById('mcItems');
+  const mcTotal  = document.getElementById('mcTotal');
+  const miniCart = document.getElementById('miniCart');
+
+  document.getElementById('cartIcon').addEventListener('click', () => miniCart.classList.toggle('open'));
+  document.addEventListener('click', e => { if (!e.target.closest('.cart-wrap')) miniCart.classList.remove('open'); });
+
+  document.querySelectorAll('.add-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      cartItems.push({ name: btn.dataset.name, price: +btn.dataset.price });
+      badge.textContent = cartItems.length;
+      mcItems.innerHTML = cartItems.map(it =>
+        `<div class="mc-item"><span>${it.name}</span><span>${it.price.toLocaleString('ru')} ₽</span></div>`
+      ).join('');
+      mcTotal.textContent = cartItems.reduce((s, it) => s + it.price, 0).toLocaleString('ru');
+    });
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>73. Несохранённые изменения</title>
+<style>
+  * { box-sizing: border-box; }
+  body { font-family: Arial, sans-serif; padding: 40px; max-width: 480px; }
+  h2 { font-size: 18px; margin-bottom: 20px; }
+  .field { margin-bottom: 16px; }
+  .field label { display: block; font-size: 14px; margin-bottom: 5px; color: #555; }
+  .field input, .field textarea {
+    width: 100%; padding: 10px 12px; border: 1px solid #ddd; border-radius: 6px;
+    font-size: 14px; outline: none; transition: border-color 0.2s;
+  }
+  .field input:focus, .field textarea:focus { border-color: #2196F3; }
+  .field textarea { min-height: 90px; resize: vertical; }
+  .btn-row { display: flex; gap: 10px; }
+  .btn-save   { padding: 10px 24px; background: #2196F3; color: #fff; border: none; border-radius: 6px; cursor: pointer; font-size: 14px; }
+  .btn-cancel { padding: 10px 24px; background: #f5f5f5; border: 1px solid #ddd; border-radius: 6px; cursor: pointer; font-size: 14px; }
+  .status-bar {
+    margin-top: 14px; font-size: 13px; padding: 8px 12px; border-radius: 6px;
+    display: none;
+  }
+  .status-bar.dirty { display: block; background: #FFF3E0; color: #E65100; border: 1px solid #FFE0B2; }
+  .status-bar.saved { display: block; background: #E8F5E9; color: #2E7D32; border: 1px solid #C8E6C9; }
+</style>
+</head>
+<body>
+<h2>Редактировать профиль</h2>
+<form id="profileForm">
+  <div class="field"><label>Имя</label><input id="fName" type="text" value="Иван Иванов"></div>
+  <div class="field"><label>Email</label><input id="fEmail" type="email" value="ivan@mail.ru"></div>
+  <div class="field"><label>О себе</label><textarea id="fBio">Покупаю технику уже 5 лет.</textarea></div>
+  <div class="btn-row">
+    <button type="submit" class="btn-save">Сохранить</button>
+    <button type="button" class="btn-cancel" id="btnCancel">Отмена</button>
+  </div>
+</form>
+<div class="status-bar" id="statusBar"></div>
+
+<script>
+  const form      = document.getElementById('profileForm');
+  const statusBar = document.getElementById('statusBar');
+  let isDirty     = false;
+
+  // Следим за изменениями
+  form.querySelectorAll('input, textarea').forEach(el => {
+    el.addEventListener('input', () => {
+      if (!isDirty) {
+        isDirty = true;
+        statusBar.className  = 'status-bar dirty';
+        statusBar.textContent = '⚠️ Есть несохранённые изменения';
+      }
+    });
+  });
+
+  // Предупреждение при уходе со страницы
+  window.addEventListener('beforeunload', e => {
+    if (isDirty) {
+      e.preventDefault();
+      e.returnValue = '';
+    }
+  });
+
+  form.addEventListener('submit', e => {
+    e.preventDefault();
+    isDirty = false;
+    statusBar.className   = 'status-bar saved';
+    statusBar.textContent = '✓ Изменения сохранены';
+  });
+
+  document.getElementById('btnCancel').addEventListener('click', () => {
+    if (isDirty && !confirm('Отменить несохранённые изменения?')) return;
+    form.reset();
+    isDirty = false;
+    statusBar.className = 'status-bar';
+    statusBar.style.display = 'none';
+  });
+</script>
+</body>
+</html>

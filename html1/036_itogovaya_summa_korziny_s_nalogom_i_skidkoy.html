@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>36. Итог корзины с налогом</title>
+<style>
+  body { font-family: Arial, sans-serif; padding: 30px; max-width: 400px; margin: 0 auto; }
+  h2 { font-size: 18px; margin-bottom: 14px; }
+  .cart-list { list-style: none; padding: 0; margin: 0 0 16px; }
+  .cart-list li { display: flex; justify-content: space-between; padding: 7px 0; border-bottom: 1px solid #eee; font-size: 14px; }
+  .summary { background: #f9f9f9; border-radius: 8px; padding: 16px; font-size: 14px; }
+  .summary-row { display: flex; justify-content: space-between; margin-bottom: 8px; color: #555; }
+  .summary-row.discount { color: #4CAF50; }
+  .summary-row.total { font-size: 17px; font-weight: bold; color: #222; border-top: 1px solid #ddd; padding-top: 10px; margin-top: 4px; }
+  .coupon { display: flex; gap: 8px; margin-bottom: 16px; }
+  .coupon input { flex: 1; padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px; }
+  .coupon button { padding: 8px 14px; background: #2196F3; color: #fff; border: none; border-radius: 4px; cursor: pointer; }
+</style>
+</head>
+<body>
+<h2>Корзина</h2>
+<ul class="cart-list" id="cartList"></ul>
+<div class="coupon">
+  <input type="text" id="couponInput" placeholder="Промокод (SAVE20)">
+  <button id="btnApply">Применить</button>
+</div>
+<div class="summary">
+  <div class="summary-row">Подытог: <span id="subtotal">0 ₽</span></div>
+  <div class="summary-row discount">Скидка: <span id="discount">0 ₽</span></div>
+  <div class="summary-row">НДС 20%: <span id="tax">0 ₽</span></div>
+  <div class="summary-row total">Итого: <span id="total">0 ₽</span></div>
+</div>
+<script>
+  const cart = [
+    { name: 'Кроссовки Nike', price: 4990 },
+    { name: 'Шапка UA',       price: 890  },
+    { name: 'Рюкзак',         price: 3200 },
+  ];
+  const TAX_RATE = 0.20;
+  let discountRate = 0;
+  const cartList   = document.getElementById('cartList');
+  const subtotalEl = document.getElementById('subtotal');
+  const discountEl = document.getElementById('discount');
+  const taxEl      = document.getElementById('tax');
+  const totalEl    = document.getElementById('total');
+
+  function fmt(n) { return n.toLocaleString('ru') + ' ₽'; }
+  function recalc() {
+    const subtotal = cart.reduce((s, it) => s + it.price, 0);
+    const discount = Math.round(subtotal * discountRate);
+    const taxable  = subtotal - discount;
+    const tax      = Math.round(taxable * TAX_RATE);
+    subtotalEl.textContent = fmt(subtotal);
+    discountEl.textContent = discount > 0 ? '−' + fmt(discount) : fmt(0);
+    taxEl.textContent      = fmt(tax);
+    totalEl.textContent    = fmt(taxable + tax);
+  }
+  cartList.innerHTML = cart.map(it =>
+    `<li><span>${it.name}</span><span>${fmt(it.price)}</span></li>`).join('');
+  recalc();
+
+  document.getElementById('btnApply').addEventListener('click', () => {
+    const code = document.getElementById('couponInput').value.trim().toUpperCase();
+    discountRate = code === 'SAVE20' ? 0.20 : 0;
+    alert(code === 'SAVE20' ? 'Скидка 20% применена!' : 'Промокод не найден.');
+    recalc();
+  });
+</script>
+</body>
+</html>

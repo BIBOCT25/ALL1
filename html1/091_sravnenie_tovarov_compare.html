@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>91. Сравнение товаров</title>
+<style>
+  * { box-sizing: border-box; margin: 0; }
+  body { font-family: Arial, sans-serif; padding: 28px; background: #f5f5f5; }
+  h2 { font-size: 18px; margin-bottom: 18px; }
+  .catalog { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 24px; }
+  .card {
+    width: 160px; background: #fff; border-radius: 10px; padding: 14px;
+    border: 2px solid transparent; cursor: pointer; transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .card:hover { box-shadow: 0 2px 12px rgba(0,0,0,.1); }
+  .card.selected { border-color: #1565C0; box-shadow: 0 2px 12px rgba(21,101,192,.2); }
+  .card img { width: 100%; border-radius: 6px; margin-bottom: 8px; }
+  .card-name  { font-size: 13px; font-weight: bold; margin-bottom: 4px; }
+  .card-price { font-size: 13px; color: #D32F2F; font-weight: bold; }
+  .compare-btn {
+    font-size: 11px; margin-top: 8px; padding: 4px 8px;
+    border: 1px solid #1565C0; border-radius: 4px; background: #fff;
+    color: #1565C0; cursor: pointer; width: 100%;
+  }
+  .card.selected .compare-btn { background: #1565C0; color: #fff; }
+  .compare-wrap { background: #fff; border-radius: 12px; overflow-x: auto; padding: 16px; max-width: 680px; }
+  .compare-wrap h3 { font-size: 15px; margin-bottom: 14px; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th { padding: 10px 12px; background: #E3F2FD; color: #1565C0; text-align: left; }
+  td { padding: 9px 12px; border-bottom: 1px solid #f0f0f0; color: #444; }
+  td.best { color: #2E7D32; font-weight: bold; }
+  tr:last-child td { border-bottom: none; }
+  .limit-msg { font-size: 12px; color: #E53935; margin: -8px 0 16px; }
+</style>
+</head>
+<body>
+<h2>Выберите до 3 товаров для сравнения</h2>
+<p class="limit-msg" id="limitMsg" style="display:none">Максимум 3 товара</p>
+<div class="catalog" id="catalog"></div>
+<div class="compare-wrap" id="compareWrap" style="display:none">
+  <h3>Сравнение</h3>
+  <table id="compareTable"></table>
+</div>
+
+<script>
+  const PRODUCTS = [
+    { id:1, name:'iPhone 15',   price:89990,  ram:6,  camera:48, battery:3877, color:'1565C0' },
+    { id:2, name:'Galaxy S24',  price:74990,  ram:8,  camera:50, battery:4000, color:'2E7D32' },
+    { id:3, name:'Pixel 8 Pro', price:84990,  ram:12, camera:50, battery:5050, color:'6A1B9A' },
+    { id:4, name:'Xiaomi 14',   price:69990,  ram:12, camera:50, battery:4610, color:'BF360C' },
+    { id:5, name:'OnePlus 12',  price:64990,  ram:16, camera:50, battery:5400, color:'00695C' },
+  ];
+  const SPECS = [
+    { key:'price',   label:'Цена, ₽',    fmt: v => v.toLocaleString('ru') },
+    { key:'ram',     label:'ОЗУ, ГБ',    fmt: v => v },
+    { key:'camera',  label:'Камера, МП', fmt: v => v },
+    { key:'battery', label:'АКБ, мАч',   fmt: v => v },
+  ];
+  const BEST_MAX = new Set(['ram','camera','battery']);
+  const BEST_MIN = new Set(['price']);
+
+  let selected = [];
+
+  function renderCatalog() {
+    document.getElementById('catalog').innerHTML = PRODUCTS.map(p => `
+      <div class="card ${selected.includes(p.id) ? 'selected' : ''}" data-id="${p.id}">
+        <img src="https://placehold.co/130x80/${p.color}/fff?text=${encodeURIComponent(p.name)}" alt="${p.name}">
+        <div class="card-name">${p.name}</div>
+        <div class="card-price">${p.price.toLocaleString('ru')} ₽</div>
+        <button class="compare-btn">${selected.includes(p.id) ? '✓ Добавлен' : '+ Сравнить'}</button>
+      </div>`).join('');
+
+    document.querySelectorAll('.card').forEach(card => {
+      card.addEventListener('click', () => {
+        const id = parseInt(card.dataset.id);
+        if (selected.includes(id)) {
+          selected = selected.filter(x => x !== id);
+        } else {
+          if (selected.length >= 3) { document.getElementById('limitMsg').style.display = 'block'; setTimeout(()=>document.getElementById('limitMsg').style.display='none',2000); return; }
+          selected.push(id);
+        }
+        renderCatalog();
+        renderTable();
+      });
+    });
+  }
+
+  function renderTable() {
+    const wrap = document.getElementById('compareWrap');
+    const tbl  = document.getElementById('compareTable');
+    if (!selected.length) { wrap.style.display = 'none'; return; }
+    wrap.style.display = 'block';
+    const prods = selected.map(id => PRODUCTS.find(p => p.id === id));
+    const head = '<tr><th>Характеристика</th>' + prods.map(p => `<th>${p.name}</th>`).join('') + '</tr>';
+    const rows = SPECS.map(spec => {
+      const vals = prods.map(p => p[spec.key]);
+      let best;
+      if (BEST_MAX.has(spec.key)) best = Math.max(...vals);
+      if (BEST_MIN.has(spec.key)) best = Math.min(...vals);
+      const cells = vals.map(v => `<td class="${v === best ? 'best' : ''}">${spec.fmt(v)}</td>`).join('');
+      return `<tr><td><b>${spec.label}</b></td>${cells}</tr>`;
+    }).join('');
+    tbl.innerHTML = head + rows;
+  }
+
+  renderCatalog();
+</script>
+</body>
+</html>

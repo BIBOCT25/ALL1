@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>42. Таймер «Только сегодня»</title>
+<style>
+  body { font-family: Arial, sans-serif; display: flex; justify-content: center; padding: 50px; background: #FFF8E1; }
+  .banner {
+    background: #FF9800; color: #fff; border-radius: 12px;
+    padding: 24px 36px; text-align: center; max-width: 360px;
+  }
+  .banner-title { font-size: 18px; font-weight: bold; margin-bottom: 4px; }
+  .banner-sub   { font-size: 13px; opacity: .85; margin-bottom: 18px; }
+  .timer { display: flex; gap: 10px; justify-content: center; font-size: 32px; font-weight: bold; font-variant-numeric: tabular-nums; }
+  .timer .sep { opacity: .7; }
+  .label { font-size: 11px; opacity: .8; margin-top: 4px; }
+</style>
+</head>
+<body>
+<div class="banner">
+  <div class="banner-title">🔥 Только сегодня!</div>
+  <div class="banner-sub">Скидка 30% на всё. Успейте!</div>
+  <div class="timer" id="timer">
+    <div><span id="h">00</span><div class="label">ч</div></div>
+    <div class="sep">:</div>
+    <div><span id="m">00</span><div class="label">мин</div></div>
+    <div class="sep">:</div>
+    <div><span id="s">00</span><div class="label">сек</div></div>
+  </div>
+</div>
+<script>
+  function pad(n) { return String(n).padStart(2, '0'); }
+
+  function tick() {
+    const now       = new Date();
+    const midnight  = new Date(now);
+    midnight.setHours(23, 59, 59, 999);
+    const diff = midnight - now;
+
+    if (diff <= 0) {
+      document.getElementById('timer').innerHTML = '<span style="font-size:16px">Акция завершена!</span>';
+      return;
+    }
+    document.getElementById('h').textContent = pad(Math.floor(diff / 3600000));
+    document.getElementById('m').textContent = pad(Math.floor((diff % 3600000) / 60000));
+    document.getElementById('s').textContent = pad(Math.floor((diff % 60000) / 1000));
+  }
+
+  tick();
+  setInterval(tick, 1000);
+</script>
+</body>
+</html>

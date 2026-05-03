@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Метод: querySelectorAll</title>
+</head>
+<body>
+
+    <h2>Кредитный калькулятор (querySelectorAll)</h2>
+
+    <label>Сумма кредита:</label>
+    <input type="number" class="amount" placeholder="100000"><br><br>
+
+    <label>Процентная ставка (%):</label>
+    <input type="number" class="rate" placeholder="12"><br><br>
+
+    <label>Срок (месяцев):</label>
+    <input type="number" class="months" placeholder="24"><br><br>
+
+    <button class="calc">Рассчитать</button><br><br>
+
+    <label>Всего отдадите:</label>
+    <input type="text" class="result" readonly>
+
+    <script>
+        document.querySelectorAll('.calc')[0].addEventListener('click', function() {
+            let amount = document.querySelectorAll('.amount')[0].value;
+            let rate = document.querySelectorAll('.rate')[0].value;
+            let months = document.querySelectorAll('.months')[0].value;
+            let resultField = document.querySelectorAll('.result')[0];
+
+            if (amount === '' || rate === '' || months === '') {
+                resultField.value = 'Заполните все поля!';
+                return;
+            }
+            let total = amount * (1 + rate / 100 * months / 12);
+            resultField.value = total.toFixed(2) + ' руб.';
+        });
+    </script>
+
+</body>
+</html>

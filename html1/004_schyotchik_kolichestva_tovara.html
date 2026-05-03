@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>4. Счётчик количества товара</title>
+<style>
+  body { font-family: Arial, sans-serif; display: flex; justify-content: center; padding: 60px; }
+  .counter { display: flex; align-items: center; border: 1px solid #ddd; border-radius: 6px; overflow: hidden; }
+  .counter button {
+    width: 40px; height: 40px; border: none; background: #f5f5f5;
+    font-size: 20px; cursor: pointer; transition: background 0.2s;
+  }
+  .counter button:hover { background: #e0e0e0; }
+  .counter button:disabled { color: #ccc; cursor: default; }
+  .counter input {
+    width: 50px; height: 40px; border: none; border-left: 1px solid #ddd;
+    border-right: 1px solid #ddd; text-align: center; font-size: 16px; outline: none;
+  }
+  .info { margin-top: 14px; color: #666; font-size: 14px; }
+</style>
+</head>
+<body>
+<div>
+  <div class="counter">
+    <button id="btnMinus">−</button>
+    <input type="text" id="qty" value="1" readonly>
+    <button id="btnPlus">+</button>
+  </div>
+  <div class="info" id="info">Количество: 1</div>
+</div>
+<script>
+  const MIN = 1, MAX = 99;
+  const qty = document.getElementById('qty');
+  const btnMinus = document.getElementById('btnMinus');
+  const btnPlus  = document.getElementById('btnPlus');
+  const info = document.getElementById('info');
+
+  function update(val) {
+    qty.value = val;
+    btnMinus.disabled = val <= MIN;
+    btnPlus.disabled  = val >= MAX;
+    info.textContent  = 'Количество: ' + val;
+  }
+
+  btnMinus.addEventListener('click', () => update(Math.max(MIN, +qty.value - 1)));
+  btnPlus.addEventListener('click',  () => update(Math.min(MAX, +qty.value + 1)));
+  update(1);
+</script>
+</body>
+</html>

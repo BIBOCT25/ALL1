@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>89. Таймлайн заказа</title>
+<style>
+  * { box-sizing: border-box; margin: 0; }
+  body { font-family: Arial, sans-serif; padding: 40px; background: #f5f5f5; }
+  h2 { font-size: 20px; margin-bottom: 24px; }
+  .timeline { position: relative; max-width: 480px; padding-left: 48px; }
+  .timeline::before {
+    content: ''; position: absolute; left: 15px; top: 0; bottom: 0;
+    width: 2px; background: #e0e0e0;
+  }
+  .step { position: relative; margin-bottom: 28px; cursor: pointer; }
+  .step-dot {
+    position: absolute; left: -41px; top: 2px;
+    width: 28px; height: 28px; border-radius: 50%;
+    background: #e0e0e0; border: 3px solid #fff;
+    box-shadow: 0 0 0 2px #e0e0e0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; color: #aaa; transition: all 0.3s;
+  }
+  .step.done   .step-dot { background: #4CAF50; box-shadow: 0 0 0 2px #4CAF50; color: #fff; }
+  .step.active .step-dot { background: #1565C0; box-shadow: 0 0 0 2px #1565C0; color: #fff; animation: pulse 1.5s infinite; }
+  .step.active .step-title { color: #1565C0; font-weight: 700; }
+  @keyframes pulse { 0%,100%{box-shadow:0 0 0 2px #1565C0} 50%{box-shadow:0 0 0 5px rgba(21,101,192,.25)} }
+  .step-title { font-size: 15px; font-weight: 600; color: #333; margin-bottom: 3px; }
+  .step.done .step-title { color: #4CAF50; }
+  .step-sub   { font-size: 13px; color: #999; }
+  .step.done .step-sub { color: #aaa; }
+  .btn-row { display: flex; gap: 10px; margin-bottom: 20px; }
+  button { padding: 8px 18px; border: 1px solid #1565C0; border-radius: 6px; background: #fff; color: #1565C0; cursor: pointer; font-size: 13px; }
+  button:hover { background: #1565C0; color: #fff; }
+</style>
+</head>
+<body>
+<h2>Статус заказа #28341</h2>
+<div class="btn-row">
+  <button id="btnPrev">← Назад</button>
+  <button id="btnNext">Вперёд →</button>
+</div>
+<div class="timeline" id="timeline">
+  <div class="step done">
+    <div class="step-dot">✓</div>
+    <div class="step-title">Заказ оформлен</div>
+    <div class="step-sub">01.05.2026 · 10:14</div>
+  </div>
+  <div class="step done">
+    <div class="step-dot">✓</div>
+    <div class="step-title">Оплата получена</div>
+    <div class="step-sub">01.05.2026 · 10:16</div>
+  </div>
+  <div class="step active">
+    <div class="step-dot">📦</div>
+    <div class="step-title">Собирается на складе</div>
+    <div class="step-sub">Ожидаемая отправка: 02.05.2026</div>
+  </div>
+  <div class="step">
+    <div class="step-dot">🚚</div>
+    <div class="step-title">Передан в доставку</div>
+    <div class="step-sub">Курьерская служба СДЭК</div>
+  </div>
+  <div class="step">
+    <div class="step-dot">🏠</div>
+    <div class="step-title">Доставлен</div>
+    <div class="step-sub">Ожидаемая дата: 04.05.2026</div>
+  </div>
+</div>
+
+<script>
+  const steps = Array.from(document.querySelectorAll('.step'));
+  let current = steps.findIndex(s => s.classList.contains('active'));
+
+  function setStep(idx) {
+    steps.forEach((s, i) => {
+      s.classList.remove('active', 'done');
+      if (i < idx)  s.classList.add('done');
+      if (i === idx) s.classList.add('active');
+    });
+    current = idx;
+    // обновить иконки
+    steps.forEach((s, i) => {
+      const dot = s.querySelector('.step-dot');
+      if (i < idx)  dot.textContent = '✓';
+    });
+  }
+
+  document.getElementById('btnNext').addEventListener('click', () => {
+    if (current < steps.length - 1) setStep(current + 1);
+  });
+  document.getElementById('btnPrev').addEventListener('click', () => {
+    if (current > 0) setStep(current - 1);
+  });
+  steps.forEach((s, i) => s.addEventListener('click', () => setStep(i)));
+</script>
+</body>
+</html>

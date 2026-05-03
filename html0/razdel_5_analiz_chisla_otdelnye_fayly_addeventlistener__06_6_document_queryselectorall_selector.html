@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Метод: querySelectorAll</title>
+</head>
+<body>
+
+    <h2>Анализ числа (querySelectorAll)</h2>
+
+    <input type="number" class="numInput" placeholder="Введите число 1">
+    <input type="number" class="numInput" placeholder="Введите число 2">
+    <input type="number" class="numInput" placeholder="Введите число 3">
+    <input type="number" class="numInput" placeholder="Введите число 4">
+
+    <br><br>
+
+    <button class="analyzeBtn">Анализировать 4-е число</button>
+
+    <p class="result"></p>
+
+    <script>
+        document.querySelectorAll('.analyzeBtn')[0].addEventListener('click', function() {
+            let allInputs = document.querySelectorAll('.numInput');
+            let input = allInputs[3].value;
+            let num = Number(input);
+            let resultField = document.querySelectorAll('.result')[0];
+
+            if (input === '' || isNaN(num)) {
+                resultField.textContent = 'Ошибка: введите корректное число в 4-е поле!';
+                return;
+            }
+
+            let sign = '';
+            if (num > 0) {
+                sign = 'положительное';
+            } else if (num < 0) {
+                sign = 'отрицательное';
+            } else {
+                sign = 'нулевое';
+            }
+
+            let parity = (num % 2 === 0) ? 'чётное' : 'нечётное';
+
+            resultField.textContent = `Число ${num}: ${sign}, ${parity}.`;
+        });
+    </script>
+
+</body>
+</html>

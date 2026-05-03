@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>DOM-методы JS — учебные примеры</title>
+<style>
+/* ══════════════════════════════════════
+   CSS-переменные: ТЁМНАЯ тема (по умолч.)
+══════════════════════════════════════ */
+:root {
+  --bg:          #0d1117;
+  --text:        #e0e0e0;
+  --text-num:    #5588cc;
+  --header-bg:   linear-gradient(135deg,#0d2137,#0a3d62);
+  --header-bd:   #1a4a7a;
+  --header-sub:  #8ab;
+  --badge-bg:    #0066cc;
+  --search-bd:   #1a4a7a;
+  --search-bg:   #0d1f2e;
+  --search-ph:   #555;
+  --search-btn:  #0066cc;
+  --nav-bg:      rgba(255,255,255,.04);
+  --nav-hover:   rgba(255,255,255,.12);
+  --nav-text:    #e0e0e0;
+  --cat-bg:      #161b22;
+  --cat-count:   rgba(0,0,0,.3);
+  --card-bg:     #1c2230;
+  --card-bd:     #2a3248;
+  --card-hover-bd: #3a5080;
+  --card-shadow: rgba(0,0,0,.5);
+  --mark-color:  #f0a000;
+  --footer-bd:   #1a1a2e;
+  --footer-text: #444;
+  --footer-link: #4488bb;
+  --toggle-bg:   #1c2230;
+  --toggle-text: #e0e0e0;
+}
+
+/* ══════════════════════════════════════
+   CSS-переменные:  СВЕТЛАЯ тема
+══════════════════════════════════════ */
+body.light {
+  --bg:          #F7FAFC;
+  --text:        #1a2636;
+  --text-num:    #0066cc;
+  --header-bg:   linear-gradient(135deg,#ddeeff,#b8d8f8);
+  --header-bd:   #90c0e8;
+  --header-sub:  #3a5a78;
+  --badge-bg:    #0077dd;
+  --search-bd:   #90c0e8;
+  --search-bg:   #ffffff;
+  --search-ph:   #aaa;
+  --search-btn:  #0077dd;
+  --nav-bg:      rgba(0,119,221,.06);
+  --nav-hover:   rgba(0,119,221,.15);
+  --nav-text:    #1a2e46;
+  --cat-bg:      #ffffff;
+  --cat-count:   rgba(0,0,0,.10);
+  --card-bg:     #f0f7ff;
+  --card-bd:     #c8dff5;
+  --card-hover-bd: #0077dd;
+  --card-shadow: rgba(0,80,180,.10);
+  --mark-color:  #c05000;
+  --footer-bd:   #d0e4f5;
+  --footer-text: #778899;
+  --footer-link: #0066cc;
+  --toggle-bg:   #ddeeff;
+  --toggle-text: #1a2e46;
+}
+
+* { box-sizing: border-box; margin: 0; }
+body {
+  font-family: "Segoe UI", Arial, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  transition: background .3s, color .3s;
+}
+header {
+  background: var(--header-bg);
+  padding: 40px 24px 32px;
+  text-align: center;
+  border-bottom: 2px solid var(--header-bd);
+  position: relative;
+}
+header h1 { font-size: clamp(20px,4vw,38px); color: #fff; margin-bottom: 8px; }
+body.light header h1 { color: #0a2a4a; }
+header p  { color: var(--header-sub); font-size: 15px; }
+.badge {
+  display: inline-block; margin: 12px 4px 0;
+  background: var(--badge-bg); color: #fff;
+  padding: 5px 14px; border-radius: 20px; font-size: 13px; font-weight: bold;
+}
+/* ── Переключатель темы ── */
+.theme-toggle {
+  position: absolute; top: 16px; right: 20px;
+  padding: 7px 16px; border: none; border-radius: 20px;
+  background: var(--toggle-bg); color: var(--toggle-text);
+  font-size: 13px; font-weight: 600; cursor: pointer;
+  transition: background .2s, color .2s;
+  display: flex; align-items: center; gap: 6px;
+}
+.theme-toggle:hover { filter: brightness(1.08); }
+.search-bar {
+  max-width: 520px; margin: 24px auto 0; display: flex;
+}
+.search-bar input {
+  flex: 1; padding: 11px 16px; border: 1px solid var(--search-bd);
+  border-radius: 8px 0 0 8px; background: var(--search-bg);
+  color: var(--text); font-size: 14px; outline: none;
+  transition: background .3s, border-color .3s;
+}
+.search-bar input::placeholder { color: var(--search-ph); }
+.search-bar button {
+  padding: 11px 18px; background: var(--search-btn); color: #fff; border: none;
+  border-radius: 0 8px 8px 0; cursor: pointer; font-size: 14px;
+}
+.nav-cats {
+  display: flex; flex-wrap: wrap; gap: 8px;
+  max-width: 1100px; margin: 24px auto 0; padding: 0 20px;
+}
+.nav-item {
+  padding: 6px 14px; border: 2px solid; border-radius: 20px;
+  font-size: 12px; text-decoration: none; color: var(--nav-text);
+  background: var(--nav-bg); transition: background .2s;
+  max-width: 260px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.nav-item:hover { background: var(--nav-hover); }
+main {
+  max-width: 1100px; margin: 0 auto; padding: 20px;
+}
+.category {
+  margin-bottom: 36px; border-radius: 14px; overflow: hidden;
+  background: var(--cat-bg);
+  box-shadow: 0 2px 12px var(--card-shadow);
+  transition: background .3s;
+}
+.cat-header {
+  display: flex; align-items: center; gap: 14px;
+  padding: 16px 22px;
+}
+.cat-icon { font-size: 26px; }
+.cat-header h2 { font-size: 17px; color: #fff; flex: 1; }
+body.light .cat-header h2 { color: #fff; }
+.cat-count {
+  background: var(--cat-count); color: #fff;
+  font-size: 12px; padding: 3px 10px; border-radius: 12px;
+}
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 12px; padding: 16px;
+}
+.card {
+  background: var(--card-bg); border-radius: 10px; padding: 14px;
+  text-decoration: none; color: var(--text);
+  border: 1px solid var(--card-bd);
+  transition: transform .18s, box-shadow .18s, border-color .18s, background .3s;
+  display: flex; flex-direction: column; gap: 6px;
+}
+.card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px var(--card-shadow);
+  border-color: var(--card-hover-bd);
+}
+.card-num   { font-size: 11px; color: var(--text-num); font-weight: bold; }
+.card-title { font-size: 13px; font-weight: 600; line-height: 1.4; }
+.card-title mark { background: transparent; color: var(--mark-color); }
+.card.hidden { display: none; }
+.category.all-hidden { opacity: .3; }
+footer {
+  text-align: center; padding: 30px; color: var(--footer-text); font-size: 13px;
+  border-top: 1px solid var(--footer-bd);
+}
+footer a { color: var(--footer-link); text-decoration: none; }
+</style>
+</head>
+<body>
+<header>
+  <button class="theme-toggle" id="themeBtn" onclick="toggleTheme()">🌙 Тёмная</button>
+  <h1>📚 DOM-методы JavaScript</h1>
+  <p>Учебные примеры из readme.md — 6 методов × несколько задач</p>
+  <span class="badge">49 примеров</span>
+  <span class="badge">5 разделов</span>
+  <div class="search-bar">
+    <input type="text" id="searchInput" placeholder="Поиск: getElementById, querySelectorAll…">
+    <button onclick="doSearch()">🔍</button>
+  </div>
+</header>
+<nav class="nav-cats">
+  <a class="nav-item" href="#sec0" style="border-color:#FF6B6B">📄 Введение</a>
+<a class="nav-item" href="#sec1" style="border-color:#FF8E53">💳 Раздел 4: Кредитный калькулятор — отдельные файлы (addEventListener)</a>
+<a class="nav-item" href="#sec2" style="border-color:#FFC300">🔢 Раздел 5: Анализ числа — отдельные файлы (addEventListener)</a>
+<a class="nav-item" href="#sec3" style="border-color:#52C41A">💱 Раздел 6: Конвертер валют — отдельные файлы (addEventListener)</a>
+<a class="nav-item" href="#sec4" style="border-color:#13C2C2">⚡ Раздел 7: Сокращённые версии JS (стрелочные функции и тернарные операторы)</a>
+
+</nav>
+<main id="main">
+
+    <section class="category" id="sec0">
+      <div class="cat-header" style="background:#FF6B6B">
+        <span class="cat-icon">📄</span>
+        <h2>Введение</h2>
+        <span class="cat-count">25 файлов</span>
+      </div>
+      <div class="cards">
+          <a class="card" href="html0/vvedenie__01_1_document_getelementbyid_id.html" target="_blank">
+            <span class="card-num">#1</span>
+            <span class="card-title">1. document.<mark>getElementById</mark>(id)</span>
+          </a>
+          <a class="card" href="html0/vvedenie__02_primer.html" target="_blank">
+            <span class="card-num">#2</span>
+            <span class="card-title">Пример</span>
+          </a>
+          <a class="card" href="html0/vvedenie__03_document_getelementsbyclassname_classname.html" target="_blank">
+            <span class="card-num">#3</span>
+            <span class="card-title">document.<mark>getElementsByClassName</mark>(className)</span>
+          </a>
+          <a class="card" href="html0/vvedenie__04_document_getelementsbytagname_tagname.html" target="_blank">
+            <span class="card-num">#4</span>
+            <span class="card-title">document.<mark>getElementsByTagName</mark>(tagName)</span>
+          </a>
+          <a class="card" href="html0/vvedenie__05_document_queryselector_selector.html" target="_blank">
+            <span class="card-num">#5</span>
+            <span class="card-title">document.<mark>querySelector</mark>(selector)</span>
+          </a>
+          <a class="card" href="html0/vvedenie__06_document_queryselectorall_selector.html" target="_blank">
+            <span class="card-num">#6</span>
+            <span class="card-title">document.<mark>querySelectorAll</mark>(selector)</span>
+          </a>
+          <a class="card" href="html0/vvedenie__07_1_document_getelementbyid_id.html" target="_blank">
+            <span class="card-num">#7</span>
+            <span class="card-title">1. document.<mark>getElementById</mark>(id)</span>
+          </a>
+          <a class="card" href="html0/vvedenie__08_2_document_getelementsbyname_name.html" target="_blank">
+            <span class="card-num">#8</span>
+            <span class="card-title">2. document.<mark>getElementsByName</mark>(name)</span>
+          </a>
+          <a class="card" href="html0/vvedenie__09_3_document_getelementsbyclassname_classname.html" target="_blank">
+            <span class="card-num">#9</span>
+            <span class="card-title">3. document.<mark>getElementsByClassName</mark>(className)</span>
+          </a>
+          <a class="card" href="html0/vvedenie__10_4_document_getelementsbytagname_tagname.html" target="_blank">
+            <span class="card-num">#10</span>
+            <span class="card-title">4. document.<mark>getElementsByTagName</mark>(tagName)</span>
+          </a>
+          <a class="card" href="html0/vvedenie__11_5_document_queryselector_selector.html" target="_blank">
+            <span class="card-num">#11</span>
+            <span class="card-title">5. document.<mark>querySelector</mark>(selector)</span>
+          </a>
+          <a class="card" href="html0/vvedenie__12_6_document_queryselectorall_selector.html" target="_blank">
+            <span class="card-num">#12</span>
+            <span class="card-title">6. document.<mark>querySelectorAll</mark>(selector)</span>
+          </a>
+          <a class="card" href="html0/vvedenie__13_1_document_getelementbyid_lab1_getelementbyid_html.html" target="_blank">
+            <span class="card-num">#13</span>
+            <span class="card-title">1. document.<mark>getElementById</mark> — lab1_<mark>getElementById</mark>.html</span>
+          </a>
+          <a class="card" href="html0/vvedenie__14_2_document_getelementsbyname_lab1_getelementsbyname_html.html" target="_blank">
+            <span class="card-num">#14</span>
+            <span class="card-title">2. document.<mark>getElementsByName</mark> — lab1_<mark>getElementsByName</mark>.html</span>
+          </a>
+          <a class="card" href="html0/vvedenie__15_3_document_getelementsbyclassname_lab1_getelementsbyclassnam.html" target="_blank">
+            <span class="card-num">#15</span>
+            <span class="card-title">3. document.<mark>getElementsByClassName</mark> — lab1_<mark>getElementsByClassName</mark>.html</span>
+          </a>
+          <a class="card" href="html0/vvedenie__16_4_document_getelementsbytagname_lab1_getelementsbytagname_ht.html" target="_blank">
+            <span class="card-num">#16</span>
+            <span class="card-title">4. document.<mark>getElementsByTagName</mark> — lab1_<mark>getElementsByTagName</mark>.html</span>
+          </a>
+          <a class="card" href="html0/vvedenie__17_5_document_queryselector_lab1_queryselector_html.html" target="_blank">
+            <span class="card-num">#17</span>
+            <span class="card-title">5. document.<mark>querySelector</mark> — lab1_<mark>querySelector</mark>.html</span>
+          </a>
+          <a class="card" href="html0/vvedenie__18_6_document_queryselectorall_lab1_queryselectorall_html.html" target="_blank">
+            <span class="card-num">#18</span>
+            <span class="card-title">6. document.<mark>querySelectorAll</mark> — lab1_<mark>querySelectorAll</mark>.html</span>
+          </a>
+          <a class="card" href="html0/vvedenie__19_1_document_getelementbyid_lab1_getelementbyid_html.html" target="_blank">
+            <span class="card-num">#19</span>
+            <span class="card-title">1. document.<mark>getElementById</mark> — lab1_<mark>getElementById</mark>.html</span>
+          </a>
+          <a class="card" href="html0/vvedenie__20_2_document_getelementsbyname_lab1_getelementsbyname_html.html" target="_blank">
+            <span class="card-num">#20</span>
+            <span class="card-title">2. document.<mark>getElementsByName</mark> — lab1_<mark>getElementsByName</mark>.html</span>
+          </a>
+          <a class="card" href="html0/vvedenie__21_3_document_getelementsbyclassname_lab1_getelementsbyclassnam.html" target="_blank">
+            <span class="card-num">#21</span>
+            <span class="card-title">3. document.<mark>getElementsByClassName</mark> — lab1_<mark>getElementsByClassName</mark>.html</span>
+          </a>
+          <a class="card" href="html0/vvedenie__22_4_document_getelementsbytagname_lab1_getelementsbytagname_ht.html" target="_blank">
+            <span class="card-num">#22</span>
+            <span class="card-title">4. document.<mark>getElementsByTagName</mark> — lab1_<mark>getElementsByTagName</mark>.html</span>
+          </a>
+          <a class="card" href="html0/vvedenie__23_5_document_queryselector_lab1_queryselector_html.html" target="_blank">
+            <span class="card-num">#23</span>
+            <span class="card-title">5. document.<mark>querySelector</mark> — lab1_<mark>querySelector</mark>.html</span>
+          </a>
+          <a class="card" href="html0/vvedenie__24_6_document_queryselectorall_lab1_queryselectorall_html.html" target="_blank">
+            <span class="card-num">#24</span>
+            <span class="card-title">6. document.<mark>querySelectorAll</mark> — lab1_<mark>querySelectorAll</mark>.html</span>
+          </a>
+          <a class="card" href="html0/vvedenie__25_osnovnye_razlichiya_metodov.html" target="_blank">
+            <span class="card-num">#25</span>
+            <span class="card-title">Основные различия методов:</span>
+          </a>
+      </div>
+    </section>
+    <section class="category" id="sec1">
+      <div class="cat-header" style="background:#FF8E53">
+        <span class="cat-icon">💳</span>
+        <h2>Раздел 4: Кредитный калькулятор — отдельные файлы (addEventListener)</h2>
+        <span class="cat-count">6 файлов</span>
+      </div>
+      <div class="cards">
+          <a class="card" href="html0/razdel_4_kreditnyy_kalkulyator_otdelnye_fayly_addeventlisten__01_1_document_getelementbyid_id.html" target="_blank">
+            <span class="card-num">#1</span>
+            <span class="card-title">1. document.<mark>getElementById</mark>(id)</span>
+          </a>
+          <a class="card" href="html0/razdel_4_kreditnyy_kalkulyator_otdelnye_fayly_addeventlisten__02_2_document_getelementsbyname_name.html" target="_blank">
+            <span class="card-num">#2</span>
+            <span class="card-title">2. document.<mark>getElementsByName</mark>(name)</span>
+          </a>
+          <a class="card" href="html0/razdel_4_kreditnyy_kalkulyator_otdelnye_fayly_addeventlisten__03_3_document_getelementsbyclassname_classname.html" target="_blank">
+            <span class="card-num">#3</span>
+            <span class="card-title">3. document.<mark>getElementsByClassName</mark>(className)</span>
+          </a>
+          <a class="card" href="html0/razdel_4_kreditnyy_kalkulyator_otdelnye_fayly_addeventlisten__04_4_document_getelementsbytagname_tagname.html" target="_blank">
+            <span class="card-num">#4</span>
+            <span class="card-title">4. document.<mark>getElementsByTagName</mark>(tagName)</span>
+          </a>
+          <a class="card" href="html0/razdel_4_kreditnyy_kalkulyator_otdelnye_fayly_addeventlisten__05_5_document_queryselector_selector.html" target="_blank">
+            <span class="card-num">#5</span>
+            <span class="card-title">5. document.<mark>querySelector</mark>(selector)</span>
+          </a>
+          <a class="card" href="html0/razdel_4_kreditnyy_kalkulyator_otdelnye_fayly_addeventlisten__06_6_document_queryselectorall_selector.html" target="_blank">
+            <span class="card-num">#6</span>
+            <span class="card-title">6. document.<mark>querySelectorAll</mark>(selector)</span>
+          </a>
+      </div>
+    </section>
+    <section class="category" id="sec2">
+      <div class="cat-header" style="background:#FFC300">
+        <span class="cat-icon">🔢</span>
+        <h2>Раздел 5: Анализ числа — отдельные файлы (addEventListener)</h2>
+        <span class="cat-count">6 файлов</span>
+      </div>
+      <div class="cards">
+          <a class="card" href="html0/razdel_5_analiz_chisla_otdelnye_fayly_addeventlistener__01_1_document_getelementbyid_id.html" target="_blank">
+            <span class="card-num">#1</span>
+            <span class="card-title">1. document.<mark>getElementById</mark>(id)</span>
+          </a>
+          <a class="card" href="html0/razdel_5_analiz_chisla_otdelnye_fayly_addeventlistener__02_2_document_getelementsbyname_name.html" target="_blank">
+            <span class="card-num">#2</span>
+            <span class="card-title">2. document.<mark>getElementsByName</mark>(name)</span>
+          </a>
+          <a class="card" href="html0/razdel_5_analiz_chisla_otdelnye_fayly_addeventlistener__03_3_document_getelementsbyclassname_classname.html" target="_blank">
+            <span class="card-num">#3</span>
+            <span class="card-title">3. document.<mark>getElementsByClassName</mark>(className)</span>
+          </a>
+          <a class="card" href="html0/razdel_5_analiz_chisla_otdelnye_fayly_addeventlistener__04_4_document_getelementsbytagname_tagname.html" target="_blank">
+            <span class="card-num">#4</span>
+            <span class="card-title">4. document.<mark>getElementsByTagName</mark>(tagName)</span>
+          </a>
+          <a class="card" href="html0/razdel_5_analiz_chisla_otdelnye_fayly_addeventlistener__05_5_document_queryselector_selector.html" target="_blank">
+            <span class="card-num">#5</span>
+            <span class="card-title">5. document.<mark>querySelector</mark>(selector)</span>
+          </a>
+          <a class="card" href="html0/razdel_5_analiz_chisla_otdelnye_fayly_addeventlistener__06_6_document_queryselectorall_selector.html" target="_blank">
+            <span class="card-num">#6</span>
+            <span class="card-title">6. document.<mark>querySelectorAll</mark>(selector)</span>
+          </a>
+      </div>
+    </section>
+    <section class="category" id="sec3">
+      <div class="cat-header" style="background:#52C41A">
+        <span class="cat-icon">💱</span>
+        <h2>Раздел 6: Конвертер валют — отдельные файлы (addEventListener)</h2>
+        <span class="cat-count">6 файлов</span>
+      </div>
+      <div class="cards">
+          <a class="card" href="html0/razdel_6_konverter_valyut_otdelnye_fayly_addeventlistener__01_1_document_getelementbyid_id.html" target="_blank">
+            <span class="card-num">#1</span>
+            <span class="card-title">1. document.<mark>getElementById</mark>(id)</span>
+          </a>
+          <a class="card" href="html0/razdel_6_konverter_valyut_otdelnye_fayly_addeventlistener__02_2_document_getelementsbyname_name.html" target="_blank">
+            <span class="card-num">#2</span>
+            <span class="card-title">2. document.<mark>getElementsByName</mark>(name)</span>
+          </a>
+          <a class="card" href="html0/razdel_6_konverter_valyut_otdelnye_fayly_addeventlistener__03_3_document_getelementsbyclassname_classname.html" target="_blank">
+            <span class="card-num">#3</span>
+            <span class="card-title">3. document.<mark>getElementsByClassName</mark>(className)</span>
+          </a>
+          <a class="card" href="html0/razdel_6_konverter_valyut_otdelnye_fayly_addeventlistener__04_4_document_getelementsbytagname_tagname.html" target="_blank">
+            <span class="card-num">#4</span>
+            <span class="card-title">4. document.<mark>getElementsByTagName</mark>(tagName)</span>
+          </a>
+          <a class="card" href="html0/razdel_6_konverter_valyut_otdelnye_fayly_addeventlistener__05_5_document_queryselector_selector.html" target="_blank">
+            <span class="card-num">#5</span>
+            <span class="card-title">5. document.<mark>querySelector</mark>(selector)</span>
+          </a>
+          <a class="card" href="html0/razdel_6_konverter_valyut_otdelnye_fayly_addeventlistener__06_6_document_queryselectorall_selector.html" target="_blank">
+            <span class="card-num">#6</span>
+            <span class="card-title">6. document.<mark>querySelectorAll</mark>(selector)</span>
+          </a>
+      </div>
+    </section>
+    <section class="category" id="sec4">
+      <div class="cat-header" style="background:#13C2C2">
+        <span class="cat-icon">⚡</span>
+        <h2>Раздел 7: Сокращённые версии JS (стрелочные функции и тернарные операторы)</h2>
+        <span class="cat-count">6 файлов</span>
+      </div>
+      <div class="cards">
+          <a class="card" href="html0/razdel_7_sokrashchyonnye_versii_js_strelochnye_funktsii_i_te__01_1_document_getelementbyid_id_korotko.html" target="_blank">
+            <span class="card-num">#1</span>
+            <span class="card-title">1. document.<mark>getElementById</mark>(id) — коротко</span>
+          </a>
+          <a class="card" href="html0/razdel_7_sokrashchyonnye_versii_js_strelochnye_funktsii_i_te__02_2_document_getelementsbyname_name_korotko.html" target="_blank">
+            <span class="card-num">#2</span>
+            <span class="card-title">2. document.<mark>getElementsByName</mark>(name) — коротко</span>
+          </a>
+          <a class="card" href="html0/razdel_7_sokrashchyonnye_versii_js_strelochnye_funktsii_i_te__03_3_document_getelementsbyclassname_classname_korotko.html" target="_blank">
+            <span class="card-num">#3</span>
+            <span class="card-title">3. document.<mark>getElementsByClassName</mark>(className) — коротко</span>
+          </a>
+          <a class="card" href="html0/razdel_7_sokrashchyonnye_versii_js_strelochnye_funktsii_i_te__04_4_document_getelementsbytagname_tagname_korotko.html" target="_blank">
+            <span class="card-num">#4</span>
+            <span class="card-title">4. document.<mark>getElementsByTagName</mark>(tagName) — коротко</span>
+          </a>
+          <a class="card" href="html0/razdel_7_sokrashchyonnye_versii_js_strelochnye_funktsii_i_te__05_5_document_queryselector_selector_korotko.html" target="_blank">
+            <span class="card-num">#5</span>
+            <span class="card-title">5. document.<mark>querySelector</mark>(selector) — коротко</span>
+          </a>
+          <a class="card" href="html0/razdel_7_sokrashchyonnye_versii_js_strelochnye_funktsii_i_te__06_6_document_queryselectorall_selector_korotko.html" target="_blank">
+            <span class="card-num">#6</span>
+            <span class="card-title">6. document.<mark>querySelectorAll</mark>(selector) — коротко</span>
+          </a>
+      </div>
+    </section>
+</main>
+<footer>
+  Создано из <a href="readme.md">readme.md</a> &nbsp;|&nbsp;
+  <a href="index1.html">→ Интернет-магазин (readme1.md)</a>
+</footer>
+<script>
+  const searchInput = document.getElementById('searchInput');
+  searchInput.addEventListener('input', doSearch);
+
+  function doSearch() {
+    const q = searchInput.value.toLowerCase().trim();
+    document.querySelectorAll('.category').forEach(sec => {
+      let visible = 0;
+      sec.querySelectorAll('.card').forEach(card => {
+        const text = card.textContent.toLowerCase();
+        const show = !q || text.includes(q);
+        card.classList.toggle('hidden', !show);
+        if (show) visible++;
+      });
+      sec.classList.toggle('all-hidden', visible === 0);
+    });
+  }
+
+  document.querySelectorAll('.nav-item').forEach(a => {
+    a.addEventListener('click', e => {
+      e.preventDefault();
+      const target = document.querySelector(a.getAttribute('href'));
+      if (target) target.scrollIntoView({ behavior: 'smooth' });
+    });
+  });
+
+  // ── Переключатель тёмная / светлая ──
+  const btn = document.getElementById('themeBtn');
+  function applyTheme(t) {
+    document.body.classList.toggle('light', t === 'light');
+    btn.textContent = t === 'light' ? '🌙 Тёмная' : '☀️ Светлая';
+    localStorage.setItem('theme0', t);
+  }
+  function toggleTheme() {
+    applyTheme(document.body.classList.contains('light') ? 'dark' : 'light');
+  }
+  applyTheme(localStorage.getItem('theme0') || 'dark');
+</script>
+</body>
+</html>

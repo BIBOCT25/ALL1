@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>getElementsByClassName (коротко)</title>
+</head>
+<body>
+
+    <h2>Анализ числа (getElementsByClassName)</h2>
+
+    <input type="number" class="num" placeholder="Число 1">
+    <input type="number" class="num" placeholder="Число 2">
+    <input type="number" class="num" placeholder="Число 3">
+    <input type="number" class="num" placeholder="Число 4">
+
+    <br><br>
+
+    <button class="btn">Анализировать 4-е число</button>
+    <p class="out"></p>
+
+    <script>
+        const nums = document.getElementsByClassName('num');
+        const btn = document.getElementsByClassName('btn')[0];
+        const out = document.getElementsByClassName('out')[0];
+
+        btn.addEventListener('click', () => {
+            let n = +nums[3].value;
+            out.textContent = (nums[3].value === '' || isNaN(n))
+                ? 'Ошибка!'
+                : `Число ${n}: ${n > 0 ? 'положительное' : n < 0 ? 'отрицательное' : 'нулевое'}, ${n % 2 === 0 ? 'чётное' : 'нечётное'}.`;
+        });
+    </script>
+
+</body>
+</html>

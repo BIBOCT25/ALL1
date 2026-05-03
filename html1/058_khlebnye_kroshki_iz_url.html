@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>58. Хлебные крошки</title>
+<style>
+  body { font-family: Arial, sans-serif; padding: 40px; }
+  .breadcrumb { display: flex; align-items: center; flex-wrap: wrap; gap: 4px; font-size: 14px; color: #888; }
+  .breadcrumb a { color: #2196F3; text-decoration: none; }
+  .breadcrumb a:hover { text-decoration: underline; }
+  .breadcrumb .sep { color: #ccc; }
+  .breadcrumb .current { color: #333; font-weight: bold; }
+  .demo-btns { margin-top: 20px; display: flex; flex-wrap: wrap; gap: 8px; }
+  .demo-btns button {
+    padding: 8px 14px; border: 1px solid #ddd; border-radius: 6px;
+    background: #f5f5f5; cursor: pointer; font-size: 13px;
+  }
+  .demo-btns button:hover { background: #E3F2FD; border-color: #90CAF9; }
+  .demo-btns h4 { width: 100%; margin: 0 0 4px; font-size: 13px; color: #555; }
+</style>
+</head>
+<body>
+<div class="breadcrumb" id="breadcrumb"></div>
+
+<div class="demo-btns">
+  <h4>Симуляция путей:</h4>
+  <button onclick="buildBreadcrumb('/catalog')">Каталог</button>
+  <button onclick="buildBreadcrumb('/catalog/phones')">Каталог / Телефоны</button>
+  <button onclick="buildBreadcrumb('/catalog/phones/iphone-15')">Каталог / Телефоны / iPhone 15</button>
+  <button onclick="buildBreadcrumb('/sales/summer-2026')">Акции / Лето 2026</button>
+</div>
+
+<script>
+  const LABELS = {
+    catalog:       'Каталог',
+    phones:        'Телефоны',
+    'iphone-15':   'iPhone 15',
+    sales:         'Акции',
+    'summer-2026': 'Лето 2026',
+  };
+
+  function buildBreadcrumb(path) {
+    const parts   = path.split('/').filter(Boolean);
+    const crumbs  = document.getElementById('breadcrumb');
+    let   html    = '<a href="/">Главная</a>';
+    let   current = '';
+
+    parts.forEach((part, i) => {
+      current += '/' + part;
+      const label = LABELS[part] || decodeURIComponent(part);
+      html += '<span class="sep">›</span>';
+      if (i === parts.length - 1) {
+        html += `<span class="current">${label}</span>`;
+      } else {
+        html += `<a href="${current}">${label}</a>`;
+      }
+    });
+
+    crumbs.innerHTML = html;
+  }
+
+  buildBreadcrumb('/catalog/phones');
+</script>
+</body>
+</html>

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Метод: getElementsByClassName</title>
+</head>
+<body>
+
+    <h2>Конвертер валют (getElementsByClassName)</h2>
+
+    <label>Сумма в рублях:</label>
+    <input type="number" class="rubles" placeholder="1000"><br><br>
+
+    <label>Курс доллара (₽):</label>
+    <input type="number" class="exchangeRate" placeholder="90"><br><br>
+
+    <button class="convertBtn">Конвертировать</button><br><br>
+
+    <label>Сумма в долларах:</label>
+    <input type="text" class="dollars" readonly>
+
+    <script>
+        document.getElementsByClassName('convertBtn')[0].addEventListener('click', function() {
+            let rubles = document.getElementsByClassName('rubles')[0].value;
+            let rate = document.getElementsByClassName('exchangeRate')[0].value;
+            let resultField = document.getElementsByClassName('dollars')[0];
+
+            if (rubles === '' || rate === '' || Number(rate) <= 0) {
+                resultField.value = 'Заполните все поля корректно!';
+                return;
+            }
+
+            let dollars = rubles / rate;
+            resultField.value = '$' + dollars.toFixed(2);
+        });
+    </script>
+
+</body>
+</html>

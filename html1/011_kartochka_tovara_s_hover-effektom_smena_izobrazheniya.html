@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>11. Hover — смена изображения</title>
+<style>
+  body { font-family: Arial, sans-serif; display: flex; justify-content: center; padding: 40px; }
+  .card {
+    border: 1px solid #ddd; border-radius: 8px; overflow: hidden;
+    width: 220px; cursor: pointer;
+    transition: box-shadow 0.2s;
+  }
+  .card:hover { box-shadow: 0 4px 16px rgba(0,0,0,.15); }
+  .card img { width: 100%; height: 160px; object-fit: cover; transition: opacity 0.2s; }
+  .card-body { padding: 14px; }
+  .card-name { font-size: 15px; font-weight: bold; margin-bottom: 6px; }
+  .card-price { color: #e53935; font-size: 18px; }
+</style>
+</head>
+<body>
+<div class="card" id="card">
+  <img id="cardImg"
+    src="https://placehold.co/220x160/4FC3F7/fff?text=Вид+1"
+    data-hover="https://placehold.co/220x160/0288D1/fff?text=Вид+2"
+    data-default="https://placehold.co/220x160/4FC3F7/fff?text=Вид+1"
+    alt="Кроссовки">
+  <div class="card-body">
+    <div class="card-name">Кроссовки Nike</div>
+    <div class="card-price">4 990 ₽</div>
+  </div>
+</div>
+<script>
+  const card = document.getElementById('card');
+  const img  = document.getElementById('cardImg');
+
+  card.addEventListener('mouseenter', () => {
+    img.style.opacity = '0';
+    setTimeout(() => {
+      img.src = img.dataset.hover;
+      img.style.opacity = '1';
+    }, 150);
+  });
+
+  card.addEventListener('mouseleave', () => {
+    img.style.opacity = '0';
+    setTimeout(() => {
+      img.src = img.dataset.default;
+      img.style.opacity = '1';
+    }, 150);
+  });
+</script>
+</body>
+</html>

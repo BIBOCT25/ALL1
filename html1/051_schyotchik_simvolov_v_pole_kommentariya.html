@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>51. Счётчик символов</title>
+<style>
+  body { font-family: Arial, sans-serif; display: flex; justify-content: center; padding: 60px; }
+  .wrap { width: 360px; }
+  label { display: block; font-size: 14px; margin-bottom: 6px; color: #333; }
+  textarea {
+    width: 100%; padding: 10px 12px; border: 1px solid #ddd; border-radius: 6px;
+    font-size: 14px; resize: vertical; min-height: 100px; outline: none;
+    transition: border-color 0.2s; box-sizing: border-box;
+  }
+  textarea:focus { border-color: #2196F3; }
+  .counter-row { display: flex; justify-content: flex-end; margin-top: 4px; font-size: 12px; color: #888; }
+  .counter-row span { font-weight: bold; transition: color 0.2s; }
+  .btn-send {
+    margin-top: 12px; width: 100%; padding: 10px; background: #2196F3;
+    color: #fff; border: none; border-radius: 6px; cursor: pointer; font-size: 14px;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <label for="comment">Комментарий к заказу</label>
+  <textarea id="comment" placeholder="Например: домофон не работает, звонить по телефону..."></textarea>
+  <div class="counter-row">Осталось: <span id="cnt">200</span>&nbsp;символов</div>
+  <button class="btn-send" id="btnSend">Отправить</button>
+</div>
+<script>
+  const MAX   = 200;
+  const area  = document.getElementById('comment');
+  const cnt   = document.getElementById('cnt');
+  const btn   = document.getElementById('btnSend');
+
+  area.addEventListener('input', () => {
+    const left = MAX - area.value.length;
+    cnt.textContent  = Math.max(0, left);
+    cnt.style.color  = left <= 20 ? (left <= 0 ? '#e53935' : '#FF9800') : '#333';
+    // Не даём вводить больше MAX символов
+    if (area.value.length > MAX) area.value = area.value.slice(0, MAX);
+    btn.disabled = area.value.trim().length === 0;
+  });
+
+  btn.addEventListener('click', () => {
+    if (!area.value.trim()) return;
+    btn.textContent = '✓ Отправлено';
+    btn.disabled    = true;
+    area.disabled   = true;
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>80. Lazy load изображений</title>
+<style>
+  * { box-sizing: border-box; margin: 0; }
+  body { font-family: Arial, sans-serif; padding: 20px; background: #f5f5f5; }
+  h2 { font-size: 18px; margin-bottom: 16px; }
+  .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; max-width: 600px; }
+  .img-wrap {
+    position: relative; background: #e0e0e0; border-radius: 10px;
+    overflow: hidden; aspect-ratio: 4/3;
+  }
+  .img-wrap img {
+    width: 100%; height: 100%; object-fit: cover; display: block;
+    opacity: 0; transition: opacity 0.4s ease;
+  }
+  .img-wrap img.loaded { opacity: 1; }
+  .placeholder {
+    position: absolute; inset: 0; display: flex;
+    align-items: center; justify-content: center;
+    font-size: 28px; color: #bbb; transition: opacity 0.4s;
+  }
+  .img-wrap img.loaded + .placeholder,
+  .img-wrap.loaded .placeholder { opacity: 0; pointer-events: none; }
+  .hint { font-size: 13px; color: #888; margin-bottom: 12px; }
+</style>
+</head>
+<body>
+<h2>Каталог (прокрутите вниз)</h2>
+<p class="hint">Изображения загружаются только при появлении в области видимости</p>
+<div class="grid" id="grid"></div>
+
+<script>
+  const ITEMS = [
+    { color: '1565C0', label: 'Смартфоны' },
+    { color: '2E7D32', label: 'Ноутбуки'  },
+    { color: '6A1B9A', label: 'Планшеты'  },
+    { color: 'BF360C', label: 'Наушники'  },
+    { color: '00695C', label: 'Часы'       },
+    { color: '4527A0', label: 'Камеры'     },
+    { color: 'F57F17', label: 'ТВ'         },
+    { color: '880E4F', label: 'Игры'       },
+    { color: '1B5E20', label: 'Акции'      },
+  ];
+
+  const grid = document.getElementById('grid');
+  ITEMS.forEach(it => {
+    const wrap = document.createElement('div');
+    wrap.className = 'img-wrap';
+    wrap.innerHTML = `
+      <img data-src="https://placehold.co/400x300/${it.color}/ffffff?text=${encodeURIComponent(it.label)}" alt="${it.label}">
+      <div class="placeholder">🖼️</div>`;
+    grid.appendChild(wrap);
+  });
+
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (!entry.isIntersecting) return;
+      const img = entry.target.querySelector('img[data-src]');
+      if (!img) return;
+      img.src = img.dataset.src;
+      img.removeAttribute('data-src');
+      img.addEventListener('load', () => {
+        img.classList.add('loaded');
+        entry.target.classList.add('loaded');
+      });
+      observer.unobserve(entry.target);
+    });
+  }, { rootMargin: '80px' });
+
+  grid.querySelectorAll('.img-wrap').forEach(w => observer.observe(w));
+</script>
+</body>
+</html>

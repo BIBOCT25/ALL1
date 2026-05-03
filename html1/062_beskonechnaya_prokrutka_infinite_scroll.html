@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>62. Бесконечная прокрутка</title>
+<style>
+  * { box-sizing: border-box; }
+  body { font-family: Arial, sans-serif; padding: 20px; max-width: 480px; margin: 0 auto; }
+  h2 { font-size: 18px; margin-bottom: 16px; }
+  .card {
+    display: flex; align-items: center; gap: 14px; padding: 12px;
+    border: 1px solid #f0f0f0; border-radius: 8px; margin-bottom: 10px;
+    background: #fff;
+  }
+  .card-img { width: 52px; height: 52px; border-radius: 6px; flex-shrink: 0; }
+  .card-name  { font-size: 14px; font-weight: bold; }
+  .card-price { font-size: 13px; color: #2196F3; margin-top: 3px; }
+  #trigger { text-align: center; padding: 20px; color: #aaa; font-size: 13px; }
+  .spinner { display: inline-block; width: 20px; height: 20px; border: 2px solid #ddd; border-top-color: #2196F3; border-radius: 50%; animation: spin 0.7s linear infinite; vertical-align: middle; margin-right: 6px; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+<h2>Каталог</h2>
+<div id="productContainer"></div>
+<div id="trigger"><span class="spinner"></span> Загружаем...</div>
+
+<script>
+  const COLORS = ['E3F2FD','E8F5E9','FFF8E1','FCE4EC','EDE7F6'];
+  const NAMES  = ['Смартфон','Ноутбук','Наушники','Планшет','Колонка'];
+  let nextId   = 1;
+  let loading  = false;
+
+  function createItem(id) {
+    const name  = NAMES[id % NAMES.length] + ' ' + id;
+    const color = COLORS[id % COLORS.length];
+    const price = (id * 890 + 1990).toLocaleString('ru-RU');
+    const card  = document.createElement('div');
+    card.className = 'card';
+    card.innerHTML = `
+      <img class="card-img" src="https://placehold.co/52x52/${color}/333?text=${id}" alt="">
+      <div>
+        <div class="card-name">${name}</div>
+        <div class="card-price">${price} ₽</div>
+      </div>`;
+    return card;
+  }
+
+  function loadMore() {
+    if (loading || nextId > 40) {
+      if (nextId > 40) document.getElementById('trigger').textContent = 'Все товары загружены';
+      return;
+    }
+    loading = true;
+    // Имитация задержки сети
+    setTimeout(() => {
+      const container = document.getElementById('productContainer');
+      for (let i = 0; i < 6; i++) container.appendChild(createItem(nextId++));
+      loading = false;
+    }, 600);
+  }
+
+  const observer = new IntersectionObserver(entries => {
+    if (entries[0].isIntersecting) loadMore();
+  }, { rootMargin: '100px' });
+
+  observer.observe(document.getElementById('trigger'));
+</script>
+</body>
+</html>

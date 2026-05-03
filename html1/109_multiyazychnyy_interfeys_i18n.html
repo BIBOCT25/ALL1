@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>109. Мультиязычность</title>
+<style>
+  * { box-sizing: border-box; margin: 0; }
+  body { font-family: Arial, sans-serif; padding: 36px; background: #f5f5f5; }
+  .lang-bar { display: flex; gap: 8px; margin-bottom: 28px; }
+  .lang-btn {
+    padding: 7px 16px; border: 1px solid #ccc; border-radius: 20px;
+    background: #fff; cursor: pointer; font-size: 13px; font-weight: bold;
+    transition: all 0.2s;
+  }
+  .lang-btn.active { background: #1565C0; color: #fff; border-color: #1565C0; }
+  .lang-btn:hover:not(.active) { border-color: #1565C0; color: #1565C0; }
+  .hero { background: #1565C0; color: #fff; border-radius: 14px; padding: 28px; margin-bottom: 20px; max-width: 480px; }
+  .hero h1 { font-size: 24px; margin-bottom: 8px; }
+  .hero p  { font-size: 14px; opacity: 0.85; line-height: 1.6; margin-bottom: 18px; }
+  .btn-hero { padding: 11px 24px; background: #fff; color: #1565C0; border: none; border-radius: 8px; font-size: 14px; font-weight: bold; cursor: pointer; }
+  .features { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; max-width: 480px; }
+  .feat { background: #fff; border-radius: 10px; padding: 14px; }
+  .feat-icon { font-size: 24px; margin-bottom: 6px; }
+  .feat-title { font-size: 13px; font-weight: bold; margin-bottom: 4px; }
+  .feat-desc  { font-size: 12px; color: #888; line-height: 1.5; }
+</style>
+</head>
+<body>
+
+<div class="lang-bar" id="langBar"></div>
+
+<div class="hero">
+  <h1 data-i18n="hero_title">Добро пожаловать!</h1>
+  <p  data-i18n="hero_desc">Лучший интернет-магазин электроники с доставкой по всей России.</p>
+  <button class="btn-hero" data-i18n="hero_btn">Перейти в каталог</button>
+</div>
+<div class="features">
+  <div class="feat"><div class="feat-icon">🚚</div><div class="feat-title" data-i18n="f1_title">Доставка</div><div class="feat-desc" data-i18n="f1_desc">Быстро по всей стране</div></div>
+  <div class="feat"><div class="feat-icon">💳</div><div class="feat-title" data-i18n="f2_title">Оплата</div><div class="feat-desc" data-i18n="f2_desc">Любым удобным способом</div></div>
+  <div class="feat"><div class="feat-icon">🔒</div><div class="feat-title" data-i18n="f3_title">Гарантия</div><div class="feat-desc" data-i18n="f3_desc">1 год на все товары</div></div>
+</div>
+
+<script>
+  const LANGS = {
+    ru: {
+      label: '🇷🇺 RU',
+      hero_title: 'Добро пожаловать!',
+      hero_desc:  'Лучший интернет-магазин электроники с доставкой по всей России.',
+      hero_btn:   'Перейти в каталог',
+      f1_title: 'Доставка',    f1_desc: 'Быстро по всей стране',
+      f2_title: 'Оплата',      f2_desc: 'Любым удобным способом',
+      f3_title: 'Гарантия',    f3_desc: '1 год на все товары',
+    },
+    en: {
+      label: '🇬🇧 EN',
+      hero_title: 'Welcome!',
+      hero_desc:  'The best online electronics store with delivery across Russia.',
+      hero_btn:   'Go to catalog',
+      f1_title: 'Delivery',    f1_desc: 'Fast across the country',
+      f2_title: 'Payment',     f2_desc: 'Any convenient method',
+      f3_title: 'Warranty',    f3_desc: '1 year on all goods',
+    },
+    zh: {
+      label: '🇨🇳 ZH',
+      hero_title: '欢迎光临！',
+      hero_desc:  '俄罗斯最好的电子产品网上商店，全国配送。',
+      hero_btn:   '前往商品目录',
+      f1_title: '快递',        f1_desc: '全国快速配送',
+      f2_title: '支付',        f2_desc: '多种支付方式',
+      f3_title: '保修',        f3_desc: '所有商品保修1年',
+    },
+    ar: {
+      label: '🇸🇦 AR',
+      hero_title: 'مرحبًا بكم!',
+      hero_desc:  'أفضل متجر إلكتروني للإلكترونيات مع توصيل عبر روسيا.',
+      hero_btn:   'الذهاب إلى الكتالوج',
+      f1_title: 'التوصيل',    f1_desc: 'سريع في جميع أنحاء البلاد',
+      f2_title: 'الدفع',      f2_desc: 'بأي طريقة مريحة',
+      f3_title: 'الضمان',     f3_desc: 'سنة واحدة على جميع البضائع',
+    },
+  };
+
+  let current = localStorage.getItem('lang') || 'ru';
+
+  function applyLang(lang) {
+    current = lang;
+    localStorage.setItem('lang', lang);
+    const t = LANGS[lang];
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+      const key = el.dataset.i18n;
+      if (t[key]) el.textContent = t[key];
+    });
+    document.documentElement.lang = lang;
+    document.documentElement.dir  = lang === 'ar' ? 'rtl' : 'ltr';
+    document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.toggle('active', btn.dataset.lang === lang));
+  }
+
+  // Кнопки языков
+  document.getElementById('langBar').innerHTML = Object.entries(LANGS).map(([code, v]) =>
+    `<button class="lang-btn" data-lang="${code}">${v.label}</button>`).join('');
+  document.querySelectorAll('.lang-btn').forEach(btn =>
+    btn.addEventListener('click', () => applyLang(btn.dataset.lang)));
+
+  applyLang(current);
+</script>
+</body>
+</html>

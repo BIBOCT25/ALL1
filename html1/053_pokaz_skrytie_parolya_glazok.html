@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>53. Показ пароля</title>
+<style>
+  body { font-family: Arial, sans-serif; display: flex; justify-content: center; padding: 60px; }
+  .wrap { width: 320px; }
+  label { display: block; font-size: 14px; margin-bottom: 6px; color: #333; }
+  .input-row { position: relative; }
+  input {
+    width: 100%; padding: 10px 44px 10px 12px; border: 1px solid #ddd;
+    border-radius: 6px; font-size: 15px; outline: none;
+    box-sizing: border-box; transition: border-color 0.2s;
+  }
+  input:focus { border-color: #2196F3; }
+  .eye-btn {
+    position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
+    background: none; border: none; cursor: pointer; font-size: 20px;
+    color: #aaa; padding: 0; line-height: 1; transition: color 0.2s;
+  }
+  .eye-btn:hover { color: #2196F3; }
+  .hint { font-size: 12px; color: #bbb; margin-top: 6px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <label for="pwField">Пароль</label>
+  <div class="input-row">
+    <input type="password" id="pwField" placeholder="Введите пароль" value="SuperSecret123">
+    <button class="eye-btn" id="eyeBtn" title="Показать/скрыть пароль">🙈</button>
+  </div>
+  <div class="hint" id="hint">Пароль скрыт</div>
+</div>
+<script>
+  const pwField = document.getElementById('pwField');
+  const eyeBtn  = document.getElementById('eyeBtn');
+  const hint    = document.getElementById('hint');
+  let visible   = false;
+
+  eyeBtn.addEventListener('click', () => {
+    visible       = !visible;
+    pwField.type  = visible ? 'text' : 'password';
+    eyeBtn.textContent = visible ? '👁' : '🙈';
+    hint.textContent   = visible ? 'Пароль виден' : 'Пароль скрыт';
+    hint.style.color   = visible ? '#2196F3' : '#bbb';
+    // Возвращаем фокус в поле
+    pwField.focus();
+  });
+</script>
+</body>
+</html>

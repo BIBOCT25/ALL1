@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>48. Сила пароля</title>
+<style>
+  body { font-family: Arial, sans-serif; display: flex; justify-content: center; padding: 60px; }
+  .wrap { width: 320px; }
+  label { display: block; font-size: 14px; margin-bottom: 6px; }
+  .input-wrap { position: relative; }
+  input[type=password] {
+    width: 100%; padding: 10px 40px 10px 12px; border: 1px solid #ddd;
+    border-radius: 6px; font-size: 15px; outline: none; box-sizing: border-box;
+  }
+  .toggle-pw {
+    position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
+    background: none; border: none; cursor: pointer; font-size: 18px; color: #aaa;
+  }
+  .strength-bar { display: flex; gap: 4px; margin-top: 8px; }
+  .bar-seg { flex: 1; height: 5px; border-radius: 3px; background: #eee; transition: background 0.3s; }
+  .strength-label { font-size: 12px; color: #888; margin-top: 5px; }
+  .tips { font-size: 12px; color: #aaa; margin-top: 8px; line-height: 1.6; }
+  .tip.ok { color: #4CAF50; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <label>Придумайте пароль</label>
+  <div class="input-wrap">
+    <input type="password" id="pw" placeholder="Введите пароль" autocomplete="new-password">
+    <button class="toggle-pw" id="togglePw" tabindex="-1">👁</button>
+  </div>
+  <div class="strength-bar">
+    <div class="bar-seg" id="s1"></div>
+    <div class="bar-seg" id="s2"></div>
+    <div class="bar-seg" id="s3"></div>
+    <div class="bar-seg" id="s4"></div>
+  </div>
+  <div class="strength-label" id="strengthLabel"></div>
+  <div class="tips" id="tips"></div>
+</div>
+<script>
+  const pw    = document.getElementById('pw');
+  const label = document.getElementById('strengthLabel');
+  const segs  = [1,2,3,4].map(i => document.getElementById('s' + i));
+  const tips  = document.getElementById('tips');
+
+  const LEVELS = [
+    { color: '#e53935', text: 'Очень слабый' },
+    { color: '#FF9800', text: 'Слабый'       },
+    { color: '#FFC107', text: 'Средний'      },
+    { color: '#4CAF50', text: 'Сильный'      },
+  ];
+
+  pw.addEventListener('input', () => {
+    const v = pw.value;
+    const checks = [
+      v.length >= 8,
+      /[A-ZА-ЯЁ]/.test(v),
+      /[0-9]/.test(v),
+      /[^A-Za-zА-Яа-яЁёёё0-9]/.test(v),
+    ];
+    const score = checks.filter(Boolean).length; // 0–4
+
+    segs.forEach((seg, i) => {
+      seg.style.background = i < score ? LEVELS[score - 1].color : '#eee';
+    });
+
+    label.textContent  = v.length ? LEVELS[score - 1].text : '';
+    label.style.color  = score ? LEVELS[score - 1].color : '#888';
+
+    const tipTexts = ['≥ 8 символов', 'Заглавная буква', 'Цифра', 'Спецсимвол'];
+    tips.innerHTML = tipTexts.map((t, i) =>
+      `<span class="tip ${checks[i] ? 'ok' : ''}">${checks[i] ? '✓' : '○'} ${t}</span><br>`
+    ).join('');
+  });
+
+  let shown = false;
+  document.getElementById('togglePw').addEventListener('click', () => {
+    shown = !shown;
+    pw.type = shown ? 'text' : 'password';
+  });
+</script>
+</body>
+</html>

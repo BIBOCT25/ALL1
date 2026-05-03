@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>34. Удаление из корзины</title>
+<style>
+  body { font-family: Arial, sans-serif; padding: 30px; max-width: 420px; margin: 0 auto; }
+  h2 { font-size: 18px; margin-bottom: 14px; }
+  .cart-item {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 10px 0; border-bottom: 1px solid #eee;
+  }
+  .item-info .name  { font-size: 14px; font-weight: bold; }
+  .item-info .price { font-size: 13px; color: #e53935; }
+  .btn-del {
+    background: none; border: none; color: #aaa; font-size: 20px;
+    cursor: pointer; padding: 0 4px; transition: color 0.15s;
+  }
+  .btn-del:hover { color: #e53935; }
+  .total-row { margin-top: 14px; font-size: 16px; font-weight: bold; }
+  .empty-msg { color: #999; font-size: 14px; margin-top: 12px; }
+</style>
+</head>
+<body>
+<h2>Корзина</h2>
+<div id="cartEl"></div>
+<div class="empty-msg" id="emptyMsg" style="display:none;">Корзина пуста</div>
+<div class="total-row" id="totalRow">Итого: <span id="total">0</span> ₽</div>
+
+<script>
+  let cart = [
+    { id: 1, name: 'Кроссовки Nike',  price: 4990 },
+    { id: 2, name: 'Куртка Adidas',   price: 6990 },
+    { id: 3, name: 'Шапка UA',        price: 890  },
+  ];
+
+  const cartEl   = document.getElementById('cartEl');
+  const totalEl  = document.getElementById('total');
+  const emptyMsg = document.getElementById('emptyMsg');
+  const totalRow = document.getElementById('totalRow');
+
+  function render() {
+    cartEl.innerHTML = cart.map(it => `
+      <div class="cart-item" data-id="${it.id}">
+        <div class="item-info">
+          <div class="name">${it.name}</div>
+          <div class="price">${it.price.toLocaleString('ru')} ₽</div>
+        </div>
+        <button class="btn-del" data-id="${it.id}" title="Удалить">✕</button>
+      </div>`).join('');
+
+    const sum = cart.reduce((s, it) => s + it.price, 0);
+    totalEl.textContent = sum.toLocaleString('ru');
+    emptyMsg.style.display = cart.length ? 'none' : 'block';
+    totalRow.style.display  = cart.length ? 'block' : 'none';
+  }
+
+  cartEl.addEventListener('click', e => {
+    const btn = e.target.closest('.btn-del');
+    if (!btn) return;
+    cart = cart.filter(it => it.id !== +btn.dataset.id);
+    render();
+  });
+
+  render();
+</script>
+</body>
+</html>

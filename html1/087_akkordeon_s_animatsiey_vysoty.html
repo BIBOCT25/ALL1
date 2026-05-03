@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>87. Аккордеон с анимацией</title>
+<style>
+  * { box-sizing: border-box; margin: 0; }
+  body { font-family: Arial, sans-serif; padding: 40px; background: #f0f4ff; }
+  h2 { font-size: 20px; margin-bottom: 24px; color: #1a237e; }
+  .accordion { max-width: 560px; }
+  .acc-item { background: #fff; border-radius: 12px; margin-bottom: 10px; overflow: hidden; }
+  .acc-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 16px 20px; cursor: pointer; font-size: 15px; font-weight: 600;
+    color: #212121; user-select: none;
+  }
+  .acc-header:hover { background: #f5f5f5; }
+  .acc-icon {
+    width: 26px; height: 26px; border-radius: 50%; background: #E3F2FD;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; color: #1565C0; transition: transform 0.3s, background 0.3s;
+    flex-shrink: 0;
+  }
+  .acc-item.open .acc-icon { transform: rotate(180deg); background: #1565C0; color: #fff; }
+  .acc-body {
+    max-height: 0; overflow: hidden;
+    transition: max-height 0.35s ease;
+  }
+  .acc-body-inner {
+    padding: 0 20px 18px; font-size: 14px; color: #555;
+    line-height: 1.75; border-top: 1px solid #f0f0f0;
+  }
+</style>
+</head>
+<body>
+<h2>О доставке и оплате</h2>
+<div class="accordion" id="accordion">
+  <div class="acc-item">
+    <div class="acc-header">
+      <span>Сроки доставки по России</span>
+      <div class="acc-icon">▾</div>
+    </div>
+    <div class="acc-body">
+      <div class="acc-body-inner">По Москве и МО — 1–2 дня. По регионам — 3–7 рабочих дней. Отслеживание через личный кабинет или по SMS с трек-номером.</div>
+    </div>
+  </div>
+  <div class="acc-item">
+    <div class="acc-header">
+      <span>Стоимость доставки</span>
+      <div class="acc-icon">▾</div>
+    </div>
+    <div class="acc-body">
+      <div class="acc-body-inner">Бесплатно при заказе от 3 000 ₽. При заказе до 3 000 ₽ стоимость доставки — 299 ₽. Экспресс-доставка (на следующий день) — 499 ₽.</div>
+    </div>
+  </div>
+  <div class="acc-item">
+    <div class="acc-header">
+      <span>Способы оплаты</span>
+      <div class="acc-icon">▾</div>
+    </div>
+    <div class="acc-body">
+      <div class="acc-body-inner">Онлайн: карты Visa, MasterCard, МИР; СБП (без комиссии); ЮMoney. При получении: наличные или карта курьеру.</div>
+    </div>
+  </div>
+  <div class="acc-item">
+    <div class="acc-header">
+      <span>Рассрочка и кредит</span>
+      <div class="acc-icon">▾</div>
+    </div>
+    <div class="acc-body">
+      <div class="acc-body-inner">Рассрочка 0–0–12 доступна на все товары от 5 000 ₽. Кредит оформляется прямо на сайте за 5 минут — решение сразу.</div>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.querySelectorAll('.acc-header').forEach(header => {
+    header.addEventListener('click', () => {
+      const item = header.parentElement;
+      const body = item.querySelector('.acc-body');
+      const isOpen = item.classList.contains('open');
+
+      // Закрыть все
+      document.querySelectorAll('.acc-item.open').forEach(other => {
+        other.classList.remove('open');
+        other.querySelector('.acc-body').style.maxHeight = '0';
+      });
+
+      // Открыть текущий, если был закрыт
+      if (!isOpen) {
+        item.classList.add('open');
+        body.style.maxHeight = body.scrollHeight + 'px';
+      }
+    });
+  });
+</script>
+</body>
+</html>

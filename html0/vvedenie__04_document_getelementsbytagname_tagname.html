@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>getElementsByTagName</title>
+</head>
+<body>
+
+    <input type="text" value="первый">
+    <input type="text" value="второй">
+    <input type="text" value="третий">
+    <input type="text" value="четвёртый">
+
+    <br><br>
+
+    <a>первый</a><br>
+    <a>второй</a><br>
+    <a>третий</a><br>
+    <a>четвёртый</a>
+
+    <script>
+        document.getElementsByTagName('input')[3].style.color = 'yellow';
+        document.getElementsByTagName('a')[3].style.color = 'yellow';
+    </script>
+
+</body>
+</html>

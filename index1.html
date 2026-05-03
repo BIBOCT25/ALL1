@@ -1,0 +1,914 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>JS-фишки для интернет-магазина — 110 примеров</title>
+<style>
+/* ══════════════════════════════════════
+   CSS-переменные: ТЁМНАЯ тема (по умолч.)
+══════════════════════════════════════ */
+:root {
+  --bg:          #0f0f1a;
+  --text:        #e0e0e0;
+  --text-muted:  #888;
+  --text-num:    #6c8ebf;
+  --header-bg:   linear-gradient(135deg,#1a1a3e,#2d2d6b);
+  --header-bd:   #3a3a7c;
+  --header-sub:  #aab;
+  --badge-bg:    #2563eb;
+  --search-bd:   #3a3a7c;
+  --search-bg:   #1a1a38;
+  --search-ph:   #666;
+  --search-btn:  #2563eb;
+  --nav-bg:      rgba(255,255,255,.05);
+  --nav-hover:   rgba(255,255,255,.15);
+  --nav-text:    #e0e0e0;
+  --cat-bg:      #1a1a30;
+  --cat-count:   rgba(0,0,0,.28);
+  --card-bg:     #22223a;
+  --card-bd:     #2e2e50;
+  --card-hover-bd: #4a4a90;
+  --card-shadow: rgba(0,0,0,.4);
+  --footer-bd:   #222;
+  --footer-text: #555;
+  --footer-link: #5588cc;
+  --toggle-bg:   #2e2e50;
+  --toggle-text: #e0e0e0;
+}
+
+/* ══════════════════════════════════════
+   CSS-переменные: МОЛОЧНАЯ / СВЕТЛАЯ тема
+══════════════════════════════════════ */
+body.light {
+  --bg:          #FDFCF7;
+  --text:        #1a1a2e;
+  --text-muted:  #7a7a8c;
+  --text-num:    #2563eb;
+  --header-bg:   linear-gradient(135deg,#e8e4f8,#cfc8f0);
+  --header-bd:   #c0b8e0;
+  --header-sub:  #5a5070;
+  --badge-bg:    #4f46e5;
+  --search-bd:   #c0b8e0;
+  --search-bg:   #ffffff;
+  --search-ph:   #aaa;
+  --search-btn:  #4f46e5;
+  --nav-bg:      rgba(79,70,229,.07);
+  --nav-hover:   rgba(79,70,229,.16);
+  --nav-text:    #2a2050;
+  --cat-bg:      #ffffff;
+  --cat-count:   rgba(0,0,0,.10);
+  --card-bg:     #faf9ff;
+  --card-bd:     #ddd8f5;
+  --card-hover-bd: #7c6fcd;
+  --card-shadow: rgba(79,70,229,.12);
+  --footer-bd:   #e0daf5;
+  --footer-text: #888;
+  --footer-link: #4f46e5;
+  --toggle-bg:   #e8e4f8;
+  --toggle-text: #2a2050;
+}
+
+* { box-sizing: border-box; margin: 0; }
+body {
+  font-family: "Segoe UI", Arial, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  transition: background .3s, color .3s;
+}
+header {
+  background: var(--header-bg);
+  padding: 40px 24px 32px;
+  text-align: center;
+  border-bottom: 2px solid var(--header-bd);
+  position: relative;
+}
+header h1 { font-size: clamp(22px,4vw,40px); color: #fff; margin-bottom: 8px; }
+body.light header h1 { color: #2a1d6e; }
+header p  { color: var(--header-sub); font-size: 15px; }
+.badge {
+  display: inline-block; margin: 12px 4px 0;
+  background: var(--badge-bg); color: #fff;
+  padding: 5px 14px; border-radius: 20px; font-size: 13px; font-weight: bold;
+}
+/* ── Переключатель темы ── */
+.theme-toggle {
+  position: absolute; top: 16px; right: 20px;
+  padding: 7px 16px; border: none; border-radius: 20px;
+  background: var(--toggle-bg); color: var(--toggle-text);
+  font-size: 13px; font-weight: 600; cursor: pointer;
+  transition: background .2s, color .2s;
+  display: flex; align-items: center; gap: 6px;
+}
+.theme-toggle:hover { filter: brightness(1.1); }
+/* ── Поиск ── */
+.search-bar {
+  max-width: 520px; margin: 24px auto 0; display: flex;
+}
+.search-bar input {
+  flex: 1; padding: 11px 16px; border: 1px solid var(--search-bd);
+  border-radius: 8px 0 0 8px; background: var(--search-bg);
+  color: var(--text); font-size: 14px; outline: none;
+  transition: background .3s, border-color .3s;
+}
+.search-bar input::placeholder { color: var(--search-ph); }
+.search-bar button {
+  padding: 11px 18px; background: var(--search-btn); color: #fff; border: none;
+  border-radius: 0 8px 8px 0; cursor: pointer; font-size: 14px;
+}
+/* ── Навигация по категориям ── */
+.nav-cats {
+  display: flex; flex-wrap: wrap; gap: 8px;
+  max-width: 1100px; margin: 24px auto 0; padding: 0 20px;
+}
+.nav-item {
+  padding: 6px 14px; border: 2px solid; border-radius: 20px;
+  font-size: 13px; text-decoration: none; color: var(--nav-text);
+  background: var(--nav-bg); transition: background .2s;
+}
+.nav-item:hover { background: var(--nav-hover); }
+main {
+  max-width: 1100px; margin: 0 auto; padding: 20px;
+}
+/* ── Категории ── */
+.category {
+  margin-bottom: 36px; border-radius: 14px; overflow: hidden;
+  background: var(--cat-bg);
+  box-shadow: 0 2px 12px var(--card-shadow);
+  transition: background .3s;
+}
+.cat-header {
+  display: flex; align-items: center; gap: 14px;
+  padding: 16px 22px;
+}
+.cat-icon { font-size: 26px; }
+.cat-header h2 { font-size: 18px; color: #fff; flex: 1; }
+body.light .cat-header h2 { color: #fff; }
+.cat-count {
+  background: var(--cat-count); color: #fff;
+  font-size: 12px; padding: 3px 10px; border-radius: 12px;
+}
+/* ── Карточки примеров ── */
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 12px; padding: 16px;
+}
+.card {
+  background: var(--card-bg); border-radius: 10px; padding: 14px;
+  text-decoration: none; color: var(--text);
+  border: 1px solid var(--card-bd);
+  transition: transform .18s, box-shadow .18s, border-color .18s, background .3s;
+  display: flex; flex-direction: column; gap: 6px;
+}
+.card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px var(--card-shadow);
+  border-color: var(--card-hover-bd);
+}
+.card-num  { font-size: 11px; color: var(--text-num); font-weight: bold; }
+.card-title { font-size: 13px; font-weight: 700; line-height: 1.35; }
+.card-desc  { font-size: 11px; color: var(--text-muted); line-height: 1.5; margin-top: 2px; }
+.card.hidden { display: none; }
+.category.all-hidden { opacity: .3; }
+footer {
+  text-align: center; padding: 30px; color: var(--footer-text); font-size: 13px;
+  border-top: 1px solid var(--footer-bd);
+}
+footer a { color: var(--footer-link); text-decoration: none; }
+</style>
+</head>
+<body>
+<header>
+  <button class="theme-toggle" id="themeBtn" onclick="toggleTheme()">🌙 Тёмная</button>
+  <h1>🛒 JS-фишки для интернет-магазина</h1>
+  <p>110 самодостаточных мини-примеров — HTML + CSS + JS без фреймворков</p>
+  <span class="badge">110 примеров</span>
+  <span class="badge">12 категорий</span>
+  <div class="search-bar">
+    <input type="text" id="searchInput" placeholder="Поиск по названию или описанию…">
+    <button onclick="doSearch()">🔍</button>
+  </div>
+</header>
+<nav class="nav-cats">
+  <a class="nav-item" href="#cat0" style="border-color:#FF6B6B">🔘 Кнопки и товары</a>
+<a class="nav-item" href="#cat1" style="border-color:#FF8E53">🃏 Карточки товаров</a>
+<a class="nav-item" href="#cat2" style="border-color:#FFC300">🔍 Фильтры и сортировка</a>
+<a class="nav-item" href="#cat3" style="border-color:#52C41A">🛒 Корзина</a>
+<a class="nav-item" href="#cat4" style="border-color:#13C2C2">⏱ Таймеры и обратный отсчёт</a>
+<a class="nav-item" href="#cat5" style="border-color:#1890FF">📝 Формы и валидация</a>
+<a class="nav-item" href="#cat6" style="border-color:#722ED1">🧭 Навигация и меню</a>
+<a class="nav-item" href="#cat7" style="border-color:#EB2F96">🖼 Слайдеры и галереи</a>
+<a class="nav-item" href="#cat8" style="border-color:#FA541C">🔔 Уведомления и модальные окна</a>
+<a class="nav-item" href="#cat9" style="border-color:#2F54EB">✨ UX-мелочи</a>
+<a class="nav-item" href="#cat10" style="border-color:#08979C">❓ FAQ и аккордеон</a>
+<a class="nav-item" href="#cat11" style="border-color:#FF6B6B">📄 Дополнительные примеры</a>
+
+</nav>
+<main id="main">
+
+    <section class="category" id="cat0">
+      <div class="cat-header" style="background:#FF6B6B">
+        <span class="cat-icon">🔘</span>
+        <h2>Кнопки и товары</h2>
+        <span class="cat-count">10 примеров</span>
+      </div>
+      <div class="cards">
+          <a class="card" href="html1/001_knopka_dobavit_v_korzinu_smena_teksta_i_tsveta.html" target="_blank">
+            <span class="card-num">#1</span>
+            <span class="card-title">Кнопка «Добавить в корзину» — смена текста и цвета</span>
+            <span class="card-desc"></span>
+          </a>
+          <a class="card" href="html1/002_schyotchik_tovarov_v_shapke_1_pri_klike.html" target="_blank">
+            <span class="card-num">#2</span>
+            <span class="card-title">Счётчик товаров в шапке (+1 при клике)</span>
+            <span class="card-desc"></span>
+          </a>
+          <a class="card" href="html1/003_knopka_v_izbrannoe_pereklyuchenie_s_animatsiey.html" target="_blank">
+            <span class="card-num">#3</span>
+            <span class="card-title">Кнопка «В избранное» — переключение ♡ / ♥ с анимацией</span>
+            <span class="card-desc"></span>
+          </a>
+          <a class="card" href="html1/004_schyotchik_kolichestva_tovara.html" target="_blank">
+            <span class="card-num">#4</span>
+            <span class="card-title">Счётчик количества товара −/+</span>
+            <span class="card-desc"></span>
+          </a>
+          <a class="card" href="html1/005_knopka_s_progress-barom_obrabotka.html" target="_blank">
+            <span class="card-num">#5</span>
+            <span class="card-title">Кнопка с прогресс-баром «Обработка...»</span>
+            <span class="card-desc"></span>
+          </a>
+          <a class="card" href="html1/006_knopka_kupit_v_1_klik_poyavlenie_mini-formy.html" target="_blank">
+            <span class="card-num">#6</span>
+            <span class="card-title">Кнопка «Купить в 1 клик» — появление мини-формы</span>
+            <span class="card-desc"></span>
+          </a>
+          <a class="card" href="html1/007_knopki_vybora_razmera_s_podsvetkoy_vybrannogo.html" target="_blank">
+            <span class="card-num">#7</span>
+            <span class="card-title">Кнопки выбора размера с подсветкой выбранного</span>
+            <span class="card-desc"></span>
+          </a>
+          <a class="card" href="html1/008_knopki_vybora_tsveta_tovara.html" target="_blank">
+            <span class="card-num">#8</span>
+            <span class="card-title">Кнопки выбора цвета товара</span>
+            <span class="card-desc"></span>
+          </a>
+          <a class="card" href="html1/009_knopka_sravnit_spisok_sravneniya_do_3_tovarov.html" target="_blank">
+            <span class="card-num">#9</span>
+            <span class="card-title">Кнопка «Сравнить» — список сравнения до 3 товаров</span>
+            <span class="card-desc"></span>
+          </a>
+          <a class="card" href="html1/010_knopka_podelitsya_kopirovanie_ssylki_v_bufer.html" target="_blank">
+            <span class="card-num">#10</span>
+            <span class="card-title">Кнопка «Поделиться» — копирование ссылки в буфер</span>
+            <span class="card-desc"></span>
+          </a>
+      </div>
+    </section>
+    <section class="category" id="cat1">
+      <div class="cat-header" style="background:#FF8E53">
+        <span class="cat-icon">🃏</span>
+        <h2>Карточки товаров</h2>
+        <span class="cat-count">13 примеров</span>
+      </div>
+      <div class="cards">
+          <a class="card" href="html1/011_kartochka_tovara_s_hover-effektom_smena_izobrazheniya.html" target="_blank">
+            <span class="card-num">#11</span>
+            <span class="card-title">Карточка товара с hover-эффектом — смена изображения</span>
+            <span class="card-desc"></span>
+          </a>
+          <a class="card" href="html1/012_beydzh_skidka_na_kartochke_dinamicheskiy_raschyot.html" target="_blank">
+            <span class="card-num">#12</span>
+            <span class="card-title">Бейдж «Скидка» на карточке — динамический расчёт</span>
+            <span class="card-desc"></span>
+          </a>
+          <a class="card" href="html1/013_bystryy_prosmotr_tovara_quick_view.html" target="_blank">
+            <span class="card-num">#13</span>
+            <span class="card-title">Быстрый просмотр товара (Quick View)</span>
+            <span class="card-desc"></span>
+          </a>
+          <a class="card" href="html1/014_reyting_tovara_interaktivnye_zvyozdy.html" target="_blank">
+            <span class="card-num">#14</span>
+            <span class="card-title">Рейтинг товара — интерактивные звёзды</span>
+            <span class="card-desc"></span>
+          </a>
+          <a class="card" href="html1/015_kartochka_so_schyotchikom_prosmotrov_localstorage.html" target="_blank">
+            <span class="card-num">#15</span>
+            <span class="card-title">Карточка со счётчиком просмотров (localStorage)</span>
+            <span class="card-desc"></span>
+          </a>
+          <a class="card" href="html1/016_kartochka_ostalos_n_shtuk_dinamicheskoe_preduprezhdenie.html" target="_blank">
+            <span class="card-num">#16</span>
+            <span class="card-title">Карточка: «Осталось N штук» — динамическое предупреждение</span>
+            <span class="card-desc"></span>
+          </a>
+          <a class="card" href="html1/017_karusel_miniatyur_klik_vybiraet_glavnoe_foto.html" target="_blank">
+            <span class="card-num">#17</span>
+            <span class="card-title">Карусель миниатюр — клик выбирает главное фото</span>
+            <span class="card-desc"></span>
+          </a>
+          <a class="card" href="html1/018_teg-beydzhi_na_kartochke_novinka_khit_aktsiya.html" target="_blank">
+            <span class="card-num">#18</span>
+            <span class="card-title">Тег-бейджи на карточке («Новинка», «Хит», «Акция»)</span>
+            <span class="card-desc"></span>
+          </a>
+          <a class="card" href="html1/019_raskryvaemoe_opisanie_tovara_chitat_dalee.html" target="_blank">
+            <span class="card-num">#19</span>
+            <span class="card-title">Раскрываемое описание товара («Читать далее»)</span>
+            <span class="card-desc"></span>
+          </a>
+          <a class="card" href="html1/020_animirovannyy_schyotchik_tseny_chislo_edet_vverkh.html" target="_blank">
+            <span class="card-num">#20</span>
+            <span class="card-title">Анимированный счётчик цены (число «едет» вверх)</span>
+            <span class="card-desc"></span>
+          </a>
+          <a class="card" href="html1/021_kartochka_s_skeleton-zaglushkoy_pri_zagruzke.html" target="_blank">
+            <span class="card-num">#21</span>
+            <span class="card-title">Карточка с Skeleton-заглушкой при загрузке</span>
+            <span class="card-desc"></span>
+          </a>
+          <a class="card" href="html1/022_spisok_nedavno_prosmotrennye_localstorage.html" target="_blank">
+            <span class="card-num">#22</span>
+            <span class="card-title">Список «Недавно просмотренные» (localStorage)</span>
+            <span class="card-desc"></span>
+          </a>
+          <a class="card" href="html1/023_modalnyy_zoom_uvelichenie_foto_po_kliku.html" target="_blank">
+            <span class="card-num">#23</span>
+            <span class="card-title">Модальный «Zoom» — увеличение фото по клику</span>
+            <span class="card-desc"></span>
+          </a>
+      </div>
+    </section>
+    <section class="category" id="cat2">
+      <div class="cat-header" style="background:#FFC300">
+        <span class="cat-icon">🔍</span>
+        <h2>Фильтры и сортировка</h2>
+        <span class="cat-count">9 примеров</span>
+      </div>
+      <div class="cards">
+          <a class="card" href="html1/024_filtr_tovarov_po_kategorii_show_hide_kartochek.html" target="_blank">
+            <span class="card-num">#24</span>
+            <span class="card-title">Фильтр товаров по категории — show/hide карточек</span>
+            <span class="card-desc"></span>
+          </a>
+          <a class="card" href="html1/025_sortirovka_tovarov_po_tsene_po_vozrastaniyu_ubyvaniyu.html" target="_blank">
+            <span class="card-num">#25</span>
+            <span class="card-title">Сортировка товаров по цене (по возрастанию/убыванию)</span>
+            <span class="card-desc"></span>
+          </a>
+          <a class="card" href="html1/026_filtr_po_diapazonu_tsen_range-slayder.html" target="_blank">
+            <span class="card-num">#26</span>
+            <span class="card-title">Фильтр по диапазону цен (range-слайдер)</span>
+            <span class="card-desc"></span>
+          </a>
+          <a class="card" href="html1/027_zhivoy_poisk_po_kartochkam_pole_filtratsiya.html" target="_blank">
+            <span class="card-num">#27</span>
+            <span class="card-title">Живой поиск по карточкам (поле + фильтрация)</span>
+            <span class="card-desc"></span>
+          </a>
+          <a class="card" href="html1/028_filtr-chekboksy_po_neskolkim_parametram.html" target="_blank">
+            <span class="card-num">#28</span>
+            <span class="card-title">Фильтр-чекбоксы по нескольким параметрам</span>
+            <span class="card-desc"></span>
+          </a>
+          <a class="card" href="html1/029_schyotchik_rezultatov_filtra_naydeno_x_tovarov.html" target="_blank">
+            <span class="card-num">#29</span>
+            <span class="card-title">Счётчик результатов фильтра («Найдено X товаров»)</span>
+            <span class="card-desc"></span>
+          </a>
+          <a class="card" href="html1/030_pereklyuchenie_vida_setka_spisok.html" target="_blank">
+            <span class="card-num">#30</span>
+            <span class="card-title">Переключение вида: сетка / список</span>
+            <span class="card-desc"></span>
+          </a>
+          <a class="card" href="html1/031_sortirovka_po_reytingu_perestroyka_dom.html" target="_blank">
+            <span class="card-num">#31</span>
+            <span class="card-title">Сортировка по рейтингу (перестройка DOM)</span>
+            <span class="card-desc"></span>
+          </a>
+          <a class="card" href="html1/032_multisortirovka_tsena_reyting_select.html" target="_blank">
+            <span class="card-num">#32</span>
+            <span class="card-title">Мультисортировка: цена + рейтинг (select)</span>
+            <span class="card-desc"></span>
+          </a>
+      </div>
+    </section>
+    <section class="category" id="cat3">
+      <div class="cat-header" style="background:#52C41A">
+        <span class="cat-icon">🛒</span>
+        <h2>Корзина</h2>
+        <span class="cat-count">8 примеров</span>
+      </div>
+      <div class="cards">
+          <a class="card" href="html1/033_dobavlenie_tovara_v_korzinu_spisok_s_tsenoy.html" target="_blank">
+            <span class="card-num">#33</span>
+            <span class="card-title">Добавление товара в корзину — список с ценой</span>
+            <span class="card-desc"></span>
+          </a>
+          <a class="card" href="html1/034_udalenie_tovara_iz_korziny.html" target="_blank">
+            <span class="card-num">#34</span>
+            <span class="card-title">Удаление товара из корзины</span>
+            <span class="card-desc"></span>
+          </a>
+          <a class="card" href="html1/035_obnovlenie_kolichestva_tovara_v_korzine.html" target="_blank">
+            <span class="card-num">#35</span>
+            <span class="card-title">Обновление количества товара в корзине</span>
+            <span class="card-desc"></span>
+          </a>
+          <a class="card" href="html1/036_itogovaya_summa_korziny_s_nalogom_i_skidkoy.html" target="_blank">
+            <span class="card-num">#36</span>
+            <span class="card-title">Итоговая сумма корзины с налогом и скидкой</span>
+            <span class="card-desc"></span>
+          </a>
+          <a class="card" href="html1/037_mini-korzina_v_shapke_dropdown.html" target="_blank">
+            <span class="card-num">#37</span>
+            <span class="card-title">Мини-корзина в шапке (dropdown)</span>
+            <span class="card-desc"></span>
+          </a>
+          <a class="card" href="html1/038_ochistit_korzinu_vstroennoe_podtverzhdenie.html" target="_blank">
+            <span class="card-num">#38</span>
+            <span class="card-title">Очистить корзину — встроенное подтверждение</span>
+            <span class="card-desc"></span>
+          </a>
+          <a class="card" href="html1/039_sokhranenie_korziny_v_localstorage.html" target="_blank">
+            <span class="card-num">#39</span>
+            <span class="card-title">Сохранение корзины в localStorage</span>
+            <span class="card-desc"></span>
+          </a>
+          <a class="card" href="html1/040_animatsiya_letit_v_korzinu_pri_dobavlenii.html" target="_blank">
+            <span class="card-num">#40</span>
+            <span class="card-title">Анимация «летит в корзину» при добавлении</span>
+            <span class="card-desc"></span>
+          </a>
+      </div>
+    </section>
+    <section class="category" id="cat4">
+      <div class="cat-header" style="background:#13C2C2">
+        <span class="cat-icon">⏱</span>
+        <h2>Таймеры и обратный отсчёт</h2>
+        <span class="cat-count">5 примеров</span>
+      </div>
+      <div class="cards">
+          <a class="card" href="html1/041_obratnyy_otschyot_do_kontsa_aktsii.html" target="_blank">
+            <span class="card-num">#41</span>
+            <span class="card-title">Обратный отсчёт «До конца акции»</span>
+            <span class="card-desc"></span>
+          </a>
+          <a class="card" href="html1/042_taymer_tolko_segodnya_sbros_v_polnoch.html" target="_blank">
+            <span class="card-num">#42</span>
+            <span class="card-title">Таймер «Только сегодня» — сброс в полночь</span>
+            <span class="card-desc"></span>
+          </a>
+          <a class="card" href="html1/043_taymer_sleduyushchaya_dostavka_cherez_n_minut.html" target="_blank">
+            <span class="card-num">#43</span>
+            <span class="card-title">Таймер «Следующая доставка через N минут»</span>
+            <span class="card-desc"></span>
+          </a>
+          <a class="card" href="html1/044_taymer_ogranichennoe_predlozhenie_s_progress-barom.html" target="_blank">
+            <span class="card-num">#44</span>
+            <span class="card-title">Таймер «Ограниченное предложение» с прогресс-баром</span>
+            <span class="card-desc"></span>
+          </a>
+          <a class="card" href="html1/045_avtomaticheskoe_skryt_banner_cherez_5_sek.html" target="_blank">
+            <span class="card-num">#45</span>
+            <span class="card-title">Автоматическое «Скрыть баннер через 5 сек»</span>
+            <span class="card-desc"></span>
+          </a>
+      </div>
+    </section>
+    <section class="category" id="cat5">
+      <div class="cat-header" style="background:#1890FF">
+        <span class="cat-icon">📝</span>
+        <h2>Формы и валидация</h2>
+        <span class="cat-count">10 примеров</span>
+      </div>
+      <div class="cards">
+          <a class="card" href="html1/046_validatsiya_formy_zakaza_v_realnom_vremeni.html" target="_blank">
+            <span class="card-num">#46</span>
+            <span class="card-title">Валидация формы заказа в реальном времени</span>
+            <span class="card-desc"></span>
+          </a>
+          <a class="card" href="html1/047_maska_telefona_pri_vvode.html" target="_blank">
+            <span class="card-num">#47</span>
+            <span class="card-title">Маска телефона при вводе</span>
+            <span class="card-desc"></span>
+          </a>
+          <a class="card" href="html1/048_sila_parolya_vizualnaya_shkala.html" target="_blank">
+            <span class="card-num">#48</span>
+            <span class="card-title">Сила пароля — визуальная шкала</span>
+            <span class="card-desc"></span>
+          </a>
+          <a class="card" href="html1/049_forma_podpiski_s_proverkoy_email.html" target="_blank">
+            <span class="card-num">#49</span>
+            <span class="card-title">Форма подписки с проверкой email</span>
+            <span class="card-desc"></span>
+          </a>
+          <a class="card" href="html1/050_mnogoshagovaya_forma_oformleniya_zakaza_wizard.html" target="_blank">
+            <span class="card-num">#50</span>
+            <span class="card-title">Многошаговая форма оформления заказа (wizard)</span>
+            <span class="card-desc"></span>
+          </a>
+          <a class="card" href="html1/051_schyotchik_simvolov_v_pole_kommentariya.html" target="_blank">
+            <span class="card-num">#51</span>
+            <span class="card-title">Счётчик символов в поле комментария</span>
+            <span class="card-desc"></span>
+          </a>
+          <a class="card" href="html1/052_avtodopolnenie_goroda_v_pole_poiska.html" target="_blank">
+            <span class="card-num">#52</span>
+            <span class="card-title">Автодополнение города в поле поиска</span>
+            <span class="card-desc"></span>
+          </a>
+          <a class="card" href="html1/053_pokaz_skrytie_parolya_glazok.html" target="_blank">
+            <span class="card-num">#53</span>
+            <span class="card-title">Показ/скрытие пароля (глазок)</span>
+            <span class="card-desc"></span>
+          </a>
+          <a class="card" href="html1/054_chekboks_soglasen_s_usloviyami_blokirovka_knopki.html" target="_blank">
+            <span class="card-num">#54</span>
+            <span class="card-title">Чекбокс «Согласен с условиями» — блокировка кнопки</span>
+            <span class="card-desc"></span>
+          </a>
+          <a class="card" href="html1/055_forma_s_vyborom_sposoba_oplaty_radio_dinamika.html" target="_blank">
+            <span class="card-num">#55</span>
+            <span class="card-title">Форма с выбором способа оплаты (radio + динамика)</span>
+            <span class="card-desc"></span>
+          </a>
+      </div>
+    </section>
+    <section class="category" id="cat6">
+      <div class="cat-header" style="background:#722ED1">
+        <span class="cat-icon">🧭</span>
+        <h2>Навигация и меню</h2>
+        <span class="cat-count">7 примеров</span>
+      </div>
+      <div class="cards">
+          <a class="card" href="html1/056_fiksirovannoe_menyu_podsvetka_aktivnogo_punkta_pri_skrolle.html" target="_blank">
+            <span class="card-num">#56</span>
+            <span class="card-title">Фиксированное меню — подсветка активного пункта при скролле</span>
+            <span class="card-desc"></span>
+          </a>
+          <a class="card" href="html1/057_mobilnoe_gamburger-menyu.html" target="_blank">
+            <span class="card-num">#57</span>
+            <span class="card-title">Мобильное гамбургер-меню</span>
+            <span class="card-desc"></span>
+          </a>
+          <a class="card" href="html1/058_khlebnye_kroshki_iz_url.html" target="_blank">
+            <span class="card-num">#58</span>
+            <span class="card-title">Хлебные крошки из URL</span>
+            <span class="card-desc"></span>
+          </a>
+          <a class="card" href="html1/059_vkladki_tabs_s_animatsiey.html" target="_blank">
+            <span class="card-num">#59</span>
+            <span class="card-title">Вкладки (tabs) с анимацией</span>
+            <span class="card-desc"></span>
+          </a>
+          <a class="card" href="html1/060_vypadayushchee_megamenyu_pri_navedenii.html" target="_blank">
+            <span class="card-num">#60</span>
+            <span class="card-title">Выпадающее мегаменю при наведении</span>
+            <span class="card-desc"></span>
+          </a>
+          <a class="card" href="html1/061_paginatsiya_tovarov.html" target="_blank">
+            <span class="card-num">#61</span>
+            <span class="card-title">Пагинация товаров</span>
+            <span class="card-desc"></span>
+          </a>
+          <a class="card" href="html1/062_beskonechnaya_prokrutka_infinite_scroll.html" target="_blank">
+            <span class="card-num">#62</span>
+            <span class="card-title">Бесконечная прокрутка (infinite scroll)</span>
+            <span class="card-desc"></span>
+          </a>
+      </div>
+    </section>
+    <section class="category" id="cat7">
+      <div class="cat-header" style="background:#EB2F96">
+        <span class="cat-icon">🖼</span>
+        <h2>Слайдеры и галереи</h2>
+        <span class="cat-count">5 примеров</span>
+      </div>
+      <div class="cards">
+          <a class="card" href="html1/063_prostoy_slayder_izobrazheniy.html" target="_blank">
+            <span class="card-num">#63</span>
+            <span class="card-title">Простой слайдер изображений</span>
+            <span class="card-desc"></span>
+          </a>
+          <a class="card" href="html1/064_slayder_otzyvov_testimonials.html" target="_blank">
+            <span class="card-num">#64</span>
+            <span class="card-title">Слайдер отзывов (testimonials)</span>
+            <span class="card-desc"></span>
+          </a>
+          <a class="card" href="html1/065_slayder_diapazona_tsen_range_slider_dvoynoy.html" target="_blank">
+            <span class="card-num">#65</span>
+            <span class="card-title">Слайдер диапазона цен (range slider двойной)</span>
+            <span class="card-desc"></span>
+          </a>
+          <a class="card" href="html1/066_karusel_kartochek_tovarov_s_peretaskivaniem.html" target="_blank">
+            <span class="card-num">#66</span>
+            <span class="card-title">Карусель карточек товаров (с перетаскиванием)</span>
+            <span class="card-desc"></span>
+          </a>
+          <a class="card" href="html1/067_galereya_s_laytboksom.html" target="_blank">
+            <span class="card-num">#67</span>
+            <span class="card-title">Галерея с лайтбоксом</span>
+            <span class="card-desc"></span>
+          </a>
+      </div>
+    </section>
+    <section class="category" id="cat8">
+      <div class="cat-header" style="background:#FA541C">
+        <span class="cat-icon">🔔</span>
+        <h2>Уведомления и модальные окна</h2>
+        <span class="cat-count">8 примеров</span>
+      </div>
+      <div class="cards">
+          <a class="card" href="html1/068_toast-uvedomleniya.html" target="_blank">
+            <span class="card-num">#68</span>
+            <span class="card-title">Toast-уведомления</span>
+            <span class="card-desc"></span>
+          </a>
+          <a class="card" href="html1/069_modalnoe_okno_podtverzhdeniya_udaleniya.html" target="_blank">
+            <span class="card-num">#69</span>
+            <span class="card-title">Модальное окно подтверждения удаления</span>
+            <span class="card-desc"></span>
+          </a>
+          <a class="card" href="html1/070_uvedomlenie_dobavleno_v_izbrannoe.html" target="_blank">
+            <span class="card-num">#70</span>
+            <span class="card-title">Уведомление «Добавлено в избранное»</span>
+            <span class="card-desc"></span>
+          </a>
+          <a class="card" href="html1/071_modalnoe_okno_bystryy_prosmotr_tovara.html" target="_blank">
+            <span class="card-num">#71</span>
+            <span class="card-title">Модальное окно «Быстрый просмотр товара»</span>
+            <span class="card-desc"></span>
+          </a>
+          <a class="card" href="html1/072_vsplyvayushchiy_chat-vidzhet.html" target="_blank">
+            <span class="card-num">#72</span>
+            <span class="card-title">Всплывающий чат-виджет</span>
+            <span class="card-desc"></span>
+          </a>
+          <a class="card" href="html1/073_preduprezhdenie_o_nesokhranyonnykh_izmeneniyakh.html" target="_blank">
+            <span class="card-num">#73</span>
+            <span class="card-title">Предупреждение о несохранённых изменениях</span>
+            <span class="card-desc"></span>
+          </a>
+          <a class="card" href="html1/074_popap_skidka_pri_pervom_zakaze_pokaz_cherez_n_sekund.html" target="_blank">
+            <span class="card-num">#74</span>
+            <span class="card-title">Попап «Скидка при первом заказе» (показ через N секунд)</span>
+            <span class="card-desc"></span>
+          </a>
+          <a class="card" href="html1/075_reyting-vidzhet_interaktivnye_zvyozdy.html" target="_blank">
+            <span class="card-num">#75</span>
+            <span class="card-title">Рейтинг-виджет (интерактивные звёзды)</span>
+            <span class="card-desc"></span>
+          </a>
+      </div>
+    </section>
+    <section class="category" id="cat9">
+      <div class="cat-header" style="background:#2F54EB">
+        <span class="cat-icon">✨</span>
+        <h2>UX-мелочи</h2>
+        <span class="cat-count">10 примеров</span>
+      </div>
+      <div class="cards">
+          <a class="card" href="html1/076_knopka_naverkh_pri_skrolle.html" target="_blank">
+            <span class="card-num">#76</span>
+            <span class="card-title">Кнопка «Наверх» при скролле</span>
+            <span class="card-desc"></span>
+          </a>
+          <a class="card" href="html1/077_tyomnaya_svetlaya_tema_dark_mode_toggle.html" target="_blank">
+            <span class="card-num">#77</span>
+            <span class="card-title">Тёмная / светлая тема (dark mode toggle)</span>
+            <span class="card-desc"></span>
+          </a>
+          <a class="card" href="html1/078_indikator_progressa_chteniya_stranitsy.html" target="_blank">
+            <span class="card-num">#78</span>
+            <span class="card-title">Индикатор прогресса чтения страницы</span>
+            <span class="card-desc"></span>
+          </a>
+          <a class="card" href="html1/079_kopirovanie_teksta_v_bufer_obmena.html" target="_blank">
+            <span class="card-num">#79</span>
+            <span class="card-title">Копирование текста в буфер обмена</span>
+            <span class="card-desc"></span>
+          </a>
+          <a class="card" href="html1/080_lenivaya_zagruzka_izobrazheniy_lazy_load.html" target="_blank">
+            <span class="card-num">#80</span>
+            <span class="card-title">Ленивая загрузка изображений (lazy load)</span>
+            <span class="card-desc"></span>
+          </a>
+          <a class="card" href="html1/081_sticky-shapka_s_tenyu_pri_skrolle.html" target="_blank">
+            <span class="card-num">#81</span>
+            <span class="card-title">Sticky-шапка с тенью при скролле</span>
+            <span class="card-desc"></span>
+          </a>
+          <a class="card" href="html1/082_pereklyuchatel_valyuty.html" target="_blank">
+            <span class="card-num">#82</span>
+            <span class="card-title">Переключатель валюты</span>
+            <span class="card-desc"></span>
+          </a>
+          <a class="card" href="html1/083_poisk_s_istoriey_zaprosov.html" target="_blank">
+            <span class="card-num">#83</span>
+            <span class="card-title">Поиск с историей запросов</span>
+            <span class="card-desc"></span>
+          </a>
+          <a class="card" href="html1/084_animatsiya_chisla_countup_pri_poyavlenii.html" target="_blank">
+            <span class="card-num">#84</span>
+            <span class="card-title">Анимация числа (countUp) при появлении</span>
+            <span class="card-desc"></span>
+          </a>
+          <a class="card" href="html1/085_faq-akkordeon.html" target="_blank">
+            <span class="card-num">#85</span>
+            <span class="card-title">FAQ-аккордеон</span>
+            <span class="card-desc"></span>
+          </a>
+      </div>
+    </section>
+    <section class="category" id="cat10">
+      <div class="cat-header" style="background:#08979C">
+        <span class="cat-icon">❓</span>
+        <h2>FAQ и аккордеон</h2>
+        <span class="cat-count">5 примеров</span>
+      </div>
+      <div class="cards">
+          <a class="card" href="html1/086_faq_s_poiskom_po_voprosam.html" target="_blank">
+            <span class="card-num">#86</span>
+            <span class="card-title">FAQ с поиском по вопросам</span>
+            <span class="card-desc"></span>
+          </a>
+          <a class="card" href="html1/087_akkordeon_s_animatsiey_vysoty.html" target="_blank">
+            <span class="card-num">#87</span>
+            <span class="card-title">Аккордеон с анимацией высоты</span>
+            <span class="card-desc"></span>
+          </a>
+          <a class="card" href="html1/088_mnogourovnevyy_akkordeon_vlozhennye_kategorii.html" target="_blank">
+            <span class="card-num">#88</span>
+            <span class="card-title">Многоуровневый аккордеон (вложенные категории)</span>
+            <span class="card-desc"></span>
+          </a>
+          <a class="card" href="html1/089_taymlayn_shagov_zakaza.html" target="_blank">
+            <span class="card-num">#89</span>
+            <span class="card-title">Таймлайн шагов заказа</span>
+            <span class="card-desc"></span>
+          </a>
+          <a class="card" href="html1/090_vidzhet_nedavno_prosmotrennye_localstorage.html" target="_blank">
+            <span class="card-num">#90</span>
+            <span class="card-title">Виджет «Недавно просмотренные» (localStorage)</span>
+            <span class="card-desc"></span>
+          </a>
+      </div>
+    </section>
+    <section class="category" id="cat11">
+      <div class="cat-header" style="background:#FF6B6B">
+        <span class="cat-icon">📄</span>
+        <h2>Дополнительные примеры</h2>
+        <span class="cat-count">20 примеров</span>
+      </div>
+      <div class="cards">
+          <a class="card" href="html1/091_sravnenie_tovarov_compare.html" target="_blank">
+            <span class="card-num">#91</span>
+            <span class="card-title">Сравнение товаров (compare)</span>
+            <span class="card-desc"></span>
+          </a>
+          <a class="card" href="html1/092_beskonechnaya_lenta_novostey_marquee-analog_na_js.html" target="_blank">
+            <span class="card-num">#92</span>
+            <span class="card-title">Бесконечная лента новостей (marquee-аналог на JS)</span>
+            <span class="card-desc"></span>
+          </a>
+          <a class="card" href="html1/093_interaktivnaya_karta_dostavki_zony.html" target="_blank">
+            <span class="card-num">#93</span>
+            <span class="card-title">Интерактивная карта доставки (зоны)</span>
+            <span class="card-desc"></span>
+          </a>
+          <a class="card" href="html1/094_generator_promokoda.html" target="_blank">
+            <span class="card-num">#94</span>
+            <span class="card-title">Генератор промокода</span>
+            <span class="card-desc"></span>
+          </a>
+          <a class="card" href="html1/095_mini-kviz_pomoshchnik_po_vyboru_tovara.html" target="_blank">
+            <span class="card-num">#95</span>
+            <span class="card-title">Мини-квиз «Помощник по выбору товара»</span>
+            <span class="card-desc"></span>
+          </a>
+          <a class="card" href="html1/096_vidzhet_podpiski_na_uvedomleniya_o_snizhenii_tseny.html" target="_blank">
+            <span class="card-num">#96</span>
+            <span class="card-title">Виджет подписки на уведомления о снижении цены</span>
+            <span class="card-desc"></span>
+          </a>
+          <a class="card" href="html1/097_dinamicheskaya_sortirovka_tablitsy_tovarov.html" target="_blank">
+            <span class="card-num">#97</span>
+            <span class="card-title">Динамическая сортировка таблицы товаров</span>
+            <span class="card-desc"></span>
+          </a>
+          <a class="card" href="html1/098_vidzhet_tovar_dnya_s_obratnym_otschyotom.html" target="_blank">
+            <span class="card-num">#98</span>
+            <span class="card-title">Виджет «Товар дня» с обратным отсчётом</span>
+            <span class="card-desc"></span>
+          </a>
+          <a class="card" href="html1/099_drag-and-drop_sortirovka_spiska_zhelaniy.html" target="_blank">
+            <span class="card-num">#99</span>
+            <span class="card-title">Drag-and-drop сортировка списка желаний</span>
+            <span class="card-desc"></span>
+          </a>
+          <a class="card" href="html1/100_panel_upravleniya_mini-magazinom_dashbord.html" target="_blank">
+            <span class="card-num">#100</span>
+            <span class="card-title">Панель управления мини-магазином (дашборд)</span>
+            <span class="card-desc"></span>
+          </a>
+          <a class="card" href="html1/101_kalkulyator_skidki_i_vygody.html" target="_blank">
+            <span class="card-num">#101</span>
+            <span class="card-title">Калькулятор скидки и выгоды</span>
+            <span class="card-desc"></span>
+          </a>
+          <a class="card" href="html1/102_filtr_tovarov_s_tegami_multivybor.html" target="_blank">
+            <span class="card-num">#102</span>
+            <span class="card-title">Фильтр товаров с тегами (мультивыбор)</span>
+            <span class="card-desc"></span>
+          </a>
+          <a class="card" href="html1/103_mini-igra_poymay_skidku.html" target="_blank">
+            <span class="card-num">#103</span>
+            <span class="card-title">Мини-игра «Поймай скидку»</span>
+            <span class="card-desc"></span>
+          </a>
+          <a class="card" href="html1/104_konstruktor_nabora_tovarov_bundle_builder.html" target="_blank">
+            <span class="card-num">#104</span>
+            <span class="card-title">Конструктор набора товаров (bundle builder)</span>
+            <span class="card-desc"></span>
+          </a>
+          <a class="card" href="html1/105_chekaut_s_avtozapolneniem_adresa.html" target="_blank">
+            <span class="card-num">#105</span>
+            <span class="card-title">Чекаут с автозаполнением адреса</span>
+            <span class="card-desc"></span>
+          </a>
+          <a class="card" href="html1/106_vidzhet_otsenki_kachestva_dostavki.html" target="_blank">
+            <span class="card-num">#106</span>
+            <span class="card-title">Виджет оценки качества доставки</span>
+            <span class="card-desc"></span>
+          </a>
+          <a class="card" href="html1/107_lenta_tovarov_s_avtopodgruzkoy_infinite_scroll.html" target="_blank">
+            <span class="card-num">#107</span>
+            <span class="card-title">Лента товаров с автоподгрузкой (infinite scroll)</span>
+            <span class="card-desc"></span>
+          </a>
+          <a class="card" href="html1/108_uvedomlenie_o_cookie_gdpr-banner.html" target="_blank">
+            <span class="card-num">#108</span>
+            <span class="card-title">Уведомление о cookie (GDPR-баннер)</span>
+            <span class="card-desc"></span>
+          </a>
+          <a class="card" href="html1/109_multiyazychnyy_interfeys_i18n.html" target="_blank">
+            <span class="card-num">#109</span>
+            <span class="card-title">Мультиязычный интерфейс (i18n)</span>
+            <span class="card-desc"></span>
+          </a>
+          <a class="card" href="html1/110_polnotsennaya_stranitsa_tovara_product_page.html" target="_blank">
+            <span class="card-num">#110</span>
+            <span class="card-title">Полноценная страница товара (Product Page)</span>
+            <span class="card-desc"></span>
+          </a>
+      </div>
+    </section>
+</main>
+<footer>
+  Создано из <a href="readme1.md">readme1.md</a> &nbsp;|&nbsp;
+  <a href="index.html">← DOM-методы (readme.md)</a>
+</footer>
+<script>
+  const searchInput = document.getElementById('searchInput');
+  searchInput.addEventListener('input', doSearch);
+
+  function doSearch() {
+    const q = searchInput.value.toLowerCase().trim();
+    document.querySelectorAll('.category').forEach(sec => {
+      let visible = 0;
+      sec.querySelectorAll('.card').forEach(card => {
+        const text = card.textContent.toLowerCase();
+        const show = !q || text.includes(q);
+        card.classList.toggle('hidden', !show);
+        if (show) visible++;
+      });
+      sec.classList.toggle('all-hidden', visible === 0);
+    });
+  }
+
+  // Плавный скролл к якорям
+  document.querySelectorAll('.nav-item').forEach(a => {
+    a.addEventListener('click', e => {
+      e.preventDefault();
+      const target = document.querySelector(a.getAttribute('href'));
+      if (target) target.scrollIntoView({ behavior: 'smooth' });
+    });
+  });
+
+  // ── Переключатель тёмная / молочная ──
+  const btn = document.getElementById('themeBtn');
+  function applyTheme(t) {
+    document.body.classList.toggle('light', t === 'light');
+    btn.textContent = t === 'light' ? '🌙 Тёмная' : '☀️ Молочная';
+    localStorage.setItem('theme1', t);
+  }
+  function toggleTheme() {
+    applyTheme(document.body.classList.contains('light') ? 'dark' : 'light');
+  }
+  applyTheme(localStorage.getItem('theme1') || 'dark');
+</script>
+</body>
+</html>

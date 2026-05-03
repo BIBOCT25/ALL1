@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>31. Сортировка по рейтингу</title>
+<style>
+  body { font-family: Arial, sans-serif; padding: 24px; max-width: 700px; margin: 0 auto; }
+  .toolbar { display: flex; gap: 10px; align-items: center; margin-bottom: 16px; flex-wrap: wrap; }
+  .sort-btn {
+    padding: 7px 16px; border: 1px solid #ddd; background: #fff;
+    border-radius: 6px; cursor: pointer; font-size: 14px; transition: all 0.15s;
+  }
+  .sort-btn.active { background: #2196F3; color: #fff; border-color: #2196F3; }
+  .products { display: flex; gap: 14px; flex-wrap: wrap; }
+  .card { border: 1px solid #ddd; border-radius: 8px; padding: 14px; width: 160px; }
+  .card-name { font-size: 14px; font-weight: bold; margin-bottom: 6px; }
+  .stars { color: #FFC107; font-size: 15px; margin-bottom: 2px; }
+  .rating-num { font-size: 12px; color: #888; }
+</style>
+</head>
+<body>
+<div class="toolbar">
+  <span style="font-size:14px;color:#555">Сортировать:</span>
+  <button class="sort-btn" data-sort="rating-desc">Рейтинг ↓</button>
+  <button class="sort-btn" data-sort="rating-asc">Рейтинг ↑</button>
+  <button class="sort-btn active" data-sort="default">По умолчанию</button>
+</div>
+
+<div class="products" id="products">
+  <div class="card" data-rating="4.2">
+    <div class="card-name">Кроссовки Nike</div>
+    <div class="stars">★★★★☆</div><div class="rating-num">4.2 / 5</div>
+  </div>
+  <div class="card" data-rating="4.8">
+    <div class="card-name">Куртка Adidas</div>
+    <div class="stars">★★★★★</div><div class="rating-num">4.8 / 5</div>
+  </div>
+  <div class="card" data-rating="3.5">
+    <div class="card-name">Шапка UA</div>
+    <div class="stars">★★★½☆</div><div class="rating-num">3.5 / 5</div>
+  </div>
+  <div class="card" data-rating="4.6">
+    <div class="card-name">Рюкзак Nike</div>
+    <div class="stars">★★★★★</div><div class="rating-num">4.6 / 5</div>
+  </div>
+</div>
+
+<script>
+  const toolbar   = document.getElementById('toolbar');
+  const products  = document.getElementById('products');
+  const original  = [...products.children];
+
+  toolbar.addEventListener('click', e => {
+    const btn = e.target.closest('.sort-btn');
+    if (!btn) return;
+    toolbar.querySelectorAll('.sort-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+
+    let sorted = [...products.children];
+    if (btn.dataset.sort === 'rating-desc') {
+      sorted.sort((a, b) => +b.dataset.rating - +a.dataset.rating);
+    } else if (btn.dataset.sort === 'rating-asc') {
+      sorted.sort((a, b) => +a.dataset.rating - +b.dataset.rating);
+    } else {
+      sorted = original;
+    }
+    sorted.forEach(c => products.appendChild(c));
+  });
+</script>
+</body>
+</html>

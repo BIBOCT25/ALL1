@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>2. Счётчик товаров в шапке</title>
+<style>
+  body { font-family: Arial, sans-serif; margin: 0; }
+  header {
+    background: #222; color: #fff; padding: 14px 30px;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .logo { font-size: 18px; font-weight: bold; }
+  .cart-icon { position: relative; cursor: pointer; font-size: 26px; }
+  .badge {
+    position: absolute; top: -8px; right: -10px;
+    background: #e53935; color: #fff; border-radius: 50%;
+    width: 20px; height: 20px; font-size: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: bold; transition: transform 0.2s;
+  }
+  .badge.bump { transform: scale(1.4); }
+  main { padding: 40px; display: flex; gap: 16px; flex-wrap: wrap; }
+  .btn-add {
+    padding: 10px 20px; background: #2196F3; color: #fff;
+    border: none; border-radius: 6px; cursor: pointer; font-size: 14px;
+  }
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">МойМагазин</div>
+  <div class="cart-icon" id="cartIcon">
+    🛒<span class="badge" id="badge">0</span>
+  </div>
+</header>
+<main>
+  <button class="btn-add">+ Кроссовки</button>
+  <button class="btn-add">+ Куртка</button>
+  <button class="btn-add">+ Шапка</button>
+</main>
+<script>
+  const badge = document.getElementById('badge');
+  let count = 0;
+  document.querySelectorAll('.btn-add').forEach(btn => {
+    btn.addEventListener('click', () => {
+      count++;
+      badge.textContent = count;
+      badge.classList.add('bump');
+      setTimeout(() => badge.classList.remove('bump'), 200);
+    });
+  });
+</script>
+</body>
+</html>

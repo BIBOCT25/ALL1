@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>17. Карусель миниатюр</title>
+<style>
+  body { font-family: Arial, sans-serif; display: flex; justify-content: center; padding: 40px; }
+  .gallery { width: 300px; }
+  .main-img {
+    width: 100%; height: 200px; object-fit: cover;
+    border-radius: 8px; margin-bottom: 10px;
+    transition: opacity 0.2s;
+  }
+  .thumbs { display: flex; gap: 8px; }
+  .thumb {
+    width: 64px; height: 64px; object-fit: cover;
+    border-radius: 4px; cursor: pointer; border: 2px solid transparent;
+    transition: border-color 0.15s, opacity 0.15s;
+    opacity: 0.65;
+  }
+  .thumb.active { border-color: #2196F3; opacity: 1; }
+  .thumb:hover  { opacity: 1; }
+</style>
+</head>
+<body>
+<div class="gallery">
+  <img class="main-img" id="mainImg"
+    src="https://placehold.co/300x200/4FC3F7/fff?text=Фото+1" alt="Главное фото">
+  <div class="thumbs" id="thumbs">
+    <img class="thumb active" src="https://placehold.co/64x64/4FC3F7/fff?text=1"
+      data-full="https://placehold.co/300x200/4FC3F7/fff?text=Фото+1" alt="">
+    <img class="thumb" src="https://placehold.co/64x64/81C784/fff?text=2"
+      data-full="https://placehold.co/300x200/81C784/fff?text=Фото+2" alt="">
+    <img class="thumb" src="https://placehold.co/64x64/FFB74D/333?text=3"
+      data-full="https://placehold.co/300x200/FFB74D/333?text=Фото+3" alt="">
+    <img class="thumb" src="https://placehold.co/64x64/F48FB1/fff?text=4"
+      data-full="https://placehold.co/300x200/F48FB1/fff?text=Фото+4" alt="">
+  </div>
+</div>
+<script>
+  const mainImg = document.getElementById('mainImg');
+  const thumbsEl = document.getElementById('thumbs');
+
+  thumbsEl.addEventListener('click', e => {
+    const thumb = e.target.closest('.thumb');
+    if (!thumb) return;
+
+    thumbsEl.querySelectorAll('.thumb').forEach(t => t.classList.remove('active'));
+    thumb.classList.add('active');
+
+    mainImg.style.opacity = '0';
+    setTimeout(() => {
+      mainImg.src = thumb.dataset.full;
+      mainImg.style.opacity = '1';
+    }, 150);
+  });
+</script>
+</body>
+</html>

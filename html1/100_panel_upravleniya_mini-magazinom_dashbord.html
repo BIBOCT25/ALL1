@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>100. Дашборд магазина</title>
+<style>
+  * { box-sizing: border-box; margin: 0; }
+  body { font-family: Arial, sans-serif; padding: 28px; background: #f0f4ff; }
+  h2 { font-size: 20px; margin-bottom: 4px; }
+  .topbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 10px; }
+  .btn-refresh { padding: 8px 18px; background: #1565C0; color: #fff; border: none; border-radius: 8px; font-size: 13px; cursor: pointer; }
+  .btn-refresh:hover { background: #0D47A1; }
+  .cards { display: grid; grid-template-columns: repeat(4,1fr); gap: 14px; margin-bottom: 22px; }
+  @media(max-width:600px){ .cards { grid-template-columns: repeat(2,1fr); } }
+  .kpi {
+    background: #fff; border-radius: 12px; padding: 16px 18px;
+    box-shadow: 0 2px 10px rgba(0,0,0,.07);
+  }
+  .kpi-label { font-size: 12px; color: #888; margin-bottom: 6px; }
+  .kpi-val   { font-size: 26px; font-weight: 900; color: #1565C0; }
+  .kpi-delta { font-size: 12px; margin-top: 4px; }
+  .kpi-delta.up   { color: #2E7D32; }
+  .kpi-delta.down { color: #C62828; }
+  .chart-box { background: #fff; border-radius: 12px; padding: 18px; box-shadow: 0 2px 10px rgba(0,0,0,.07); max-width: 100%; }
+  .chart-box h3 { font-size: 14px; margin-bottom: 14px; color: #555; }
+  svg.chart { display: block; width: 100%; overflow: visible; }
+  .bar-rect { fill: #90CAF9; transition: fill 0.2s; rx: 3; }
+  .bar-rect:hover { fill: #1565C0; }
+  .bar-label { font-size: 10px; fill: #888; text-anchor: middle; }
+  .bar-val   { font-size: 10px; fill: #1565C0; text-anchor: middle; font-weight: bold; }
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div><h2>Дашборд</h2><div style="font-size:13px;color:#888">Апрель — май 2026</div></div>
+  <button class="btn-refresh" id="refreshBtn">↻ Обновить данные</button>
+</div>
+<div class="cards" id="cards"></div>
+<div class="chart-box">
+  <h3>Выручка по дням (тыс. ₽)</h3>
+  <svg class="chart" height="150" id="chartSvg" viewBox="0 0 560 150"></svg>
+</div>
+
+<script>
+  function rand(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
+
+  function genData() {
+    return {
+      revenue:  rand(280, 520),
+      orders:   rand(130, 280),
+      clients:  rand(80, 160),
+      conv:     (rand(18, 42) / 10).toFixed(1),
+      days: Array.from({length: 14}, (_, i) => ({
+        label: `${i + 19}.04`,
+        val:   rand(10, 60),
+      })),
+    };
+  }
+
+  function renderKPI(data) {
+    const KPI = [
+      { label: 'Выручка, тыс. ₽', val: data.revenue,         delta: '+' + rand(3,14) + '%', up: true  },
+      { label: 'Заказы',           val: data.orders,           delta: '+' + rand(2,10) + '%', up: true  },
+      { label: 'Клиенты',          val: data.clients,          delta: '-' + rand(1,5) + '%',  up: false },
+      { label: 'Конверсия, %',     val: data.conv,             delta: '+' + rand(1,8) + '%',  up: true  },
+    ];
+    document.getElementById('cards').innerHTML = KPI.map(k => `
+      <div class="kpi">
+        <div class="kpi-label">${k.label}</div>
+        <div class="kpi-val">${k.val}</div>
+        <div class="kpi-delta ${k.up ? 'up' : 'down'}">${k.up ? '▲' : '▼'} ${k.delta} к прошлому периоду</div>
+      </div>`).join('');
+  }
+
+  function renderChart(data) {
+    const svg    = document.getElementById('chartSvg');
+    const W      = 560, H = 130, n = data.days.length;
+    const maxVal = Math.max(...data.days.map(d => d.val));
+    const bw     = Math.floor(W / n) - 4;
+    svg.innerHTML = data.days.map((d, i) => {
+      const bh  = Math.round((d.val / maxVal) * H * 0.75);
+      const x   = i * (W / n) + (W / n - bw) / 2;
+      const y   = H - bh - 18;
+      return `
+        <rect class="bar-rect" x="${x}" y="${y}" width="${bw}" height="${bh}" rx="3"/>
+        <text class="bar-val"  x="${x + bw/2}" y="${y - 3}">${d.val}</text>
+        <text class="bar-label" x="${x + bw/2}" y="${H - 2}">${d.label}</text>`;
+    }).join('');
+  }
+
+  function update() {
+    const data = genData();
+    renderKPI(data);
+    renderChart(data);
+  }
+
+  document.getElementById('refreshBtn').addEventListener('click', update);
+  update();
+</script>
+</body>
+</html>

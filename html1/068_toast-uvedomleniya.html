@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>68. Toast-уведомления</title>
+<style>
+  * { box-sizing: border-box; }
+  body { font-family: Arial, sans-serif; padding: 30px; }
+  h2 { font-size: 18px; margin-bottom: 16px; }
+  .btn-row { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 20px; }
+  .btn-row button {
+    padding: 9px 18px; border: none; border-radius: 6px;
+    cursor: pointer; font-size: 14px; color: #fff;
+  }
+  .btn-success { background: #4CAF50; }
+  .btn-error   { background: #e53935; }
+  .btn-info    { background: #2196F3; }
+  .btn-warn    { background: #FF9800; }
+
+  #toast-container {
+    position: fixed; bottom: 24px; right: 24px;
+    display: flex; flex-direction: column; gap: 10px; z-index: 9999;
+  }
+  .toast {
+    display: flex; align-items: flex-start; gap: 10px;
+    padding: 13px 18px; border-radius: 8px; color: #fff;
+    box-shadow: 0 4px 16px rgba(0,0,0,.18); min-width: 240px; max-width: 320px;
+    animation: toastIn 0.3s ease;
+  }
+  .toast.removing { animation: toastOut 0.3s ease forwards; }
+  @keyframes toastIn  { from { opacity: 0; transform: translateX(50px); } to { opacity: 1; transform: none; } }
+  @keyframes toastOut { to   { opacity: 0; transform: translateX(50px); } }
+  .toast-success { background: #388E3C; }
+  .toast-error   { background: #C62828; }
+  .toast-info    { background: #1565C0; }
+  .toast-warn    { background: #E65100; color: #fff; }
+  .toast-icon { font-size: 18px; flex-shrink: 0; }
+  .toast-body { flex: 1; }
+  .toast-title { font-weight: bold; font-size: 14px; margin-bottom: 2px; }
+  .toast-msg   { font-size: 13px; opacity: .9; }
+  .toast-close { background: none; border: none; color: rgba(255,255,255,.7); font-size: 18px; cursor: pointer; padding: 0; }
+</style>
+</head>
+<body>
+<h2>Toast-уведомления</h2>
+<div class="btn-row">
+  <button class="btn-success" onclick="showToast('success','Успешно!','Товар добавлен в корзину')">✓ Успех</button>
+  <button class="btn-error"   onclick="showToast('error','Ошибка!','Не удалось оформить заказ')">✕ Ошибка</button>
+  <button class="btn-info"    onclick="showToast('info','Информация','Доставка займёт 1–2 дня')">ℹ Инфо</button>
+  <button class="btn-warn"    onclick="showToast('warn','Внимание!','Осталось только 2 штуки')">⚠ Предупреждение</button>
+</div>
+<div id="toast-container"></div>
+
+<script>
+  const ICONS = { success: '✅', error: '❌', info: 'ℹ️', warn: '⚠️' };
+  const DELAY = 3500;
+
+  function showToast(type, title, msg) {
+    const container = document.getElementById('toast-container');
+    const toast = document.createElement('div');
+    toast.className = `toast toast-${type}`;
+    toast.innerHTML = `
+      <span class="toast-icon">${ICONS[type]}</span>
+      <div class="toast-body">
+        <div class="toast-title">${title}</div>
+        <div class="toast-msg">${msg}</div>
+      </div>
+      <button class="toast-close" onclick="removeToast(this.closest('.toast'))">✕</button>`;
+    container.appendChild(toast);
+
+    setTimeout(() => removeToast(toast), DELAY);
+  }
+
+  function removeToast(toast) {
+    if (!toast || !toast.parentNode) return;
+    toast.classList.add('removing');
+    toast.addEventListener('animationend', () => toast.remove());
+  }
+</script>
+</body>
+</html>

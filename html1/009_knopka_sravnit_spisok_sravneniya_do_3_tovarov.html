@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>9. Сравнение товаров</title>
+<style>
+  body { font-family: Arial, sans-serif; padding: 30px; }
+  .products { display: flex; gap: 16px; flex-wrap: wrap; }
+  .card {
+    border: 1px solid #ddd; border-radius: 8px; padding: 16px;
+    width: 160px; text-align: center;
+  }
+  .card img { width: 100%; border-radius: 4px; margin-bottom: 8px; }
+  .card .name { font-size: 14px; margin-bottom: 8px; }
+  .btn-cmp {
+    padding: 6px 12px; border: 1px solid #2196F3; background: #fff;
+    color: #2196F3; border-radius: 4px; cursor: pointer; font-size: 13px;
+    transition: all 0.2s;
+  }
+  .btn-cmp.in { background: #2196F3; color: #fff; }
+  .btn-cmp:disabled { opacity: 0.4; cursor: default; }
+  .compare-bar {
+    margin-top: 24px; padding: 14px; background: #E3F2FD;
+    border-radius: 6px; display: none;
+  }
+  .compare-bar.show { display: block; }
+  .compare-bar strong { display: block; margin-bottom: 6px; }
+  .compare-bar ul { margin: 0; padding-left: 18px; }
+</style>
+</head>
+<body>
+<div class="products" id="products">
+  <div class="card" data-id="1" data-name="Кроссовки Nike">
+    <img src="https://placehold.co/160x100/eee/999?text=1" alt="">
+    <div class="name">Кроссовки Nike</div>
+    <button class="btn-cmp">+ Сравнить</button>
+  </div>
+  <div class="card" data-id="2" data-name="Куртка Adidas">
+    <img src="https://placehold.co/160x100/eee/999?text=2" alt="">
+    <div class="name">Куртка Adidas</div>
+    <button class="btn-cmp">+ Сравнить</button>
+  </div>
+  <div class="card" data-id="3" data-name="Шапка Puma">
+    <img src="https://placehold.co/160x100/eee/999?text=3" alt="">
+    <div class="name">Шапка Puma</div>
+    <button class="btn-cmp">+ Сравнить</button>
+  </div>
+  <div class="card" data-id="4" data-name="Перчатки Under Armour">
+    <img src="https://placehold.co/160x100/eee/999?text=4" alt="">
+    <div class="name">Перчатки UA</div>
+    <button class="btn-cmp">+ Сравнить</button>
+  </div>
+</div>
+
+<div class="compare-bar" id="compareBar">
+  <strong>Сравниваем (<span id="cmpCount">0</span>/3):</strong>
+  <ul id="cmpList"></ul>
+</div>
+
+<script>
+  const MAX = 3;
+  const compare = [];
+  const bar   = document.getElementById('compareBar');
+  const list  = document.getElementById('cmpList');
+  const count = document.getElementById('cmpCount');
+
+  document.getElementById('products').addEventListener('click', e => {
+    const btn  = e.target.closest('.btn-cmp');
+    const card = e.target.closest('.card');
+    if (!btn || !card) return;
+
+    const id   = card.dataset.id;
+    const name = card.dataset.name;
+    const idx  = compare.indexOf(id);
+
+    if (idx !== -1) {
+      compare.splice(idx, 1);
+      btn.textContent = '+ Сравнить';
+      btn.classList.remove('in');
+    } else {
+      if (compare.length >= MAX) return;
+      compare.push(id);
+      btn.textContent = '✓ В сравнении';
+      btn.classList.add('in');
+    }
+
+    // блокируем кнопки добавления если лимит
+    document.querySelectorAll('.btn-cmp:not(.in)').forEach(b => {
+      b.disabled = compare.length >= MAX;
+    });
+
+    // обновляем панель
+    count.textContent = compare.length;
+    list.innerHTML = '';
+    compare.forEach(cid => {
+      const c = document.querySelector(`.card[data-id="${cid}"]`);
+      const li = document.createElement('li');
+      li.textContent = c.dataset.name;
+      list.appendChild(li);
+    });
+    bar.classList.toggle('show', compare.length > 0);
+  });
+</script>
+</body>
+</html>

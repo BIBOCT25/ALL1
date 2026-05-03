@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>94. Генератор промокода</title>
+<style>
+  * { box-sizing: border-box; margin: 0; }
+  body { font-family: Arial, sans-serif; padding: 40px; background: linear-gradient(135deg,#E3F2FD,#f5f5f5); min-height: 100vh; }
+  h2 { font-size: 22px; margin-bottom: 6px; }
+  .sub { font-size: 14px; color: #888; margin-bottom: 28px; }
+  .promo-box {
+    background: #fff; border-radius: 16px; padding: 28px;
+    max-width: 420px; box-shadow: 0 4px 24px rgba(21,101,192,.12);
+  }
+  .code-display {
+    text-align: center; font-size: 34px; font-weight: 900; letter-spacing: 6px;
+    color: #1565C0; background: #E3F2FD; border-radius: 10px;
+    padding: 18px; margin-bottom: 14px; font-family: monospace;
+    cursor: pointer; user-select: all; position: relative;
+  }
+  .copy-hint {
+    font-size: 11px; color: #aaa; text-align: center; margin-bottom: 16px;
+    transition: color 0.3s;
+  }
+  .copy-hint.ok { color: #4CAF50; font-weight: bold; }
+  .timer-bar-wrap { height: 6px; background: #E3F2FD; border-radius: 3px; overflow: hidden; margin-bottom: 6px; }
+  .timer-bar { height: 100%; background: #1565C0; transition: width 0.5s linear; border-radius: 3px; }
+  .timer-label { font-size: 12px; color: #888; text-align: right; margin-bottom: 20px; }
+  .btn-gen {
+    width: 100%; padding: 13px; background: #1565C0; color: #fff;
+    border: none; border-radius: 10px; font-size: 15px; font-weight: bold;
+    cursor: pointer; transition: background 0.2s;
+  }
+  .btn-gen:hover { background: #0D47A1; }
+  .history { margin-top: 24px; }
+  .history h4 { font-size: 13px; color: #888; margin-bottom: 8px; }
+  .hist-item {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 6px 10px; background: #f5f5f5; border-radius: 6px;
+    margin-bottom: 4px; font-size: 13px; font-family: monospace; color: #555;
+  }
+  .hist-item .expired { color: #bbb; text-decoration: line-through; }
+  .hist-item .active-badge { font-size: 10px; background: #E8F5E9; color: #2E7D32; padding: 2px 6px; border-radius: 8px; }
+</style>
+</head>
+<body>
+<h2>Получите промокод</h2>
+<p class="sub">Нажмите кнопку — получите скидку 10% на любой заказ</p>
+<div class="promo-box">
+  <div class="code-display" id="codeDisplay">------</div>
+  <div class="copy-hint" id="copyHint">нажмите на код чтобы скопировать</div>
+  <div class="timer-bar-wrap"><div class="timer-bar" id="timerBar" style="width:0%"></div></div>
+  <div class="timer-label" id="timerLabel">— нет активного кода —</div>
+  <button class="btn-gen" id="genBtn">🎁 Получить промокод</button>
+  <div class="history" id="history" style="display:none">
+    <h4>История промокодов</h4>
+    <div id="histList"></div>
+  </div>
+</div>
+
+<script>
+  const CHARS    = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  const DURATION = 120; // секунд
+  let timer = null, remaining = 0, current = '', history = [];
+
+  function genCode(len = 8) {
+    return Array.from({ length: len }, () => CHARS[Math.floor(Math.random() * CHARS.length)]).join('');
+  }
+
+  function startTimer() {
+    clearInterval(timer);
+    remaining = DURATION;
+    timer = setInterval(() => {
+      remaining--;
+      const pct = (remaining / DURATION) * 100;
+      document.getElementById('timerBar').style.width = pct + '%';
+      document.getElementById('timerLabel').textContent =
+        remaining > 0 ? `Код действует ещё ${remaining} сек.` : 'Код истёк';
+      if (remaining <= 0) {
+        clearInterval(timer);
+        document.getElementById('timerBar').style.width = '0%';
+        renderHistory();
+      }
+    }, 1000);
+  }
+
+  function renderHistory() {
+    if (!history.length) return;
+    document.getElementById('history').style.display = 'block';
+    document.getElementById('histList').innerHTML = history.slice().reverse().map(h => {
+      const isActive = h.code === current && remaining > 0;
+      return `<div class="hist-item">
+        <span class="${isActive ? '' : 'expired'}">${h.code}</span>
+        ${isActive ? '<span class="active-badge">активен</span>' : '<span style="font-size:11px;color:#ccc">истёк</span>'}
+      </div>`;
+    }).join('');
+  }
+
+  document.getElementById('genBtn').addEventListener('click', () => {
+    current = genCode();
+    history.push({ code: current });
+    document.getElementById('codeDisplay').textContent = current;
+    document.getElementById('copyHint').textContent = 'нажмите на код чтобы скопировать';
+    document.getElementById('copyHint').classList.remove('ok');
+    startTimer();
+    renderHistory();
+  });
+
+  document.getElementById('codeDisplay').addEventListener('click', async () => {
+    if (current === '------') return;
+    try {
+      await navigator.clipboard.writeText(current);
+      const hint = document.getElementById('copyHint');
+      hint.textContent = '✓ Промокод скопирован!';
+      hint.classList.add('ok');
+      setTimeout(() => { hint.textContent = 'нажмите на код чтобы скопировать'; hint.classList.remove('ok'); }, 2500);
+    } catch {}
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>107. Infinite scroll</title>
+<style>
+  * { box-sizing: border-box; margin: 0; }
+  body { font-family: Arial, sans-serif; padding: 24px; background: #f5f5f5; }
+  h2 { font-size: 18px; margin-bottom: 18px; }
+  .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; max-width: 620px; }
+  .card { background: #fff; border-radius: 10px; overflow: hidden; box-shadow: 0 1px 6px rgba(0,0,0,.07); }
+  .card img { width: 100%; display: block; }
+  .card-body { padding: 12px; }
+  .card-name  { font-size: 13px; font-weight: bold; margin-bottom: 4px; }
+  .card-price { font-size: 13px; color: #D32F2F; font-weight: bold; }
+  .card-id    { font-size: 11px; color: #bbb; margin-top: 4px; }
+  .sentinel   { height: 40px; display: flex; align-items: center; justify-content: center; color: #aaa; font-size: 13px; max-width: 620px; margin-top: 10px; }
+  .loader     { display: none; gap: 6px; align-items: center; }
+  .loader.visible { display: flex; }
+  .dot { width: 8px; height: 8px; border-radius: 50%; background: #1565C0; animation: bounce 0.7s infinite alternate; }
+  .dot:nth-child(2) { animation-delay: 0.2s; }
+  .dot:nth-child(3) { animation-delay: 0.4s; }
+  @keyframes bounce { to { transform: translateY(-6px); opacity: 0.4; } }
+  .end-msg { display: none; font-size: 13px; color: #aaa; }
+</style>
+</head>
+<body>
+<h2>Каталог (прокрутите вниз)</h2>
+<div class="grid" id="grid"></div>
+<div class="sentinel" id="sentinel">
+  <div class="loader" id="loader"><div class="dot"></div><div class="dot"></div><div class="dot"></div><span>Загружаем...</span></div>
+  <div class="end-msg" id="endMsg">✓ Все товары загружены</div>
+</div>
+
+<script>
+  const COLORS = ['1565C0','2E7D32','6A1B9A','BF360C','00695C','4527A0','F57F17','880E4F','1B5E20','0D47A1'];
+  const NAMES  = ['iPhone','Galaxy','Pixel','Xiaomi','OnePlus','Nokia','Sony','Huawei','Motorola','Realme'];
+
+  const PAGE_SIZE = 6;
+  let   page      = 0;
+  const TOTAL     = 36;
+
+  function makePage(p) {
+    return Array.from({ length: PAGE_SIZE }, (_, i) => {
+      const n  = p * PAGE_SIZE + i + 1;
+      if (n > TOTAL) return null;
+      const name  = NAMES[(n - 1) % NAMES.length] + ' ' + n;
+      const color = COLORS[(n - 1) % COLORS.length];
+      const price = (Math.floor(Math.random() * 80) + 20) * 1000;
+      return { n, name, color, price };
+    }).filter(Boolean);
+  }
+
+  function renderPage(items) {
+    const grid = document.getElementById('grid');
+    items.forEach(item => {
+      const card = document.createElement('div');
+      card.className = 'card';
+      card.innerHTML = `
+        <img src="https://placehold.co/200x120/${item.color}/fff?text=${encodeURIComponent(item.name)}" alt="${item.name}">
+        <div class="card-body">
+          <div class="card-name">${item.name}</div>
+          <div class="card-price">${item.price.toLocaleString('ru')} ₽</div>
+          <div class="card-id">#${item.n}</div>
+        </div>`;
+      grid.appendChild(card);
+    });
+  }
+
+  const loader = document.getElementById('loader');
+  const endMsg = document.getElementById('endMsg');
+
+  const observer = new IntersectionObserver(entries => {
+    if (!entries[0].isIntersecting) return;
+    if (page * PAGE_SIZE >= TOTAL) {
+      loader.classList.remove('visible');
+      endMsg.style.display = 'block';
+      observer.disconnect();
+      return;
+    }
+    loader.classList.add('visible');
+    setTimeout(() => {
+      renderPage(makePage(page));
+      page++;
+      loader.classList.remove('visible');
+    }, 600);
+  }, { rootMargin: '100px' });
+
+  observer.observe(document.getElementById('sentinel'));
+</script>
+</body>
+</html>

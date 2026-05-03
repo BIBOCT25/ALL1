@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>45. Автоскрытие баннера</title>
+<style>
+  body { font-family: Arial, sans-serif; padding: 24px; }
+  .banner {
+    position: relative; background: #E3F2FD; border: 1px solid #BBDEFB;
+    border-radius: 10px; padding: 20px 50px 20px 20px;
+    max-width: 480px; transition: opacity 0.5s, transform 0.5s;
+  }
+  .banner.hide { opacity: 0; transform: translateY(-10px); pointer-events: none; }
+  .banner-title { font-size: 16px; font-weight: bold; color: #1565C0; margin-bottom: 6px; }
+  .banner-text  { font-size: 14px; color: #333; }
+  .btn-close {
+    position: absolute; top: 10px; right: 14px;
+    background: none; border: none; font-size: 20px; color: #90CAF9; cursor: pointer;
+  }
+  .btn-close:hover { color: #1565C0; }
+  .timer-line {
+    height: 3px; background: #2196F3; border-radius: 0 0 10px 10px;
+    margin: 12px -20px -20px; transition: width 5s linear; width: 100%;
+  }
+  .timer-line.run { width: 0; }
+  p { margin-top: 24px; color: #999; font-size: 14px; }
+</style>
+</head>
+<body>
+<div class="banner" id="banner">
+  <button class="btn-close" id="btnClose">✕</button>
+  <div class="banner-title">🎁 Подарок к первому заказу!</div>
+  <div class="banner-text">Используйте промокод <b>GIFT10</b> и получите −10% + бесплатную доставку.</div>
+  <div class="timer-line" id="timerLine"></div>
+</div>
+<p id="afterMsg" style="display:none">Баннер скрыт. Промокод: <b>GIFT10</b></p>
+
+<script>
+  const banner    = document.getElementById('banner');
+  const timerLine = document.getElementById('timerLine');
+  const afterMsg  = document.getElementById('afterMsg');
+
+  function hideBanner() {
+    banner.classList.add('hide');
+    setTimeout(() => {
+      banner.style.display = 'none';
+      afterMsg.style.display = 'block';
+    }, 500);
+  }
+
+  // Запускаем анимацию прогресс-линии
+  requestAnimationFrame(() => timerLine.classList.add('run'));
+
+  // Автоскрытие через 5 секунд
+  const autoHide = setTimeout(hideBanner, 5000);
+
+  document.getElementById('btnClose').addEventListener('click', () => {
+    clearTimeout(autoHide);
+    hideBanner();
+  });
+</script>
+</body>
+</html>

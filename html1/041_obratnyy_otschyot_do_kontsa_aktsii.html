@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>41. Обратный отсчёт</title>
+<style>
+  body { font-family: Arial, sans-serif; display: flex; justify-content: center; padding: 50px; }
+  .promo-box { text-align: center; padding: 30px 40px; background: linear-gradient(135deg,#1a237e,#283593); color: #fff; border-radius: 16px; max-width: 420px; }
+  .promo-title { font-size: 20px; font-weight: bold; margin-bottom: 6px; }
+  .promo-sub   { font-size: 14px; opacity: .8; margin-bottom: 24px; }
+  .countdown   { display: flex; gap: 16px; justify-content: center; }
+  .block { text-align: center; }
+  .num   { font-size: 48px; font-weight: bold; min-width: 66px; display: block; font-variant-numeric: tabular-nums; }
+  .lbl   { font-size: 12px; opacity: .75; text-transform: uppercase; letter-spacing: 1px; }
+  .separator { font-size: 40px; align-self: flex-start; margin-top: 10px; opacity: .6; }
+  .expired { font-size: 18px; color: #FF5252; font-weight: bold; margin-top: 10px; }
+</style>
+</head>
+<body>
+<div class="promo-box">
+  <div class="promo-title">Мегараспродажа −50%</div>
+  <div class="promo-sub">Акция заканчивается через:</div>
+  <div class="countdown" id="countdown">
+    <div class="block"><span class="num" id="days">00</span><span class="lbl">дней</span></div>
+    <div class="separator">:</div>
+    <div class="block"><span class="num" id="hours">00</span><span class="lbl">часов</span></div>
+    <div class="separator">:</div>
+    <div class="block"><span class="num" id="mins">00</span><span class="lbl">минут</span></div>
+    <div class="separator">:</div>
+    <div class="block"><span class="num" id="secs">00</span><span class="lbl">секунд</span></div>
+  </div>
+</div>
+<script>
+  // Устанавливаем дедлайн — через 3 дня от сейчас
+  const deadline = new Date(Date.now() + 3 * 24 * 60 * 60 * 1000);
+
+  function pad(n) { return String(n).padStart(2, '0'); }
+
+  function tick() {
+    const diff = deadline - Date.now();
+    if (diff <= 0) {
+      document.getElementById('countdown').innerHTML = '<div class="expired">Акция завершена!</div>';
+      return;
+    }
+    const days  = Math.floor(diff / 86400000);
+    const hours = Math.floor((diff % 86400000) / 3600000);
+    const mins  = Math.floor((diff % 3600000)  / 60000);
+    const secs  = Math.floor((diff % 60000)    / 1000);
+    document.getElementById('days').textContent  = pad(days);
+    document.getElementById('hours').textContent = pad(hours);
+    document.getElementById('mins').textContent  = pad(mins);
+    document.getElementById('secs').textContent  = pad(secs);
+  }
+
+  tick();
+  setInterval(tick, 1000);
+</script>
+</body>
+</html>

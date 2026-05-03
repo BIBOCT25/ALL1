@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>6. Купить в 1 клик</title>
+<style>
+  body { font-family: Arial, sans-serif; display: flex; justify-content: center; padding: 60px; }
+  .wrap { width: 260px; }
+  .btn-1click {
+    width: 100%; padding: 11px; background: #FF9800; color: #fff;
+    border: none; border-radius: 6px; font-size: 15px; cursor: pointer;
+  }
+  .quick-form {
+    margin-top: 12px; padding: 14px; border: 1px solid #FFE0B2;
+    border-radius: 6px; background: #FFF8F0;
+    display: none;
+  }
+  .quick-form.show { display: block; }
+  .quick-form input {
+    width: 100%; box-sizing: border-box; padding: 8px;
+    border: 1px solid #ddd; border-radius: 4px; font-size: 14px;
+    margin-bottom: 8px;
+  }
+  .quick-form button {
+    width: 100%; padding: 9px; background: #4CAF50; color: #fff;
+    border: none; border-radius: 4px; cursor: pointer; font-size: 14px;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div style="font-weight:bold;margin-bottom:10px;">Кроссовки — 3 490 ₽</div>
+  <button class="btn-1click" id="btn1click">Купить в 1 клик</button>
+  <div class="quick-form" id="quickForm">
+    <div style="font-size:13px;margin-bottom:8px;">Оставьте номер — перезвоним!</div>
+    <input type="tel" id="phone" placeholder="+7 (___) ___-__-__">
+    <button id="btnSend">Отправить</button>
+  </div>
+</div>
+<script>
+  const btn = document.getElementById('btn1click');
+  const form = document.getElementById('quickForm');
+  const btnSend = document.getElementById('btnSend');
+  const phone = document.getElementById('phone');
+
+  btn.addEventListener('click', () => form.classList.toggle('show'));
+
+  btnSend.addEventListener('click', () => {
+    if (!phone.value.trim()) { phone.style.borderColor = 'red'; return; }
+    phone.style.borderColor = '#ddd';
+    form.innerHTML = '<div style="color:#4CAF50;font-weight:bold;">✓ Заявка принята!</div>';
+  });
+</script>
+</body>
+</html>

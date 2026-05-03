@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>19. Читать далее</title>
+<style>
+  body { font-family: Arial, sans-serif; display: flex; justify-content: center; padding: 40px; }
+  .card { border: 1px solid #ddd; border-radius: 8px; padding: 20px; width: 300px; }
+  .card-name { font-size: 17px; font-weight: bold; margin-bottom: 10px; }
+  .desc { font-size: 14px; color: #444; line-height: 1.6; }
+  .btn-more {
+    background: none; border: none; color: #2196F3;
+    cursor: pointer; font-size: 14px; padding: 0; margin-top: 6px;
+  }
+  .btn-more:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="card-name">Смарт-часы Xiaomi Mi Band 8</div>
+  <div class="desc" id="desc"></div>
+  <button class="btn-more" id="btnMore">Читать далее</button>
+</div>
+<script>
+  const FULL = `Xiaomi Mi Band 8 — новое поколение фитнес-браслетов с AMOLED-экраном 1.62", 
+    которые отслеживают 150+ видов активности, измеряют пульс, SpO2 и уровень стресса. 
+    Водонепроницаемость 5ATM, автономность до 16 дней. 
+    Поддержка GPS через смартфон, уведомления из мессенджеров и звонки прямо с запястья.`;
+  const SHORT_LEN = 80;
+  const descEl = document.getElementById('desc');
+  const btnMore = document.getElementById('btnMore');
+  let expanded = false;
+
+  descEl.textContent = FULL.slice(0, SHORT_LEN) + '...';
+
+  btnMore.addEventListener('click', () => {
+    expanded = !expanded;
+    descEl.textContent = expanded ? FULL : FULL.slice(0, SHORT_LEN) + '...';
+    btnMore.textContent = expanded ? 'Свернуть' : 'Читать далее';
+  });
+</script>
+</body>
+</html>

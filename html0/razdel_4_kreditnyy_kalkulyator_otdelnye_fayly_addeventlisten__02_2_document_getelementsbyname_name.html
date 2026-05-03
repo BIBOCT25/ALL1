@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Метод: getElementsByName</title>
+</head>
+<body>
+
+    <h2>Кредитный калькулятор (getElementsByName)</h2>
+
+    <label>Сумма кредита:</label>
+    <input type="number" name="amount" placeholder="100000"><br><br>
+
+    <label>Процентная ставка (%):</label>
+    <input type="number" name="rate" placeholder="12"><br><br>
+
+    <label>Срок (месяцев):</label>
+    <input type="number" name="months" placeholder="24"><br><br>
+
+    <button name="calc">Рассчитать</button><br><br>
+
+    <label>Всего отдадите:</label>
+    <input type="text" name="result" readonly>
+
+    <script>
+        document.getElementsByName('calc')[0].addEventListener('click', function() {
+            let amount = document.getElementsByName('amount')[0].value;
+            let rate = document.getElementsByName('rate')[0].value;
+            let months = document.getElementsByName('months')[0].value;
+            let resultField = document.getElementsByName('result')[0];
+
+            if (amount === '' || rate === '' || months === '') {
+                resultField.value = 'Заполните все поля!';
+                return;
+            }
+            let total = amount * (1 + rate / 100 * months / 12);
+            resultField.value = total.toFixed(2) + ' руб.';
+        });
+    </script>
+
+</body>
+</html>

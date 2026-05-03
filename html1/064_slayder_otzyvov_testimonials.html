@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>64. Слайдер отзывов</title>
+<style>
+  * { box-sizing: border-box; }
+  body { font-family: Arial, sans-serif; display: flex; justify-content: center; padding: 50px; background: #F3E5F5; }
+  .testimonials { max-width: 480px; width: 100%; text-align: center; }
+  h2 { font-size: 20px; margin-bottom: 24px; color: #4A148C; }
+  .slide-wrap { position: relative; min-height: 180px; }
+  .review-card {
+    background: #fff; border-radius: 14px; padding: 28px 30px;
+    box-shadow: 0 4px 18px rgba(74,20,140,.12);
+    position: absolute; width: 100%;
+    opacity: 0; transition: opacity 0.4s ease;
+    pointer-events: none;
+  }
+  .review-card.active { opacity: 1; pointer-events: auto; position: relative; }
+  .review-text { font-size: 15px; color: #444; line-height: 1.7; margin-bottom: 18px; font-style: italic; }
+  .review-author { display: flex; align-items: center; gap: 12px; justify-content: center; }
+  .author-avatar { width: 44px; height: 44px; border-radius: 50%; object-fit: cover; }
+  .author-name   { font-size: 14px; font-weight: bold; color: #333; }
+  .author-stars  { font-size: 12px; color: #FFC107; }
+  .nav-dots { display: flex; justify-content: center; gap: 8px; margin-top: 20px; }
+  .nav-dot { width: 10px; height: 10px; border-radius: 50%; background: #CE93D8; cursor: pointer; transition: background 0.2s; border: none; }
+  .nav-dot.active { background: #7B1FA2; }
+  .nav-btns { display: flex; justify-content: center; gap: 10px; margin-top: 14px; }
+  .nav-btns button {
+    background: none; border: 2px solid #CE93D8; color: #7B1FA2;
+    width: 36px; height: 36px; border-radius: 50%; font-size: 18px; cursor: pointer; transition: all 0.2s;
+  }
+  .nav-btns button:hover { background: #7B1FA2; color: #fff; border-color: #7B1FA2; }
+</style>
+</head>
+<body>
+<div class="testimonials">
+  <h2>Отзывы покупателей</h2>
+  <div class="slide-wrap" id="slideWrap"></div>
+  <div class="nav-dots" id="navDots"></div>
+  <div class="nav-btns">
+    <button id="prevBtn">‹</button>
+    <button id="nextBtn">›</button>
+  </div>
+</div>
+
+<script>
+  const reviews = [
+    { text: '«Заказал ноутбук — доставили за 1 день. Упаковка отличная, всё целое. Обязательно вернусь!»', name: 'Алексей К.', stars: '★★★★★' },
+    { text: '«Наушники звучат потрясающе. Цена-качество на высшем уровне. Рекомендую всем!»', name: 'Мария В.', stars: '★★★★★' },
+    { text: '«Поддержка помогла быстро решить вопрос с возвратом. Профессиональный сервис.»', name: 'Дмитрий С.', stars: '★★★★☆' },
+    { text: '«Смартфон пришёл быстро, цена ниже чем везде. Теперь постоянный покупатель.»', name: 'Анна Т.', stars: '★★★★★' },
+  ];
+
+  const wrap = document.getElementById('slideWrap');
+  const dots = document.getElementById('navDots');
+  let cur = 0;
+
+  reviews.forEach((r, i) => {
+    const card = document.createElement('div');
+    card.className = 'review-card' + (i === 0 ? ' active' : '');
+    card.innerHTML = `
+      <div class="review-text">${r.text}</div>
+      <div class="review-author">
+        <img class="author-avatar" src="https://placehold.co/44x44/EDE7F6/7B1FA2?text=${encodeURIComponent(r.name[0])}" alt="">
+        <div>
+          <div class="author-name">${r.name}</div>
+          <div class="author-stars">${r.stars}</div>
+        </div>
+      </div>`;
+    wrap.appendChild(card);
+
+    const dot = document.createElement('button');
+    dot.className = 'nav-dot' + (i === 0 ? ' active' : '');
+    dot.addEventListener('click', () => goTo(i));
+    dots.appendChild(dot);
+  });
+
+  function goTo(idx) {
+    const cards = wrap.querySelectorAll('.review-card');
+    const dotEls = dots.querySelectorAll('.nav-dot');
+    cards[cur].classList.remove('active');
+    dotEls[cur].classList.remove('active');
+    cur = (idx + reviews.length) % reviews.length;
+    cards[cur].classList.add('active');
+    dotEls[cur].classList.add('active');
+  }
+
+  document.getElementById('prevBtn').addEventListener('click', () => goTo(cur - 1));
+  document.getElementById('nextBtn').addEventListener('click', () => goTo(cur + 1));
+  setInterval(() => goTo(cur + 1), 4000);
+</script>
+</body>
+</html>

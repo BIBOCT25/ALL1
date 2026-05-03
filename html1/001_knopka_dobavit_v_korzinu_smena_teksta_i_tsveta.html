@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>1. Кнопка «Добавить в корзину»</title>
+<style>
+  body { font-family: Arial, sans-serif; display: flex; justify-content: center; padding: 40px; }
+  .card { border: 1px solid #ddd; border-radius: 8px; padding: 20px; width: 220px; text-align: center; }
+  .card img { width: 100%; border-radius: 4px; margin-bottom: 12px; }
+  .price { font-size: 20px; font-weight: bold; margin-bottom: 16px; }
+  .btn-cart {
+    width: 100%; padding: 10px; border: none; border-radius: 6px;
+    background: #2196F3; color: #fff; font-size: 15px; cursor: pointer;
+    transition: background 0.3s, transform 0.1s;
+  }
+  .btn-cart.added { background: #4CAF50; }
+  .btn-cart:active { transform: scale(0.97); }
+</style>
+</head>
+<body>
+<div class="card">
+  <img src="https://placehold.co/220x160/eee/999?text=Товар" alt="Товар">
+  <div class="price">1 490 ₽</div>
+  <button class="btn-cart" id="btnCart">Добавить в корзину</button>
+</div>
+<script>
+  const btn = document.getElementById('btnCart');
+  btn.addEventListener('click', function () {
+    if (btn.classList.contains('added')) return;
+    btn.textContent = '✓ Добавлено';
+    btn.classList.add('added');
+    btn.disabled = true;
+    setTimeout(() => {
+      btn.textContent = 'Добавить в корзину';
+      btn.classList.remove('added');
+      btn.disabled = false;
+    }, 2000);
+  });
+</script>
+</body>
+</html>

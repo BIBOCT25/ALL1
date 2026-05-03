@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>24. Фильтр по категории</title>
+<style>
+  body { font-family: Arial, sans-serif; padding: 24px; max-width: 700px; margin: 0 auto; }
+  .filters { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px; }
+  .filter-btn {
+    padding: 7px 18px; border: 2px solid #ddd; background: #fff;
+    border-radius: 20px; cursor: pointer; font-size: 14px; transition: all 0.2s;
+  }
+  .filter-btn.active { border-color: #2196F3; background: #2196F3; color: #fff; }
+  .products { display: flex; gap: 14px; flex-wrap: wrap; }
+  .card {
+    border: 1px solid #ddd; border-radius: 8px; padding: 14px; width: 180px;
+    transition: opacity 0.3s, transform 0.3s;
+  }
+  .card.hidden { display: none; }
+  .card img { width: 100%; border-radius: 4px; margin-bottom: 8px; }
+  .card-cat { font-size: 11px; color: #2196F3; text-transform: uppercase; margin-bottom: 4px; }
+  .card-name { font-size: 14px; font-weight: bold; }
+  .card-price { color: #e53935; font-size: 16px; margin-top: 6px; }
+</style>
+</head>
+<body>
+
+<div class="filters" id="filters">
+  <button class="filter-btn active" data-filter="all">Все</button>
+  <button class="filter-btn" data-filter="shoes">Обувь</button>
+  <button class="filter-btn" data-filter="clothes">Одежда</button>
+  <button class="filter-btn" data-filter="accessories">Аксессуары</button>
+</div>
+
+<div class="products" id="products">
+  <div class="card" data-category="shoes">
+    <img src="https://placehold.co/180x110/4FC3F7/fff?text=Кроссовки" alt=""><div class="card-cat">Обувь</div>
+    <div class="card-name">Кроссовки Nike</div><div class="card-price">4 990 ₽</div>
+  </div>
+  <div class="card" data-category="shoes">
+    <img src="https://placehold.co/180x110/0288D1/fff?text=Ботинки" alt=""><div class="card-cat">Обувь</div>
+    <div class="card-name">Ботинки Timberland</div><div class="card-price">8 490 ₽</div>
+  </div>
+  <div class="card" data-category="clothes">
+    <img src="https://placehold.co/180x110/81C784/fff?text=Куртка" alt=""><div class="card-cat">Одежда</div>
+    <div class="card-name">Куртка Adidas</div><div class="card-price">6 990 ₽</div>
+  </div>
+  <div class="card" data-category="clothes">
+    <img src="https://placehold.co/180x110/AED581/333?text=Шапка" alt=""><div class="card-cat">Одежда</div>
+    <div class="card-name">Шапка Under Armour</div><div class="card-price">1 290 ₽</div>
+  </div>
+  <div class="card" data-category="accessories">
+    <img src="https://placehold.co/180x110/FFB74D/333?text=Очки" alt=""><div class="card-cat">Аксессуары</div>
+    <div class="card-name">Очки Ray-Ban</div><div class="card-price">3 490 ₽</div>
+  </div>
+  <div class="card" data-category="accessories">
+    <img src="https://placehold.co/180x110/F48FB1/fff?text=Рюкзак" alt=""><div class="card-cat">Аксессуары</div>
+    <div class="card-name">Рюкзак Nike</div><div class="card-price">2 990 ₽</div>
+  </div>
+</div>
+
+<script>
+  const filtersEl  = document.getElementById('filters');
+  const cards      = document.querySelectorAll('.card');
+
+  filtersEl.addEventListener('click', e => {
+    const btn = e.target.closest('.filter-btn');
+    if (!btn) return;
+
+    filtersEl.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+
+    const filter = btn.dataset.filter;
+    cards.forEach(card => {
+      const match = filter === 'all' || card.dataset.category === filter;
+      card.classList.toggle('hidden', !match);
+    });
+  });
+</script>
+</body>
+</html>

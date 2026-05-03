@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>82. Переключатель валюты</title>
+<style>
+  * { box-sizing: border-box; }
+  body { font-family: Arial, sans-serif; padding: 30px; background: #f5f5f5; }
+  h2 { font-size: 18px; margin-bottom: 6px; }
+  .toolbar {
+    display: flex; align-items: center; gap: 8px;
+    margin-bottom: 24px; flex-wrap: wrap;
+  }
+  .toolbar label { font-size: 14px; color: #555; }
+  .btn-cur {
+    padding: 7px 16px; border: 1px solid #ccc; border-radius: 20px;
+    background: #fff; cursor: pointer; font-size: 13px; font-weight: bold;
+    transition: all 0.2s;
+  }
+  .btn-cur.active { background: #1565C0; color: #fff; border-color: #1565C0; }
+  .btn-cur:hover:not(.active) { border-color: #1565C0; color: #1565C0; }
+  .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; max-width: 620px; }
+  .card { background: #fff; border-radius: 10px; padding: 16px; box-shadow: 0 1px 6px rgba(0,0,0,.08); }
+  .card-title { font-size: 14px; font-weight: bold; margin-bottom: 4px; }
+  .card-old { font-size: 12px; color: #aaa; text-decoration: line-through; }
+  .card-price { font-size: 16px; color: #D32F2F; font-weight: bold; margin-top: 4px; }
+</style>
+</head>
+<body>
+<h2>Каталог электроники</h2>
+<div class="toolbar">
+  <label>Валюта:</label>
+  <button class="btn-cur active" data-cur="RUB">₽ RUB</button>
+  <button class="btn-cur" data-cur="USD">$ USD</button>
+  <button class="btn-cur" data-cur="EUR">€ EUR</button>
+  <button class="btn-cur" data-cur="CNY">¥ CNY</button>
+</div>
+
+<div class="grid">
+  <div class="card">
+    <div class="card-title">iPhone 15</div>
+    <div class="card-old"><span class="price" data-rub="99990">99 990</span> <span class="sym">₽</span></div>
+    <div class="card-price"><span class="price" data-rub="89990">89 990</span> <span class="sym">₽</span></div>
+  </div>
+  <div class="card">
+    <div class="card-title">Galaxy S24</div>
+    <div class="card-old"><span class="price" data-rub="84990">84 990</span> <span class="sym">₽</span></div>
+    <div class="card-price"><span class="price" data-rub="74990">74 990</span> <span class="sym">₽</span></div>
+  </div>
+  <div class="card">
+    <div class="card-title">MacBook Air</div>
+    <div class="card-old"><span class="price" data-rub="139990">139 990</span> <span class="sym">₽</span></div>
+    <div class="card-price"><span class="price" data-rub="124990">124 990</span> <span class="sym">₽</span></div>
+  </div>
+  <div class="card">
+    <div class="card-title">iPad Pro 11"</div>
+    <div class="card-old"><span class="price" data-rub="109990">109 990</span> <span class="sym">₽</span></div>
+    <div class="card-price"><span class="price" data-rub="99990">99 990</span> <span class="sym">₽</span></div>
+  </div>
+  <div class="card">
+    <div class="card-title">AirPods Pro</div>
+    <div class="card-old"><span class="price" data-rub="27990">27 990</span> <span class="sym">₽</span></div>
+    <div class="card-price"><span class="price" data-rub="22990">22 990</span> <span class="sym">₽</span></div>
+  </div>
+  <div class="card">
+    <div class="card-title">Apple Watch</div>
+    <div class="card-old"><span class="price" data-rub="49990">49 990</span> <span class="sym">₽</span></div>
+    <div class="card-price"><span class="price" data-rub="44990">44 990</span> <span class="sym">₽</span></div>
+  </div>
+</div>
+
+<script>
+  const rates = { RUB: 1, USD: 0.011, EUR: 0.010, CNY: 0.080 };
+  const syms  = { RUB: '₽', USD: '$', EUR: '€', CNY: '¥' };
+  let cur = 'RUB';
+
+  function updatePrices() {
+    document.querySelectorAll('.price').forEach(el => {
+      const rub = parseFloat(el.dataset.rub);
+      const val = rub * rates[cur];
+      el.textContent = cur === 'RUB'
+        ? Math.round(val).toLocaleString('ru')
+        : val.toLocaleString('en', { minimumFractionDigits: 0, maximumFractionDigits: 2 });
+    });
+    document.querySelectorAll('.sym').forEach(el => el.textContent = syms[cur]);
+  }
+
+  document.querySelectorAll('.btn-cur').forEach(btn => {
+    btn.addEventListener('click', () => {
+      cur = btn.dataset.cur;
+      document.querySelectorAll('.btn-cur').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      updatePrices();
+    });
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang='ru'>
+<head>
+    <meta charset='UTF-8'>
+    <title>Метод: getElementsByTagName</title>
+</head>
+<body>
+    <h2>Анализ числа (getElementsByTagName)</h2>
+    <input type='number' placeholder='Введите число 1'>
+    <input type='number' placeholder='Введите число 2'>
+    <input type='number' placeholder='Введите число 3'>
+    <input type='number' placeholder='Введите число 4'>
+    <button onclick='analyzeNumber()'>Анализировать 4-е число</button>
+    <p></p>
+
+    <script>
+        function analyzeNumber() {
+            // Получаем "живую" коллекцию всех элементов <input>
+            let allInputs = document.getElementsByTagName('input');
+            
+            // Обращаемся к 4-му элементу (индекс 3)
+            let input = allInputs[3].value;
+            let num = Number(input);
+            
+            // Получаем коллекцию всех <p> и берём первый
+            let resultElement = document.getElementsByTagName('p')[0];
+            
+            if (input === '' || isNaN(num)) {
+                resultElement.textContent = 
+                    'Ошибка: введите корректное число в 4-е поле!';
+                return;
+            }
+            
+            let sign = '';
+            if (num > 0) {
+                sign = 'положительное';
+            } else if (num < 0) {
+                sign = 'отрицательное';
+            } else {
+                sign = 'нулевое';
+            }
+            
+            let parity = (num % 2 === 0) ? 'чётное' : 'нечётное';
+            
+            resultElement.textContent = 
+                `Число ${num}: ${sign}, ${parity}.`;
+        }
+    </script>
+</body>
+</html>

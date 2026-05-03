@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>5. Кнопка с прогресс-баром</title>
+<style>
+  body { font-family: Arial, sans-serif; display: flex; justify-content: center; padding: 60px; }
+  .wrap { width: 260px; text-align: center; }
+  .btn-buy {
+    width: 100%; padding: 12px; border: none; border-radius: 6px;
+    background: #2196F3; color: #fff; font-size: 16px; cursor: pointer;
+    transition: background 0.2s;
+  }
+  .btn-buy:disabled { background: #90CAF9; cursor: default; }
+  .progress-wrap {
+    margin-top: 12px; background: #eee; border-radius: 4px;
+    height: 6px; overflow: hidden; display: none;
+  }
+  .progress-bar { height: 100%; width: 0; background: #2196F3; transition: width 0.05s linear; }
+  .status { margin-top: 10px; font-size: 14px; color: #555; min-height: 20px; }
+  .status.success { color: #4CAF50; font-weight: bold; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <button class="btn-buy" id="btnBuy">Купить сейчас</button>
+  <div class="progress-wrap" id="progressWrap">
+    <div class="progress-bar" id="progressBar"></div>
+  </div>
+  <div class="status" id="status"></div>
+</div>
+<script>
+  const btn  = document.getElementById('btnBuy');
+  const wrap = document.getElementById('progressWrap');
+  const bar  = document.getElementById('progressBar');
+  const status = document.getElementById('status');
+
+  btn.addEventListener('click', () => {
+    btn.disabled = true;
+    btn.textContent = 'Обработка...';
+    wrap.style.display = 'block';
+    status.textContent = '';
+    status.className = 'status';
+
+    let pct = 0;
+    const iv = setInterval(() => {
+      pct += 2;
+      bar.style.width = pct + '%';
+      if (pct >= 100) {
+        clearInterval(iv);
+        wrap.style.display = 'none';
+        bar.style.width = '0';
+        btn.textContent = 'Купить сейчас';
+        btn.disabled = false;
+        status.textContent = '✓ Заказ оформлен!';
+        status.classList.add('success');
+      }
+    }, 30);
+  });
+</script>
+</body>
+</html>

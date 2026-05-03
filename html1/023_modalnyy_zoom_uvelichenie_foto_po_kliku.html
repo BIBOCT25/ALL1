@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>23. Zoom — увеличение фото</title>
+<style>
+  body { font-family: Arial, sans-serif; display: flex; justify-content: center; padding: 40px; gap: 16px; flex-wrap: wrap; }
+  .thumb-img {
+    width: 160px; height: 110px; object-fit: cover;
+    border-radius: 6px; cursor: zoom-in;
+    transition: transform 0.15s, box-shadow 0.15s;
+    border: 2px solid transparent;
+  }
+  .thumb-img:hover { transform: scale(1.04); box-shadow: 0 4px 14px rgba(0,0,0,.2); border-color: #2196F3; }
+  .lightbox {
+    position: fixed; inset: 0; background: rgba(0,0,0,.85);
+    display: flex; align-items: center; justify-content: center;
+    opacity: 0; pointer-events: none; transition: opacity 0.25s; z-index: 200;
+    cursor: zoom-out;
+  }
+  .lightbox.open { opacity: 1; pointer-events: all; }
+  .lightbox img { max-width: 90vw; max-height: 90vh; border-radius: 6px; box-shadow: 0 8px 32px rgba(0,0,0,.4); }
+  .lb-close {
+    position: fixed; top: 18px; right: 24px;
+    color: #fff; font-size: 32px; cursor: pointer; line-height: 1;
+  }
+</style>
+</head>
+<body>
+
+<img class="thumb-img" src="https://placehold.co/160x110/4FC3F7/fff?text=Фото+1"
+  data-full="https://placehold.co/800x530/4FC3F7/fff?text=Полный+размер+1" alt="">
+<img class="thumb-img" src="https://placehold.co/160x110/81C784/fff?text=Фото+2"
+  data-full="https://placehold.co/800x530/81C784/fff?text=Полный+размер+2" alt="">
+<img class="thumb-img" src="https://placehold.co/160x110/FFB74D/333?text=Фото+3"
+  data-full="https://placehold.co/800x530/FFB74D/333?text=Полный+размер+3" alt="">
+
+<div class="lightbox" id="lightbox">
+  <span class="lb-close" id="lbClose">✕</span>
+  <img id="lbImg" src="" alt="Увеличенное фото">
+</div>
+
+<script>
+  const lightbox = document.getElementById('lightbox');
+  const lbImg    = document.getElementById('lbImg');
+
+  document.querySelectorAll('.thumb-img').forEach(img => {
+    img.addEventListener('click', () => {
+      lbImg.src = img.dataset.full;
+      lightbox.classList.add('open');
+    });
+  });
+
+  function close() { lightbox.classList.remove('open'); }
+  document.getElementById('lbClose').addEventListener('click', close);
+  lightbox.addEventListener('click', e => { if (e.target === lightbox) close(); });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') close(); });
+</script>
+</body>
+</html>

@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>95. Квиз-помощник</title>
+<style>
+  * { box-sizing: border-box; margin: 0; }
+  body { font-family: Arial, sans-serif; padding: 40px; background: #f0f4ff; min-height: 100vh; }
+  h2 { font-size: 22px; margin-bottom: 6px; }
+  .sub { font-size: 14px; color: #888; margin-bottom: 28px; }
+  .quiz-box {
+    background: #fff; border-radius: 16px; padding: 28px;
+    max-width: 480px; box-shadow: 0 4px 20px rgba(21,101,192,.1);
+  }
+  .progress-wrap { height: 4px; background: #E3F2FD; border-radius: 2px; margin-bottom: 20px; }
+  .progress-fill { height: 100%; background: #1565C0; border-radius: 2px; transition: width 0.4s; }
+  .step-label { font-size: 12px; color: #aaa; margin-bottom: 6px; }
+  .question { font-size: 17px; font-weight: 700; color: #1a237e; margin-bottom: 18px; line-height: 1.4; }
+  .options { display: flex; flex-direction: column; gap: 8px; }
+  .opt-btn {
+    padding: 12px 16px; border: 2px solid #e0e0e0; border-radius: 10px;
+    background: #fff; text-align: left; cursor: pointer; font-size: 14px;
+    transition: all 0.2s;
+  }
+  .opt-btn:hover { border-color: #1565C0; background: #E3F2FD; color: #1565C0; }
+  .result-box { text-align: center; }
+  .result-box img { width: 160px; border-radius: 10px; margin: 0 auto 14px; display: block; }
+  .result-name  { font-size: 20px; font-weight: 900; color: #1565C0; margin-bottom: 6px; }
+  .result-desc  { font-size: 14px; color: #555; margin-bottom: 14px; line-height: 1.6; }
+  .result-price { font-size: 18px; color: #D32F2F; font-weight: bold; margin-bottom: 16px; }
+  .btn-cart { padding: 12px 28px; background: #1565C0; color: #fff; border: none; border-radius: 10px; font-size: 15px; font-weight: bold; cursor: pointer; }
+  .btn-restart { background: none; border: none; color: #888; font-size: 13px; cursor: pointer; margin-top: 10px; display: block; width: 100%; text-align: center; }
+</style>
+</head>
+<body>
+<h2>Помощник по выбору смартфона</h2>
+<p class="sub">Ответьте на 3 вопроса — подберём идеальный вариант</p>
+<div class="quiz-box" id="quizBox">
+  <div class="progress-wrap"><div class="progress-fill" id="progress" style="width:0%"></div></div>
+  <div class="step-label" id="stepLabel">Вопрос 1 из 3</div>
+  <div class="question" id="question"></div>
+  <div class="options" id="options"></div>
+</div>
+
+<script>
+  const QUESTIONS = [
+    {
+      text: 'Какой у вас бюджет?',
+      key: 'budget',
+      opts: [
+        { label: 'До 50 000 ₽',    value: 'low'    },
+        { label: '50 000–90 000 ₽', value: 'mid'    },
+        { label: 'Более 90 000 ₽',  value: 'high'   },
+      ]
+    },
+    {
+      text: 'Что важнее всего?',
+      key: 'priority',
+      opts: [
+        { label: '📷 Камера',         value: 'camera'  },
+        { label: '🔋 Батарея',        value: 'battery' },
+        { label: '⚡ Производительность', value: 'perf' },
+      ]
+    },
+    {
+      text: 'Какую ОС предпочитаете?',
+      key: 'os',
+      opts: [
+        { label: '🍎 iOS (iPhone)',   value: 'ios'     },
+        { label: '🤖 Android',        value: 'android' },
+        { label: 'Не важно',          value: 'any'     },
+      ]
+    },
+  ];
+
+  const PRODUCTS = [
+    { name:'iPhone 15',    price:'89 990 ₽', color:'1565C0', os:'ios',     budget:'mid',  priority:'camera',  desc:'Лучшая камера и экосистема Apple. Стабильная работа и 5 лет обновлений.' },
+    { name:'iPhone 14',    price:'69 990 ₽', color:'1976D2', os:'ios',     budget:'mid',  priority:'perf',    desc:'Мощный чип A15, надёжная камера, долгая поддержка.' },
+    { name:'Galaxy S24',   price:'74 990 ₽', color:'2E7D32', os:'android', budget:'mid',  priority:'perf',    desc:'Топовый Snapdragon, яркий экран, отличный дисплей.' },
+    { name:'Pixel 8 Pro',  price:'84 990 ₽', color:'6A1B9A', os:'android', budget:'mid',  priority:'camera',  desc:'Лучшее ПО для камеры, чистый Android, 7 лет обновлений.' },
+    { name:'Xiaomi 14',    price:'64 990 ₽', color:'BF360C', os:'android', budget:'low',  priority:'camera',  desc:'Объектив Leica, мощный чип, отличное соотношение цена/качество.' },
+    { name:'OnePlus 12',   price:'54 990 ₽', color:'00695C', os:'android', budget:'low',  priority:'perf',    desc:'Быстрая зарядка 100 Вт, плавный экран 120 Гц, хорошая батарея.' },
+    { name:'Samsung A55',  price:'39 990 ₽', color:'F57F17', os:'android', budget:'low',  priority:'battery', desc:'Большой аккумулятор, красивый экран AMOLED, 4 года обновлений.' },
+    { name:'iPhone 15 Pro',price:'119990 ₽', color:'0D47A1', os:'ios',     budget:'high', priority:'perf',    desc:'Чип A17 Pro, titanium корпус, Pro-камера с 5x оптикой.' },
+  ];
+
+  let step    = 0;
+  let answers = {};
+
+  function renderQuestion() {
+    const q = QUESTIONS[step];
+    document.getElementById('stepLabel').textContent = `Вопрос ${step + 1} из ${QUESTIONS.length}`;
+    document.getElementById('progress').style.width  = ((step / QUESTIONS.length) * 100) + '%';
+    document.getElementById('question').textContent  = q.text;
+    document.getElementById('options').innerHTML = q.opts.map(o =>
+      `<button class="opt-btn" data-val="${o.value}">${o.label}</button>`
+    ).join('');
+    document.querySelectorAll('.opt-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        answers[q.key] = btn.dataset.val;
+        step++;
+        if (step < QUESTIONS.length) renderQuestion();
+        else showResult();
+      });
+    });
+  }
+
+  function showResult() {
+    document.getElementById('progress').style.width = '100%';
+    // Поиск лучшего совпадения
+    const score = p => {
+      let s = 0;
+      if (p.os === answers.os || answers.os === 'any') s += 2;
+      if (p.budget === answers.budget) s += 2;
+      if (p.priority === answers.priority) s += 3;
+      return s;
+    };
+    const best = PRODUCTS.reduce((a, b) => score(a) >= score(b) ? a : b);
+    document.getElementById('quizBox').innerHTML = `
+      <div class="result-box">
+        <img src="https://placehold.co/160x110/${best.color}/fff?text=${encodeURIComponent(best.name)}" alt="${best.name}">
+        <div class="result-name">${best.name}</div>
+        <div class="result-desc">${best.desc}</div>
+        <div class="result-price">${best.price}</div>
+        <button class="btn-cart">🛒 В корзину</button>
+        <button class="btn-restart" id="restart">Пройти заново</button>
+      </div>`;
+    document.getElementById('restart').addEventListener('click', () => {
+      step = 0; answers = {};
+      document.getElementById('quizBox').innerHTML = `
+        <div class="progress-wrap"><div class="progress-fill" id="progress" style="width:0%"></div></div>
+        <div class="step-label" id="stepLabel"></div>
+        <div class="question" id="question"></div>
+        <div class="options" id="options"></div>`;
+      renderQuestion();
+    });
+  }
+
+  renderQuestion();
+</script>
+</body>
+</html>

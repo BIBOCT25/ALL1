@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>13. Quick View</title>
+<style>
+  body { font-family: Arial, sans-serif; padding: 30px; }
+  .products { display: flex; gap: 16px; flex-wrap: wrap; }
+  .card {
+    border: 1px solid #ddd; border-radius: 8px; overflow: hidden;
+    width: 180px; position: relative; cursor: pointer;
+  }
+  .card img { width: 100%; display: block; }
+  .card-body { padding: 12px; }
+  .card-name { font-size: 14px; font-weight: bold; }
+  .card-price { color: #e53935; margin-top: 4px; }
+  .btn-qv {
+    width: 100%; padding: 7px; border: none; background: rgba(33,150,243,.9);
+    color: #fff; cursor: pointer; font-size: 13px;
+    opacity: 0; transition: opacity 0.2s;
+  }
+  .card:hover .btn-qv { opacity: 1; }
+  /* Modal */
+  .overlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,.5);
+    display: flex; align-items: center; justify-content: center;
+    opacity: 0; pointer-events: none; transition: opacity 0.2s; z-index: 100;
+  }
+  .overlay.open { opacity: 1; pointer-events: all; }
+  .modal {
+    background: #fff; border-radius: 10px; padding: 24px; width: 340px;
+    position: relative; display: flex; gap: 20px;
+  }
+  .modal img { width: 130px; border-radius: 6px; }
+  .modal-info { flex: 1; }
+  .modal-info h3 { margin: 0 0 8px; }
+  .modal-price { color: #e53935; font-size: 20px; font-weight: bold; margin-bottom: 12px; }
+  .btn-close {
+    position: absolute; top: 10px; right: 14px; background: none; border: none;
+    font-size: 22px; cursor: pointer; color: #777;
+  }
+  .btn-add {
+    width: 100%; padding: 9px; background: #2196F3; color: #fff;
+    border: none; border-radius: 6px; cursor: pointer;
+  }
+</style>
+</head>
+<body>
+
+<div class="products" id="products">
+  <div class="card" data-name="Кроссовки Nike" data-price="4 990" data-desc="Лёгкие беговые кроссовки, амортизация Air Max.">
+    <img src="https://placehold.co/180x120/4FC3F7/fff?text=Nike" alt="">
+    <div class="card-body">
+      <div class="card-name">Кроссовки Nike</div>
+      <div class="card-price">4 990 ₽</div>
+    </div>
+    <button class="btn-qv">Быстрый просмотр</button>
+  </div>
+  <div class="card" data-name="Куртка Adidas" data-price="7 490" data-desc="Ветрозащитная куртка, технология Climaproof.">
+    <img src="https://placehold.co/180x120/81C784/fff?text=Adidas" alt="">
+    <div class="card-body">
+      <div class="card-name">Куртка Adidas</div>
+      <div class="card-price">7 490 ₽</div>
+    </div>
+    <button class="btn-qv">Быстрый просмотр</button>
+  </div>
+</div>
+
+<div class="overlay" id="overlay">
+  <div class="modal" id="modal">
+    <button class="btn-close" id="btnClose">✕</button>
+    <img id="mImg" src="" alt="">
+    <div class="modal-info">
+      <h3 id="mName"></h3>
+      <div class="modal-price" id="mPrice"></div>
+      <p id="mDesc" style="font-size:13px;color:#555;margin-bottom:14px;"></p>
+      <button class="btn-add">В корзину</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  const overlay = document.getElementById('overlay');
+
+  document.getElementById('products').addEventListener('click', e => {
+    const btn  = e.target.closest('.btn-qv');
+    const card = e.target.closest('.card');
+    if (!btn || !card) return;
+
+    document.getElementById('mName').textContent  = card.dataset.name;
+    document.getElementById('mPrice').textContent = card.dataset.price + ' ₽';
+    document.getElementById('mDesc').textContent  = card.dataset.desc;
+    document.getElementById('mImg').src = card.querySelector('img').src;
+    overlay.classList.add('open');
+  });
+
+  document.getElementById('btnClose').addEventListener('click', () => overlay.classList.remove('open'));
+  overlay.addEventListener('click', e => { if (e.target === overlay) overlay.classList.remove('open'); });
+</script>
+</body>
+</html>

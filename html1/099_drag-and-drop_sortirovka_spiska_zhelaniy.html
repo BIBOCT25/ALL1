@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>99. Drag & drop wishlist</title>
+<style>
+  * { box-sizing: border-box; margin: 0; }
+  body { font-family: Arial, sans-serif; padding: 36px; background: #f5f5f5; }
+  h2 { font-size: 20px; margin-bottom: 6px; }
+  .sub { font-size: 13px; color: #888; margin-bottom: 22px; }
+  .wish-list { max-width: 440px; }
+  .wish-item {
+    display: flex; align-items: center; gap: 12px;
+    background: #fff; border-radius: 10px; padding: 12px 14px;
+    margin-bottom: 8px; border: 2px solid transparent;
+    cursor: grab; user-select: none;
+    box-shadow: 0 1px 6px rgba(0,0,0,.07);
+    transition: box-shadow 0.2s, border-color 0.2s;
+  }
+  .wish-item:active { cursor: grabbing; }
+  .wish-item.dragging { opacity: 0.4; border-color: #1565C0; }
+  .wish-item.drag-over { border-color: #42A5F5; box-shadow: 0 4px 16px rgba(21,101,192,.2); }
+  .handle { color: #ccc; font-size: 18px; cursor: grab; }
+  .rank {
+    width: 24px; height: 24px; border-radius: 50%; background: #E3F2FD;
+    color: #1565C0; font-size: 12px; font-weight: bold;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+  .wish-img { width: 44px; height: 44px; border-radius: 6px; object-fit: cover; flex-shrink: 0; }
+  .wish-info { flex: 1; }
+  .wish-name  { font-size: 14px; font-weight: bold; margin-bottom: 2px; }
+  .wish-price { font-size: 13px; color: #D32F2F; }
+  .remove-btn {
+    background: none; border: none; color: #ccc; cursor: pointer;
+    font-size: 18px; padding: 0 4px; line-height: 1;
+  }
+  .remove-btn:hover { color: #E53935; }
+  .save-btn {
+    margin-top: 14px; padding: 10px 22px; background: #1565C0; color: #fff;
+    border: none; border-radius: 8px; font-size: 14px; cursor: pointer;
+  }
+  .save-btn:hover { background: #0D47A1; }
+  .saved-msg { font-size: 13px; color: #4CAF50; margin-left: 12px; display: none; }
+</style>
+</head>
+<body>
+<h2>Список желаний</h2>
+<p class="sub">Перетащите товары, чтобы расставить по приоритету</p>
+<div class="wish-list" id="wishList"></div>
+<div style="display:flex;align-items:center;max-width:440px">
+  <button class="save-btn" id="saveBtn">💾 Сохранить порядок</button>
+  <span class="saved-msg" id="savedMsg">Сохранено!</span>
+</div>
+
+<script>
+  const ITEMS = [
+    { id:1, name:'iPhone 15 Pro',  price:'119 990 ₽', color:'1565C0' },
+    { id:2, name:'MacBook Air M3', price:'124 990 ₽', color:'2E7D32' },
+    { id:3, name:'AirPods Pro 2',  price:'22 990 ₽',  color:'6A1B9A' },
+    { id:4, name:'Apple Watch 9',  price:'44 990 ₽',  color:'BF360C' },
+    { id:5, name:'iPad Pro 11"',   price:'99 990 ₽',  color:'00695C' },
+  ];
+
+  let order = ITEMS.map(i => i.id);
+  let draggingId = null;
+
+  function render() {
+    const list = document.getElementById('wishList');
+    list.innerHTML = order.map((id, idx) => {
+      const item = ITEMS.find(x => x.id === id);
+      return `<div class="wish-item" draggable="true" data-id="${id}">
+        <span class="handle">⠿</span>
+        <div class="rank">${idx + 1}</div>
+        <img class="wish-img" src="https://placehold.co/44x44/${item.color}/fff?text=${encodeURIComponent(idx+1)}" alt="${item.name}">
+        <div class="wish-info">
+          <div class="wish-name">${item.name}</div>
+          <div class="wish-price">${item.price}</div>
+        </div>
+        <button class="remove-btn" data-remove="${id}" title="Удалить">×</button>
+      </div>`;
+    }).join('');
+
+    list.querySelectorAll('.wish-item').forEach(el => {
+      el.addEventListener('dragstart', () => { draggingId = parseInt(el.dataset.id); el.classList.add('dragging'); });
+      el.addEventListener('dragend',   () => { el.classList.remove('dragging'); draggingId = null; render(); });
+      el.addEventListener('dragover',  e => {
+        e.preventDefault();
+        document.querySelectorAll('.wish-item').forEach(x => x.classList.remove('drag-over'));
+        el.classList.add('drag-over');
+      });
+      el.addEventListener('drop', e => {
+        e.preventDefault();
+        const targetId = parseInt(el.dataset.id);
+        if (draggingId === targetId) return;
+        const fromIdx = order.indexOf(draggingId);
+        const toIdx   = order.indexOf(targetId);
+        order.splice(fromIdx, 1);
+        order.splice(toIdx, 0, draggingId);
+      });
+    });
+
+    list.querySelectorAll('.remove-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        order = order.filter(id => id !== parseInt(btn.dataset.remove));
+        render();
+      });
+    });
+  }
+
+  document.getElementById('saveBtn').addEventListener('click', () => {
+    localStorage.setItem('wishOrder', JSON.stringify(order));
+    const msg = document.getElementById('savedMsg');
+    msg.style.display = 'inline';
+    setTimeout(() => msg.style.display = 'none', 2000);
+  });
+
+  render();
+</script>
+</body>
+</html>

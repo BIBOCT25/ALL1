@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>92. Бегущая строка</title>
+<style>
+  * { box-sizing: border-box; margin: 0; }
+  body { font-family: Arial, sans-serif; background: #f5f5f5; padding-top: 20px; }
+  .ticker-outer {
+    background: #1565C0; color: #fff; overflow: hidden; padding: 10px 0;
+    white-space: nowrap; position: relative;
+  }
+  .ticker-inner { display: inline-flex; gap: 0; will-change: transform; }
+  .ticker-track {
+    display: inline-flex; align-items: center; gap: 0;
+  }
+  .ticker-item {
+    padding: 0 32px; font-size: 14px; font-weight: 500; white-space: nowrap;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .ticker-item .tag {
+    background: rgba(255,255,255,.2); border-radius: 10px;
+    padding: 2px 8px; font-size: 11px; font-weight: bold; letter-spacing: .5px;
+  }
+  .ticker-sep { color: rgba(255,255,255,.4); padding: 0 6px; }
+  .page { max-width: 800px; margin: 0 auto; padding: 30px; }
+  h1 { font-size: 22px; margin-bottom: 12px; }
+  p { font-size: 14px; color: #555; line-height: 1.7; }
+  .speed-row { display: flex; align-items: center; gap: 12px; margin: 16px 0 0; font-size: 13px; color: #555; }
+  input[type=range] { accent-color: #1565C0; }
+</style>
+</head>
+<body>
+<div class="ticker-outer" id="tickerOuter">
+  <div class="ticker-inner" id="tickerInner">
+    <div class="ticker-track" id="tickerTrack"></div>
+  </div>
+</div>
+
+<div class="page">
+  <h1>МегаМаркет — новости</h1>
+  <p>Используйте бегущую строку для анонсов акций, важных уведомлений и горячих предложений.</p>
+  <div class="speed-row">
+    Скорость:
+    <input type="range" id="speedRange" min="0.5" max="4" step="0.5" value="1.5">
+    <span id="speedLabel">1.5×</span>
+  </div>
+</div>
+
+<script>
+  const NEWS = [
+    { tag: '🔥 АКЦИЯ', text: 'Скидки до 40% на смартфоны Apple' },
+    { tag: '🆕 НОВИНКА', text: 'iPhone 15 Ultra уже в продаже' },
+    { tag: '🚚 ДОСТАВКА', text: 'Бесплатная доставка при заказе от 3 000 ₽' },
+    { tag: '⚡ МОЛНИЯ', text: 'MacBook Air M3 — лучшая цена сезона' },
+    { tag: '🎁 ПОДАРОК', text: 'Чехол в подарок к каждому смартфону' },
+    { tag: '💳 РАССРОЧКА', text: 'Рассрочка 0-0-12 на все товары' },
+    { tag: '🏆 ТОП', text: 'Galaxy S24 — хит продаж апреля' },
+  ];
+
+  const track = document.getElementById('tickerTrack');
+  NEWS.forEach((n, i) => {
+    const item = document.createElement('div');
+    item.className = 'ticker-item';
+    item.innerHTML = `<span class="tag">${n.tag}</span>${n.text}${i < NEWS.length - 1 ? '<span class="ticker-sep">◆</span>' : ''}`;
+    track.appendChild(item);
+  });
+
+  // Клонируем для бесшовного повтора
+  const inner = document.getElementById('tickerInner');
+  const clone  = track.cloneNode(true);
+  inner.appendChild(clone);
+
+  let x = 0;
+  let speed = 1.5;
+  let paused = false;
+
+  function animate() {
+    if (!paused) {
+      x -= speed;
+      const w = track.offsetWidth;
+      if (Math.abs(x) >= w) x = 0;
+      inner.style.transform = `translateX(${x}px)`;
+    }
+    requestAnimationFrame(animate);
+  }
+  animate();
+
+  // Пауза при наведении
+  document.getElementById('tickerOuter').addEventListener('mouseenter', () => paused = true);
+  document.getElementById('tickerOuter').addEventListener('mouseleave', () => paused = false);
+
+  const speedRange = document.getElementById('speedRange');
+  const speedLabel = document.getElementById('speedLabel');
+  speedRange.addEventListener('input', () => {
+    speed = parseFloat(speedRange.value);
+    speedLabel.textContent = speed + '×';
+  });
+</script>
+</body>
+</html>

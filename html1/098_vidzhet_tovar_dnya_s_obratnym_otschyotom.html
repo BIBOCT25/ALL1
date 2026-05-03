@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>98. Товар дня</title>
+<style>
+  * { box-sizing: border-box; margin: 0; }
+  body { font-family: Arial, sans-serif; padding: 40px; background: #f0f4ff; }
+  .deal-card {
+    background: #fff; border-radius: 16px; max-width: 380px;
+    box-shadow: 0 4px 24px rgba(21,101,192,.12); overflow: hidden;
+  }
+  .deal-banner {
+    background: linear-gradient(135deg,#1565C0,#42A5F5);
+    color: #fff; padding: 10px 18px; font-size: 13px; font-weight: bold;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .deal-banner .discount { background: #E53935; padding: 3px 10px; border-radius: 10px; font-size: 12px; }
+  .deal-card img { width: 100%; display: block; }
+  .deal-body { padding: 18px; }
+  .deal-name  { font-size: 18px; font-weight: bold; margin-bottom: 6px; }
+  .deal-desc  { font-size: 13px; color: #777; margin-bottom: 14px; line-height: 1.6; }
+  .price-row  { display: flex; align-items: baseline; gap: 10px; margin-bottom: 16px; }
+  .price-new  { font-size: 26px; font-weight: 900; color: #D32F2F; }
+  .price-old  { font-size: 15px; color: #aaa; text-decoration: line-through; }
+  .timer-label { font-size: 12px; color: #888; margin-bottom: 8px; }
+  .timer { display: flex; gap: 8px; margin-bottom: 18px; }
+  .flip-unit { text-align: center; }
+  .flip-num {
+    display: inline-block; width: 48px; background: #1565C0; color: #fff;
+    font-size: 24px; font-weight: 900; border-radius: 8px; padding: 8px 0;
+    font-family: monospace; transition: transform 0.15s, opacity 0.15s;
+  }
+  .flip-num.flip { transform: scaleY(0); opacity: 0; }
+  .flip-cap { font-size: 10px; color: #aaa; margin-top: 3px; }
+  .sep { font-size: 24px; font-weight: 900; color: #1565C0; line-height: 44px; }
+  .btn-buy { width: 100%; padding: 13px; background: #D32F2F; color: #fff; border: none; border-radius: 10px; font-size: 15px; font-weight: bold; cursor: pointer; }
+  .btn-buy:hover { background: #B71C1C; }
+</style>
+</head>
+<body>
+<div class="deal-card">
+  <div class="deal-banner">
+    🔥 Товар дня
+    <span class="discount">−30%</span>
+  </div>
+  <img src="https://placehold.co/380x200/1565C0/fff?text=iPhone+15+Pro" alt="iPhone 15 Pro">
+  <div class="deal-body">
+    <div class="deal-name">iPhone 15 Pro 256GB</div>
+    <div class="deal-desc">Чип A17 Pro, камера 48 МП, titanium корпус, USB-C. Лучшее предложение только сегодня.</div>
+    <div class="price-row">
+      <span class="price-new">83 990 ₽</span>
+      <span class="price-old">119 990 ₽</span>
+    </div>
+    <div class="timer-label">⏳ До конца акции осталось:</div>
+    <div class="timer">
+      <div class="flip-unit"><div class="flip-num" id="tH">00</div><div class="flip-cap">часов</div></div>
+      <div class="sep">:</div>
+      <div class="flip-unit"><div class="flip-num" id="tM">00</div><div class="flip-cap">минут</div></div>
+      <div class="sep">:</div>
+      <div class="flip-unit"><div class="flip-num" id="tS">00</div><div class="flip-cap">секунд</div></div>
+    </div>
+    <button class="btn-buy">🛒 Купить со скидкой</button>
+  </div>
+</div>
+
+<script>
+  function pad(n) { return String(n).padStart(2, '0'); }
+
+  function animFlip(el, val) {
+    const next = pad(val);
+    if (el.textContent === next) return;
+    el.classList.add('flip');
+    setTimeout(() => { el.textContent = next; el.classList.remove('flip'); }, 150);
+  }
+
+  function tick() {
+    const now  = new Date();
+    const end  = new Date(now); end.setHours(23,59,59,999);
+    const diff = Math.max(0, Math.floor((end - now) / 1000));
+    animFlip(document.getElementById('tH'), Math.floor(diff / 3600));
+    animFlip(document.getElementById('tM'), Math.floor((diff % 3600) / 60));
+    animFlip(document.getElementById('tS'), diff % 60);
+  }
+
+  tick();
+  setInterval(tick, 1000);
+</script>
+</body>
+</html>

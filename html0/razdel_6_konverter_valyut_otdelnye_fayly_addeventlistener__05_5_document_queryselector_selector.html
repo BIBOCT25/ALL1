@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Метод: querySelector</title>
+</head>
+<body>
+
+    <h2>Конвертер валют (querySelector)</h2>
+
+    <label>Сумма в рублях:</label>
+    <input type="number" id="rubles" placeholder="1000"><br><br>
+
+    <label>Курс доллара (₽):</label>
+    <input type="number" id="exchangeRate" placeholder="90"><br><br>
+
+    <button id="convertBtn">Конвертировать</button><br><br>
+
+    <label>Сумма в долларах:</label>
+    <input type="text" id="dollars" readonly>
+
+    <script>
+        document.querySelector('#convertBtn').addEventListener('click', function() {
+            let rubles = document.querySelector('#rubles').value;
+            let rate = document.querySelector('#exchangeRate').value;
+            let resultField = document.querySelector('#dollars');
+
+            if (rubles === '' || rate === '' || Number(rate) <= 0) {
+                resultField.value = 'Заполните все поля корректно!';
+                return;
+            }
+
+            let dollars = rubles / rate;
+            resultField.value = '$' + dollars.toFixed(2);
+        });
+    </script>
+
+</body>
+</html>

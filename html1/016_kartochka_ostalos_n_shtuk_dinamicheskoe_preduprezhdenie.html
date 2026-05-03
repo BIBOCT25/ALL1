@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>16. Остаток товара</title>
+<style>
+  body { font-family: Arial, sans-serif; display: flex; justify-content: center; padding: 40px; gap: 20px; flex-wrap: wrap; }
+  .card { border: 1px solid #ddd; border-radius: 8px; padding: 18px; width: 200px; }
+  .card img { width: 100%; border-radius: 4px; margin-bottom: 10px; }
+  .name { font-weight: bold; font-size: 15px; margin-bottom: 6px; }
+  .price { font-size: 18px; color: #e53935; margin-bottom: 10px; }
+  .stock { font-size: 13px; }
+  .stock.low { color: #e53935; font-weight: bold; }
+  .stock.ok  { color: #4CAF50; }
+  .stock.out { color: #999; }
+</style>
+</head>
+<body>
+<script>
+  const THRESHOLD = 5;
+  const products = [
+    { name: 'Кроссовки', price: 4990, stock: 2 },
+    { name: 'Куртка',    price: 7490, stock: 0 },
+    { name: 'Шапка',     price: 990,  stock: 14 },
+  ];
+
+  products.forEach(p => {
+    let stockClass, stockText;
+    if (p.stock === 0) {
+      stockClass = 'out'; stockText = 'Нет в наличии';
+    } else if (p.stock <= THRESHOLD) {
+      stockClass = 'low'; stockText = `⚠ Осталось ${p.stock} шт.`;
+    } else {
+      stockClass = 'ok'; stockText = `✓ В наличии: ${p.stock} шт.`;
+    }
+    document.body.insertAdjacentHTML('beforeend', `
+      <div class="card">
+        <img src="https://placehold.co/200x130/eee/999?text=${encodeURIComponent(p.name)}" alt="">
+        <div class="name">${p.name}</div>
+        <div class="price">${p.price.toLocaleString('ru')} ₽</div>
+        <div class="stock ${stockClass}">${stockText}</div>
+      </div>
+    `);
+  });
+</script>
+</body>
+</html>

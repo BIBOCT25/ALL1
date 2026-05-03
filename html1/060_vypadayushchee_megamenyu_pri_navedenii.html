@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>60. Мегаменю</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: Arial, sans-serif; }
+  nav { background: #1a237e; display: flex; padding: 0 24px; position: relative; }
+  .nav-item { position: relative; }
+  .nav-link {
+    display: flex; align-items: center; gap: 5px;
+    color: rgba(255,255,255,.8); text-decoration: none; font-size: 14px;
+    padding: 16px 18px; white-space: nowrap; transition: color 0.15s, background 0.15s;
+  }
+  .nav-link:hover, .nav-item.open .nav-link { color: #fff; background: rgba(255,255,255,.1); }
+  .nav-link .arrow { font-size: 10px; transition: transform 0.2s; }
+  .nav-item.open .arrow { transform: rotate(180deg); }
+  .megamenu {
+    display: none; position: absolute; top: 100%; left: 0;
+    background: #fff; border-radius: 0 0 10px 10px;
+    box-shadow: 0 8px 32px rgba(0,0,0,.15); min-width: 480px;
+    padding: 20px; z-index: 200;
+    animation: slideDown 0.2s ease;
+  }
+  .nav-item.open .megamenu { display: flex; gap: 20px; }
+  @keyframes slideDown { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: none; } }
+  .mega-col h4 { font-size: 12px; text-transform: uppercase; letter-spacing: 1px; color: #2196F3; margin-bottom: 10px; }
+  .mega-col a {
+    display: block; font-size: 13px; color: #444; text-decoration: none;
+    padding: 5px 0; transition: color 0.15s;
+  }
+  .mega-col a:hover { color: #2196F3; }
+  .content { padding: 40px; color: #777; font-size: 15px; }
+</style>
+</head>
+<body>
+<nav>
+  <a class="nav-link" href="#">Главная</a>
+  <div class="nav-item" id="navCatalog">
+    <a class="nav-link" href="#">Каталог <span class="arrow">▼</span></a>
+    <div class="megamenu">
+      <div class="mega-col">
+        <h4>Смартфоны</h4>
+        <a href="#">Apple iPhone</a>
+        <a href="#">Samsung Galaxy</a>
+        <a href="#">Xiaomi Redmi</a>
+        <a href="#">OnePlus</a>
+      </div>
+      <div class="mega-col">
+        <h4>Ноутбуки</h4>
+        <a href="#">MacBook</a>
+        <a href="#">Dell XPS</a>
+        <a href="#">Lenovo ThinkPad</a>
+        <a href="#">ASUS VivoBook</a>
+      </div>
+      <div class="mega-col">
+        <h4>Аксессуары</h4>
+        <a href="#">Наушники</a>
+        <a href="#">Зарядки</a>
+        <a href="#">Чехлы</a>
+        <a href="#">Кабели</a>
+      </div>
+    </div>
+  </div>
+  <a class="nav-link" href="#">Акции</a>
+  <a class="nav-link" href="#">Контакты</a>
+</nav>
+<div class="content">Наведите на «Каталог» чтобы увидеть мегаменю</div>
+
+<script>
+  const navItem = document.getElementById('navCatalog');
+  let closeTimer = null;
+
+  navItem.addEventListener('mouseenter', () => {
+    clearTimeout(closeTimer);
+    navItem.classList.add('open');
+  });
+
+  navItem.addEventListener('mouseleave', () => {
+    closeTimer = setTimeout(() => navItem.classList.remove('open'), 150);
+  });
+</script>
+</body>
+</html>

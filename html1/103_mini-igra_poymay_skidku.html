@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>103. Поймай скидку</title>
+<style>
+  * { box-sizing: border-box; margin: 0; }
+  body { font-family: Arial, sans-serif; overflow: hidden; background: #0D1B2A; color: #fff; user-select: none; }
+  #arena {
+    position: relative; width: 100vw; height: 100vh;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .hud {
+    position: fixed; top: 16px; left: 0; right: 0;
+    display: flex; justify-content: center; gap: 32px; font-size: 15px; z-index: 10;
+  }
+  .hud span { background: rgba(255,255,255,.08); padding: 6px 16px; border-radius: 20px; }
+  .coupon {
+    position: absolute; width: 80px; height: 54px; background: #1565C0;
+    border-radius: 10px; display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: bold; cursor: pointer; color: #fff;
+    box-shadow: 0 4px 18px rgba(21,101,192,.6); transition: transform 0.1s;
+    border: 2px dashed rgba(255,255,255,.4);
+  }
+  .coupon:hover { transform: scale(1.1); }
+  .coupon.missed { background: #E53935; animation: shake 0.3s; }
+  @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-6px)} 75%{transform:translateX(6px)} }
+  .overlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,.7);
+    display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 20;
+  }
+  .overlay h1 { font-size: 32px; margin-bottom: 10px; }
+  .overlay p  { font-size: 16px; color: #aaa; margin-bottom: 22px; }
+  .overlay .big { font-size: 48px; font-weight: 900; color: #FFD600; margin-bottom: 8px; }
+  .btn-start {
+    padding: 14px 36px; background: #1565C0; color: #fff; border: none;
+    border-radius: 12px; font-size: 16px; font-weight: bold; cursor: pointer;
+  }
+  .btn-start:hover { background: #0D47A1; }
+  .lives { letter-spacing: 3px; }
+</style>
+</head>
+<body>
+<div class="hud">
+  <span>⏱ <span id="timeLeft">10</span>с</span>
+  <span>💰 Скидка: <span id="score">0</span>%</span>
+  <span class="lives">❤️ <span id="lives">3</span></span>
+</div>
+<div id="arena"></div>
+<div class="overlay" id="overlay">
+  <h1>🎯 Поймай скидку!</h1>
+  <p>Кликай на купоны — получай скидку до 30%<br>3 промаха = конец игры</p>
+  <button class="btn-start" id="startBtn">▶ Начать игру</button>
+</div>
+
+<script>
+  const DISCOUNTS = [5, 5, 10, 10, 15, 20, 30];
+  let lives, score, timeLeft, couponTimer, gameTimer, gameActive;
+  const arena   = document.getElementById('arena');
+  const overlay = document.getElementById('overlay');
+
+  function spawnCoupon() {
+    if (!gameActive) return;
+    const disc  = DISCOUNTS[Math.floor(Math.random() * DISCOUNTS.length)];
+    const el    = document.createElement('div');
+    el.className = 'coupon';
+    el.textContent = '−' + disc + '%';
+    el.style.left = Math.random() * (window.innerWidth  - 100) + 'px';
+    el.style.top  = Math.random() * (window.innerHeight - 80)  + 'px';
+    arena.appendChild(el);
+
+    const timeout = setTimeout(() => {
+      if (!el.parentNode) return;
+      el.classList.add('missed');
+      lives--;
+      document.getElementById('lives').textContent = lives;
+      setTimeout(() => el.remove(), 350);
+      if (lives <= 0) endGame();
+    }, 1800);
+
+    el.addEventListener('click', () => {
+      clearTimeout(timeout);
+      score = Math.min(30, score + disc);
+      document.getElementById('score').textContent = score;
+      el.textContent = '+' + disc + '%!';
+      el.style.background = '#2E7D32';
+      setTimeout(() => el.remove(), 300);
+    });
+  }
+
+  function startGame() {
+    lives = 3; score = 0; timeLeft = 10; gameActive = true;
+    overlay.style.display = 'none';
+    arena.innerHTML = '';
+    document.getElementById('lives').textContent = lives;
+    document.getElementById('score').textContent = score;
+    document.getElementById('timeLeft').textContent = timeLeft;
+    couponTimer = setInterval(spawnCoupon, 900);
+    gameTimer   = setInterval(() => {
+      timeLeft--;
+      document.getElementById('timeLeft').textContent = timeLeft;
+      if (timeLeft <= 0) endGame();
+    }, 1000);
+  }
+
+  function endGame() {
+    gameActive = false;
+    clearInterval(couponTimer); clearInterval(gameTimer);
+    overlay.style.display = 'flex';
+    overlay.innerHTML = `
+      <h1>${score >= 20 ? '🎉 Отлично!' : score >= 10 ? '👍 Неплохо!' : '😢 Попробуй снова'}</h1>
+      <div class="big">${score}%</div>
+      <p>Ваша скидка на следующий заказ!</p>
+      <button class="btn-start" id="startBtn">↻ Ещё раз</button>`;
+    document.getElementById('startBtn').addEventListener('click', startGame);
+  }
+
+  document.getElementById('startBtn').addEventListener('click', startGame);
+</script>
+</body>
+</html>

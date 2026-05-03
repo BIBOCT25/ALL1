@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>46. Валидация формы заказа</title>
+<style>
+  body { font-family: Arial, sans-serif; display: flex; justify-content: center; padding: 40px; }
+  form { width: 340px; }
+  h2   { font-size: 18px; margin-bottom: 20px; }
+  .field { margin-bottom: 16px; }
+  .field label { display: block; font-size: 14px; margin-bottom: 4px; color: #333; }
+  .field input {
+    width: 100%; padding: 9px 12px; border: 1px solid #ddd; border-radius: 6px;
+    font-size: 14px; outline: none; box-sizing: border-box; transition: border-color 0.2s;
+  }
+  .field input:focus  { border-color: #2196F3; }
+  .field input.error  { border-color: #e53935; }
+  .field input.valid  { border-color: #4CAF50; }
+  .err-msg { font-size: 12px; color: #e53935; margin-top: 4px; display: none; }
+  .err-msg.show { display: block; }
+  .btn-submit {
+    width: 100%; padding: 12px; background: #2196F3; color: #fff;
+    border: none; border-radius: 6px; font-size: 16px; cursor: pointer;
+  }
+  .btn-submit:disabled { background: #90CAF9; cursor: default; }
+  .success { color: #4CAF50; font-weight: bold; margin-top: 12px; display: none; }
+</style>
+</head>
+<body>
+<form id="orderForm" novalidate>
+  <h2>Оформление заказа</h2>
+
+  <div class="field">
+    <label>Имя *</label>
+    <input type="text" id="name" placeholder="Иван Иванов">
+    <div class="err-msg" id="name-err">Введите имя (минимум 2 символа)</div>
+  </div>
+  <div class="field">
+    <label>Телефон *</label>
+    <input type="tel" id="phone" placeholder="+7 (999) 123-45-67">
+    <div class="err-msg" id="phone-err">Введите корректный телефон</div>
+  </div>
+  <div class="field">
+    <label>Email *</label>
+    <input type="email" id="email" placeholder="ivan@mail.ru">
+    <div class="err-msg" id="email-err">Введите корректный email</div>
+  </div>
+
+  <button class="btn-submit" id="btnSubmit" disabled>Оформить заказ</button>
+  <div class="success" id="success">✓ Заказ оформлен! Ожидайте подтверждения.</div>
+</form>
+
+<script>
+  const rules = {
+    name:  { re: /^.{2,}$/,      msg: 'Введите имя (минимум 2 символа)' },
+    phone: { re: /^\+?[\d\s\-()]{10,}$/, msg: 'Введите корректный телефон' },
+    email: { re: /^[^\s@]+@[^\s@]+\.[^\s@]+$/, msg: 'Введите корректный email' },
+  };
+
+  const valid = { name: false, phone: false, email: false };
+
+  Object.keys(rules).forEach(id => {
+    const input  = document.getElementById(id);
+    const errMsg = document.getElementById(id + '-err');
+    const rule   = rules[id];
+
+    input.addEventListener('input', () => {
+      const ok = rule.re.test(input.value.trim());
+      valid[id] = ok;
+      input.classList.toggle('error', !ok && input.value.length > 0);
+      input.classList.toggle('valid',  ok);
+      errMsg.classList.toggle('show',  !ok && input.value.length > 0);
+      document.getElementById('btnSubmit').disabled = !Object.values(valid).every(Boolean);
+    });
+  });
+
+  document.getElementById('orderForm').addEventListener('submit', e => {
+    e.preventDefault();
+    document.getElementById('success').style.display = 'block';
+    document.getElementById('btnSubmit').disabled = true;
+  });
+</script>
+</body>
+</html>

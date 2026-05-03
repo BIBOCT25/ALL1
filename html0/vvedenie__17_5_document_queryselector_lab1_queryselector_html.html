@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang='ru'>
+<head>
+    <meta charset='UTF-8'>
+    <title>Метод: querySelector</title>
+</head>
+<body>
+    <h2>Анализ числа (querySelector)</h2>
+    <input type='number' class='numInput' placeholder='Введите число 1'>
+    <input type='number' class='numInput' placeholder='Введите число 2'>
+    <input type='number' class='numInput' placeholder='Введите число 3'>
+    <input type='number' class='numInput' placeholder='Введите число 4'>
+    <button onclick='analyzeNumber()'>Анализировать 4-е число</button>
+    <p class='result'></p>
+
+    <script>
+        function analyzeNumber() {
+            // Используем CSS-селектор :nth-child(4) для выбора 4-го input
+            // или можно использовать querySelectorAll и взять индекс
+            let allInputs = document.querySelectorAll('.numInput');
+            
+            // Обращаемся к 4-му элементу (индекс 3)
+            let input = allInputs[3].value;
+            let num = Number(input);
+            
+            // querySelector возвращает первый элемент, соответствующий селектору
+            let resultElement = document.querySelector('.result');
+            
+            if (input === '' || isNaN(num)) {
+                resultElement.textContent = 
+                    'Ошибка: введите корректное число в 4-е поле!';
+                return;
+            }
+            
+            let sign = '';
+            if (num > 0) {
+                sign = 'положительное';
+            } else if (num < 0) {
+                sign = 'отрицательное';
+            } else {
+                sign = 'нулевое';
+            }
+            
+            let parity = (num % 2 === 0) ? 'чётное' : 'нечётное';
+            
+            resultElement.textContent = 
+                `Число ${num}: ${sign}, ${parity}.`;
+        }
+    </script>
+</body>
+</html>

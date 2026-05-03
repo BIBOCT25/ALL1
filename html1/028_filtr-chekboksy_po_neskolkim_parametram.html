@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>28. Фильтр-чекбоксы</title>
+<style>
+  body { font-family: Arial, sans-serif; padding: 24px; display: flex; gap: 30px; max-width: 800px; }
+  aside { min-width: 150px; }
+  aside h3 { font-size: 15px; margin: 0 0 12px; }
+  .check-group { display: flex; flex-direction: column; gap: 8px; }
+  .check-group label { font-size: 14px; cursor: pointer; display: flex; align-items: center; gap: 6px; }
+  .products { flex: 1; display: flex; gap: 12px; flex-wrap: wrap; align-content: flex-start; }
+  .card { border: 1px solid #ddd; border-radius: 8px; padding: 12px; width: 155px; }
+  .card.hidden { display: none; }
+  .card-name  { font-size: 13px; font-weight: bold; margin-bottom: 4px; }
+  .card-tags  { display: flex; gap: 4px; flex-wrap: wrap; margin-top: 6px; }
+  .tag { font-size: 10px; padding: 2px 6px; background: #E3F2FD; color: #1565C0; border-radius: 3px; }
+</style>
+</head>
+<body>
+<aside>
+  <h3>Фильтры</h3>
+  <div class="check-group" id="checkGroup">
+    <label><input type="checkbox" value="sale"> Скидка</label>
+    <label><input type="checkbox" value="new">  Новинка</label>
+    <label><input type="checkbox" value="hit">  Хит продаж</label>
+    <label><input type="checkbox" value="sport">Спорт</label>
+  </div>
+</aside>
+
+<div class="products" id="products">
+  <div class="card" data-tags="sale sport">
+    <div class="card-name">Кроссовки Nike</div>
+    <div class="card-tags"><span class="tag">sale</span><span class="tag">sport</span></div>
+  </div>
+  <div class="card" data-tags="new hit">
+    <div class="card-name">Куртка Adidas</div>
+    <div class="card-tags"><span class="tag">new</span><span class="tag">hit</span></div>
+  </div>
+  <div class="card" data-tags="sale new sport">
+    <div class="card-name">Шорты Puma</div>
+    <div class="card-tags"><span class="tag">sale</span><span class="tag">new</span><span class="tag">sport</span></div>
+  </div>
+  <div class="card" data-tags="hit">
+    <div class="card-name">Рюкзак Nike</div>
+    <div class="card-tags"><span class="tag">hit</span></div>
+  </div>
+  <div class="card" data-tags="new sale">
+    <div class="card-name">Шапка UA</div>
+    <div class="card-tags"><span class="tag">new</span><span class="tag">sale</span></div>
+  </div>
+</div>
+
+<script>
+  const group    = document.getElementById('checkGroup');
+  const cards    = document.querySelectorAll('.card');
+
+  group.addEventListener('change', () => {
+    const checked = [...group.querySelectorAll('input:checked')].map(cb => cb.value);
+    cards.forEach(card => {
+      const tags  = card.dataset.tags.split(' ');
+      const match = checked.length === 0 || checked.every(t => tags.includes(t));
+      card.classList.toggle('hidden', !match);
+    });
+  });
+</script>
+</body>
+</html>

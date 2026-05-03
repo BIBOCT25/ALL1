@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>25. Сортировка по цене</title>
+<style>
+  body { font-family: Arial, sans-serif; padding: 24px; max-width: 700px; margin: 0 auto; }
+  .toolbar { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; }
+  .toolbar label { font-size: 14px; color: #555; }
+  select {
+    padding: 7px 12px; border: 1px solid #ddd; border-radius: 6px;
+    font-size: 14px; cursor: pointer; outline: none;
+  }
+  .products { display: flex; gap: 14px; flex-wrap: wrap; }
+  .card { border: 1px solid #ddd; border-radius: 8px; padding: 14px; width: 160px; }
+  .card img { width: 100%; border-radius: 4px; margin-bottom: 8px; }
+  .card-name  { font-size: 14px; font-weight: bold; margin-bottom: 4px; }
+  .card-price { color: #e53935; font-size: 17px; }
+</style>
+</head>
+<body>
+<div class="toolbar">
+  <label for="sortSelect">Сортировать:</label>
+  <select id="sortSelect">
+    <option value="default">По умолчанию</option>
+    <option value="asc">Цена: по возрастанию</option>
+    <option value="desc">Цена: по убыванию</option>
+  </select>
+</div>
+
+<div class="products" id="products">
+  <div class="card" data-price="4990">
+    <img src="https://placehold.co/160x100/eee/999?text=Nike" alt="">
+    <div class="card-name">Кроссовки Nike</div><div class="card-price">4 990 ₽</div>
+  </div>
+  <div class="card" data-price="890">
+    <img src="https://placehold.co/160x100/eee/999?text=Шапка" alt="">
+    <div class="card-name">Шапка</div><div class="card-price">890 ₽</div>
+  </div>
+  <div class="card" data-price="7490">
+    <img src="https://placehold.co/160x100/eee/999?text=Куртка" alt="">
+    <div class="card-name">Куртка Adidas</div><div class="card-price">7 490 ₽</div>
+  </div>
+  <div class="card" data-price="3200">
+    <img src="https://placehold.co/160x100/eee/999?text=Рюкзак" alt="">
+    <div class="card-name">Рюкзак</div><div class="card-price">3 200 ₽</div>
+  </div>
+  <div class="card" data-price="1290">
+    <img src="https://placehold.co/160x100/eee/999?text=Носки" alt="">
+    <div class="card-name">Носки Nike</div><div class="card-price">1 290 ₽</div>
+  </div>
+</div>
+
+<script>
+  const productsEl = document.getElementById('products');
+  const sortSelect = document.getElementById('sortSelect');
+  const original   = [...productsEl.children]; // сохраняем исходный порядок
+
+  sortSelect.addEventListener('change', () => {
+    const val   = sortSelect.value;
+    const cards = [...productsEl.children];
+
+    let sorted;
+    if (val === 'asc') {
+      sorted = cards.sort((a, b) => +a.dataset.price - +b.dataset.price);
+    } else if (val === 'desc') {
+      sorted = cards.sort((a, b) => +b.dataset.price - +a.dataset.price);
+    } else {
+      sorted = original; // вернуть исходный порядок
+    }
+
+    sorted.forEach(card => productsEl.appendChild(card));
+  });
+</script>
+</body>
+</html>

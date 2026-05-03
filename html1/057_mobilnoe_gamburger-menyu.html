@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>57. Гамбургер-меню</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: Arial, sans-serif; }
+  header {
+    background: #212121; color: #fff; display: flex;
+    align-items: center; justify-content: space-between; padding: 0 20px; height: 56px;
+  }
+  .logo { font-size: 18px; font-weight: bold; }
+  .burger {
+    background: none; border: none; color: #fff; font-size: 26px;
+    cursor: pointer; line-height: 1; padding: 4px;
+  }
+  nav {
+    background: #313131; max-height: 0; overflow: hidden;
+    transition: max-height 0.35s ease;
+  }
+  nav.open { max-height: 300px; }
+  nav a {
+    display: block; padding: 14px 20px; color: rgba(255,255,255,.8);
+    text-decoration: none; font-size: 15px; border-bottom: 1px solid #424242;
+    transition: background 0.15s, color 0.15s;
+  }
+  nav a:hover { background: #424242; color: #fff; }
+  .content { padding: 40px 20px; font-size: 15px; color: #555; }
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">МегаМаркет</div>
+  <button class="burger" id="burger">☰</button>
+</header>
+<nav id="mobileNav">
+  <a href="#">Главная</a>
+  <a href="#">Каталог</a>
+  <a href="#">Акции</a>
+  <a href="#">Корзина</a>
+  <a href="#">Контакты</a>
+</nav>
+<div class="content">Нажмите ☰ чтобы открыть меню</div>
+
+<script>
+  const burger = document.getElementById('burger');
+  const nav    = document.getElementById('mobileNav');
+
+  burger.addEventListener('click', () => {
+    const isOpen = nav.classList.toggle('open');
+    burger.textContent = isOpen ? '✕' : '☰';
+  });
+
+  // Закрываем при клике на пункт меню
+  nav.querySelectorAll('a').forEach(a => {
+    a.addEventListener('click', () => {
+      nav.classList.remove('open');
+      burger.textContent = '☰';
+    });
+  });
+</script>
+</body>
+</html>

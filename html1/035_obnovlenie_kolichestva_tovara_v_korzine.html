@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>35. Количество в корзине</title>
+<style>
+  body { font-family: Arial, sans-serif; padding: 30px; max-width: 480px; margin: 0 auto; }
+  h2 { font-size: 18px; margin-bottom: 14px; }
+  .cart-item {
+    display: flex; align-items: center; gap: 12px;
+    padding: 10px 0; border-bottom: 1px solid #eee;
+  }
+  .item-name  { flex: 1; font-size: 14px; font-weight: bold; }
+  .counter    { display: flex; align-items: center; gap: 4px; }
+  .counter button {
+    width: 28px; height: 28px; border: 1px solid #ddd; background: #f5f5f5;
+    border-radius: 4px; cursor: pointer; font-size: 16px;
+  }
+  .counter button:disabled { color: #ccc; cursor: default; }
+  .qty-val    { width: 30px; text-align: center; font-size: 14px; }
+  .item-total { width: 80px; text-align: right; color: #e53935; font-size: 14px; font-weight: bold; }
+  .grand-total { margin-top: 14px; font-size: 17px; font-weight: bold; text-align: right; }
+</style>
+</head>
+<body>
+<h2>Корзина</h2>
+<div id="cartEl"></div>
+<div class="grand-total">Итого: <span id="grandTotal">0</span> ₽</div>
+
+<script>
+  const cart = [
+    { id: 1, name: 'Кроссовки Nike', unitPrice: 4990, qty: 1 },
+    { id: 2, name: 'Шапка UA',       unitPrice: 890,  qty: 2 },
+    { id: 3, name: 'Рюкзак Nike',    unitPrice: 3200, qty: 1 },
+  ];
+
+  const cartEl    = document.getElementById('cartEl');
+  const grandTotal = document.getElementById('grandTotal');
+
+  function render() {
+    cartEl.innerHTML = cart.map(it => `
+      <div class="cart-item">
+        <div class="item-name">${it.name}</div>
+        <div class="counter">
+          <button data-id="${it.id}" data-action="dec" ${it.qty <= 1 ? 'disabled' : ''}>−</button>
+          <div class="qty-val">${it.qty}</div>
+          <button data-id="${it.id}" data-action="inc">+</button>
+        </div>
+        <div class="item-total">${(it.unitPrice * it.qty).toLocaleString('ru')} ₽</div>
+      </div>`).join('');
+
+    const sum = cart.reduce((s, it) => s + it.unitPrice * it.qty, 0);
+    grandTotal.textContent = sum.toLocaleString('ru');
+  }
+
+  cartEl.addEventListener('click', e => {
+    const btn = e.target.closest('button[data-action]');
+    if (!btn) return;
+    const item = cart.find(it => it.id === +btn.dataset.id);
+    if (!item) return;
+    if (btn.dataset.action === 'inc') item.qty++;
+    if (btn.dataset.action === 'dec' && item.qty > 1) item.qty--;
+    render();
+  });
+
+  render();
+</script>
+</body>
+</html>

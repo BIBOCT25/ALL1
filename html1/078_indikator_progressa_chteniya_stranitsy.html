@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>78. Прогресс чтения</title>
+<style>
+  * { box-sizing: border-box; margin: 0; }
+  body { font-family: Arial, sans-serif; }
+  .progress-bar {
+    position: fixed; top: 0; left: 0; height: 4px;
+    background: linear-gradient(90deg, #2196F3, #E91E63);
+    width: 0%; z-index: 1000; transition: width 0.1s linear;
+  }
+  .content { max-width: 640px; margin: 0 auto; padding: 48px 24px 120px; }
+  h1 { font-size: 24px; margin-bottom: 24px; }
+  p  { font-size: 15px; line-height: 1.8; color: #444; margin-bottom: 20px; }
+  .label {
+    position: fixed; top: 8px; right: 16px; font-size: 12px; font-weight: bold;
+    color: #2196F3; background: rgba(255,255,255,.9);
+    padding: 3px 8px; border-radius: 10px; z-index: 1001;
+  }
+</style>
+</head>
+<body>
+<div class="progress-bar" id="progressBar"></div>
+<div class="label" id="pLabel">0%</div>
+
+<div class="content">
+  <h1>Как выбрать смартфон в 2026 году</h1>
+  <p>Современный рынок смартфонов огромен. Производители предлагают сотни моделей на любой вкус и кошелёк. Чтобы не растеряться, важно определить главные критерии выбора заранее.</p>
+  <p>Первый критерий — операционная система. iOS отличается стабильностью и долгой поддержкой. Android предоставляет большую свободу настройки и богатый выбор устройств по разным ценам.</p>
+  <p>Второй критерий — процессор. Флагманские чипы обеспечивают быструю работу любых приложений, поддержку нейросетевых функций и эффективное энергопотребление.</p>
+  <p>Третий критерий — экран. Обращайте внимание на технологию (OLED vs LCD), частоту обновления (60 / 120 / 144 Гц) и яркость — особенно если часто пользуетесь телефоном на улице.</p>
+  <p>Четвёртый критерий — камера. Количество мегапикселей важно, но ещё важнее алгоритмы обработки: размытие фона, ночная съёмка, оптическая стабилизация.</p>
+  <p>Пятый критерий — батарея. Ёмкость от 4500 мАч обеспечит комфортный рабочий день. Также обратите внимание на скорость зарядки и наличие беспроводной зарядки.</p>
+  <p>Шестой критерий — обновления. Производители обязуются поддерживать свои флагманы от 3 до 7 лет. Чем дольше — тем лучше для безопасности и актуальности функций.</p>
+  <p>Наконец, не забудьте про цену. Средний класс сегодня предлагает 90% возможностей флагмана за треть цены. Взвесьте, какие функции вам действительно нужны.</p>
+</div>
+
+<script>
+  const bar   = document.getElementById('progressBar');
+  const lbl   = document.getElementById('pLabel');
+
+  window.addEventListener('scroll', () => {
+    const scrolled = window.scrollY;
+    const total    = document.documentElement.scrollHeight - window.innerHeight;
+    const pct      = total > 0 ? Math.round(scrolled / total * 100) : 0;
+    bar.style.width    = pct + '%';
+    lbl.textContent    = pct + '%';
+  });
+</script>
+</body>
+</html>

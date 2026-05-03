@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>7. Выбор размера</title>
+<style>
+  body { font-family: Arial, sans-serif; display: flex; justify-content: center; padding: 60px; }
+  .wrap { width: 300px; }
+  h3 { margin: 0 0 14px; }
+  .sizes { display: flex; gap: 8px; flex-wrap: wrap; }
+  .size-btn {
+    width: 46px; height: 46px; border: 2px solid #ddd; border-radius: 6px;
+    background: #fff; font-size: 14px; cursor: pointer; transition: all 0.15s;
+  }
+  .size-btn:hover { border-color: #2196F3; color: #2196F3; }
+  .size-btn.active { border-color: #2196F3; background: #2196F3; color: #fff; }
+  .size-btn.out { color: #ccc; cursor: default; text-decoration: line-through; }
+  .result { margin-top: 14px; font-size: 14px; color: #555; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h3>Кроссовки Nike Air</h3>
+  <div class="sizes" id="sizes">
+    <button class="size-btn" data-size="36">36</button>
+    <button class="size-btn" data-size="37">37</button>
+    <button class="size-btn out" data-size="38" disabled>38</button>
+    <button class="size-btn" data-size="39">39</button>
+    <button class="size-btn" data-size="40">40</button>
+    <button class="size-btn out" data-size="41" disabled>41</button>
+    <button class="size-btn" data-size="42">42</button>
+    <button class="size-btn" data-size="43">43</button>
+  </div>
+  <div class="result" id="result">Выберите размер</div>
+</div>
+<script>
+  const sizesEl = document.getElementById('sizes');
+  const result  = document.getElementById('result');
+
+  sizesEl.addEventListener('click', e => {
+    const btn = e.target.closest('.size-btn');
+    if (!btn || btn.classList.contains('out')) return;
+
+    sizesEl.querySelectorAll('.size-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    result.textContent = 'Выбран размер: ' + btn.dataset.size;
+  });
+</script>
+</body>
+</html>

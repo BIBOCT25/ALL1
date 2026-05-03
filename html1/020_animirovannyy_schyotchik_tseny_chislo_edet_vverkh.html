@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>20. Анимированный счётчик цены</title>
+<style>
+  body { font-family: Arial, sans-serif; display: flex; justify-content: center; padding: 60px; flex-wrap: wrap; gap: 30px; }
+  .price-box { text-align: center; }
+  .price-label { font-size: 14px; color: #888; margin-bottom: 6px; }
+  .price-value { font-size: 36px; font-weight: bold; color: #e53935; }
+  .price-currency { font-size: 20px; color: #e53935; }
+  button {
+    display: block; margin: 30px auto 0; padding: 10px 28px;
+    background: #2196F3; color: #fff; border: none; border-radius: 6px;
+    font-size: 15px; cursor: pointer;
+  }
+</style>
+</head>
+<body>
+
+<div class="price-box">
+  <div class="price-label">Цена</div>
+  <div class="price-value" id="p1">0</div>
+  <div class="price-currency">₽</div>
+</div>
+<div class="price-box">
+  <div class="price-label">Скидка</div>
+  <div class="price-value" id="p2" style="color:#4CAF50">0</div>
+  <div class="price-currency" style="color:#4CAF50">₽</div>
+</div>
+
+<script>
+  function animateCount(el, target, duration = 1200) {
+    const start = performance.now();
+    function step(now) {
+      const progress = Math.min((now - start) / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 3); // ease-out cubic
+      el.textContent = Math.round(eased * target).toLocaleString('ru');
+      if (progress < 1) requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  }
+
+  // Запускаем анимацию при загрузке
+  animateCount(document.getElementById('p1'), 14990);
+  animateCount(document.getElementById('p2'), 3000, 1400);
+</script>
+
+<button onclick="
+  document.getElementById('p1').textContent='0';
+  document.getElementById('p2').textContent='0';
+  setTimeout(()=>{
+    animateCount(document.getElementById('p1'),14990);
+    animateCount(document.getElementById('p2'),3000,1400);
+  },50)
+">Повторить анимацию</button>
+</body>
+</html>

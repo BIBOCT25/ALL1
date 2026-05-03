@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>18. Бейджи на карточке</title>
+<style>
+  body { font-family: Arial, sans-serif; padding: 30px; display: flex; gap: 20px; flex-wrap: wrap; }
+  .card { border: 1px solid #ddd; border-radius: 8px; overflow: hidden; width: 200px; position: relative; }
+  .card img { width: 100%; display: block; }
+  .badges { position: absolute; top: 8px; left: 8px; display: flex; flex-direction: column; gap: 4px; }
+  .badge {
+    padding: 2px 8px; border-radius: 3px; font-size: 11px; font-weight: bold;
+    color: #fff; width: fit-content;
+  }
+  .badge-new  { background: #2196F3; }
+  .badge-hit  { background: #FF9800; }
+  .badge-sale { background: #e53935; }
+  .card-body { padding: 12px; }
+  .card-name  { font-size: 14px; font-weight: bold; margin-bottom: 4px; }
+  .card-price { color: #e53935; font-size: 17px; }
+</style>
+</head>
+<body>
+<script>
+  const catalog = [
+    { name: 'Кроссовки Air',  price: 4990, isNew: true,  isHit: false, isSale: false },
+    { name: 'Куртка Alpine',  price: 5900, isNew: false, isHit: true,  isSale: true  },
+    { name: 'Шапка Urban',    price: 890,  isNew: false, isHit: false, isSale: false },
+    { name: 'Рюкзак Trail',   price: 3200, isNew: true,  isHit: true,  isSale: false },
+  ];
+
+  catalog.forEach(item => {
+    const badges = [
+      item.isNew  ? '<span class="badge badge-new">Новинка</span>' : '',
+      item.isHit  ? '<span class="badge badge-hit">Хит</span>'     : '',
+      item.isSale ? '<span class="badge badge-sale">Акция</span>'  : '',
+    ].join('');
+
+    document.body.insertAdjacentHTML('beforeend', `
+      <div class="card">
+        <img src="https://placehold.co/200x130/eee/999?text=${encodeURIComponent(item.name)}" alt="">
+        <div class="badges">${badges}</div>
+        <div class="card-body">
+          <div class="card-name">${item.name}</div>
+          <div class="card-price">${item.price.toLocaleString('ru')} ₽</div>
+        </div>
+      </div>
+    `);
+  });
+</script>
+</body>
+</html>

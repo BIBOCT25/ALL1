@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>85. FAQ-аккордеон</title>
+<style>
+  * { box-sizing: border-box; margin: 0; }
+  body { font-family: Arial, sans-serif; padding: 40px; background: #f9f9f9; }
+  h2 { font-size: 22px; margin-bottom: 6px; }
+  .sub { font-size: 14px; color: #888; margin-bottom: 24px; }
+  .faq { max-width: 600px; }
+  details {
+    background: #fff; border: 1px solid #e0e0e0; border-radius: 10px;
+    margin-bottom: 8px; overflow: hidden;
+    transition: box-shadow 0.2s;
+  }
+  details[open] { box-shadow: 0 2px 12px rgba(21,101,192,.12); border-color: #90CAF9; }
+  summary {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 16px 18px; cursor: pointer; font-size: 15px; font-weight: 600;
+    color: #212121; list-style: none; user-select: none;
+  }
+  summary::-webkit-details-marker { display: none; }
+  summary::after {
+    content: '+'; font-size: 22px; color: #1565C0;
+    font-weight: 300; flex-shrink: 0; margin-left: 12px;
+    transition: transform 0.25s;
+  }
+  details[open] summary::after { content: '−'; }
+  .answer {
+    padding: 0 18px 16px; font-size: 14px; color: #555; line-height: 1.7;
+    border-top: 1px solid #f0f0f0;
+  }
+  .answer a { color: #1565C0; }
+</style>
+</head>
+<body>
+<h2>Частые вопросы</h2>
+<p class="sub">Отвечаем на самые популярные вопросы покупателей</p>
+
+<div class="faq">
+  <details>
+    <summary>Как оформить заказ на сайте?</summary>
+    <div class="answer">Выберите товар, нажмите «В корзину», перейдите в корзину и нажмите «Оформить заказ». Заполните данные доставки и выберите удобный способ оплаты. Заказ будет подтверждён письмом на вашу почту.</div>
+  </details>
+  <details>
+    <summary>Какие способы оплаты доступны?</summary>
+    <div class="answer">Мы принимаем оплату банковской картой (Visa, MasterCard, МИР), через СБП, наличными при получении, а также через электронные кошельки ЮMoney и QIWI.</div>
+  </details>
+  <details>
+    <summary>Сроки и стоимость доставки?</summary>
+    <div class="answer">Доставка по Москве — 1–2 рабочих дня, по России — 3–7 дней. Бесплатная доставка при заказе от 3 000 ₽. Экспресс-доставка на следующий день — 399 ₽.</div>
+  </details>
+  <details>
+    <summary>Можно ли вернуть товар?</summary>
+    <div class="answer">Да, возврат товара надлежащего качества возможен в течение 14 дней с момента получения. Товар должен быть в оригинальной упаковке и без следов использования. Подробнее — в <a href="#">условиях возврата</a>.</div>
+  </details>
+  <details>
+    <summary>Как отследить мой заказ?</summary>
+    <div class="answer">После отправки вы получите SMS и email с номером отслеживания. Статус заказа также доступен в личном кабинете в разделе «Мои заказы».</div>
+  </details>
+  <details>
+    <summary>Есть ли программа лояльности?</summary>
+    <div class="answer">Да! За каждую покупку вы получаете кэшбэк баллами (1 балл = 1 ₽). Баллами можно оплатить до 30% следующего заказа. Зарегистрируйтесь или войдите в личный кабинет, чтобы подключить программу.</div>
+  </details>
+</div>
+
+<script>
+  // Режим аккордеона: при открытии одного — закрывать остальные
+  document.querySelectorAll('.faq details').forEach(detail => {
+    detail.addEventListener('toggle', () => {
+      if (detail.open) {
+        document.querySelectorAll('.faq details').forEach(other => {
+          if (other !== detail) other.open = false;
+        });
+      }
+    });
+  });
+</script>
+</body>
+</html>
